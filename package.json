@@ -1,0 +1,28 @@
+{
+  "name": "RAPI",
+  "version": "0.0.2",
+  "description": "Rai.tv API",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "engines": {
+    "node": "0.10.24"
+  }
+  "repository": {
+    "type": "git",
+    "url": "."
+  },
+  "keywords": [
+    "rai",
+    "api",
+    "replay"
+  ],
+  "author": "Massimiliano Cannarozzo",
+  "license": "ISC",
+  "dependencies": {
+    "express": "~3.4.8",
+    "request": "~2.33.0"
+  },
+  "devDependencies": {}
+}
