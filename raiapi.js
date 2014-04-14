@@ -20,7 +20,7 @@ var getFile = function(req, res, programmi){
 	var programma = programmi[req.params.programma];
 
 	if(programma === undefined){
-		res.status(400).send('Programma non valido');
+		res.status(400).send({ error: 'Programma non valido'});
 		return;
 	}
 	
@@ -29,7 +29,7 @@ var getFile = function(req, res, programmi){
 	var url = programma[h264sizes[req.params.qualita]];
 
 	if(url === undefined || url == ''){
-		res.status(400).send('Qualita non valida');
+		res.status(400).send({ error: 'Qualita non valida'});
 		return 
 	}
 
@@ -45,7 +45,7 @@ var getFile = function(req, res, programmi){
 		} else if(req.params.action == 'url'){
 			res.send({url:response.headers.location});
 		} else {
-			res.status(400).send('Azione non valida');
+			res.status(400).send({ error: 'Azione non valida'});
 		}
 	});
 }
@@ -55,7 +55,7 @@ var listQualita = function(req, res, programmi){
 	var h264sizes = getSizesOfProgramma(programma);
 	
 	if(programma === undefined){
-		res.status(400).send('Programma non valido');
+		res.status(400).send({ error: 'Programma non valido'});
 		return;
 	}
 	
@@ -120,7 +120,7 @@ exports.handleRequest = function(req, res){
 	if(req.query.offset){
 		offset = Number(req.query.offset);
 		if(offset > 7 || offset < 1){
-			res.status(400).send('Offset non valido');
+			res.status(400).send({ error: 'Offset non valido'});
 		}
 	}
 	
@@ -143,13 +143,13 @@ exports.handleRequest = function(req, res){
 	};
 	
 	if(canale === undefined){
-		res.status(400).send('Canale non valido');
+		res.status(400).send({ error: 'Canale non valido'});
 		return;
 	}
 	
 	request.get(options, function(error, response, body){
 		if(error || response.statusCode != 200) {
-			res.status(500).send('OMG! '+error);
+			res.status(500).send({ error: 'Errore generico '+error});
 			console.log('error '+error);
 		} else {
 			var json = JSON.parse(body);
