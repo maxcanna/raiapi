@@ -33,7 +33,7 @@ app.get('/canali/:canale/programmi/:programma/qualita', raiapi.handleRequest);
 app.get('/canali/:canale/programmi/:programma/qualita/:qualita/:action', raiapi.handleRequest);
 
 app.use(function(req,res,next){
-	res.send('');
+	res.send(404);
 });
 
 app.listen(port);
