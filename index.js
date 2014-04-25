@@ -16,7 +16,7 @@ app.use(function(req,res,next){
 
 	if(req.get('X-Mashape-Proxy-Secret') != 'x9nH57BIII9F5bbdYoW3TAcaZYF1Mu'){
 		//res.send(401,{error: 'Unauthorized'});
-	}
+	}// else 
 	next();
 });
 
@@ -31,6 +31,13 @@ app.get('/canali/:canale/programmi/:programma/qualita', raiapi.handleRequest);
 
 //Risorsa
 app.get('/canali/:canale/programmi/:programma/qualita/:qualita/:action', raiapi.handleRequest);
+
+app.use(function(err,req,res,next){
+	if(err){
+	  console.error(err.stack);
+	  res.send(500, { error: 'Aw, Snap!'});
+	} else next();
+});
 
 app.use(function(req,res,next){
 	res.send(404);
