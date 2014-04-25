@@ -1,6 +1,6 @@
 {
   "name": "RAPI",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Rai.tv API",
   "main": "index.js",
   "scripts": {

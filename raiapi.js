@@ -40,10 +40,10 @@ var getFile = function(req, res, programmi){
 	
 	request.get(options, function(error, response, body){	
 		if(req.params.action == 'file'){
-			res.set('X-Mashape-Billing', 'file=1');
+			res.set('X-Mashape-Billing', 'full request=1');
 			res.redirect(response.headers.location);
 		} else if(req.params.action == 'url'){
-			res.set('X-Mashape-Billing', 'url=1');
+			res.set('X-Mashape-Billing', 'full request=1');
 			res.send({url:response.headers.location});
 		} else {
 			res.send(400, {error: 'Azione non valida'});
