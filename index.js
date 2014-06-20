@@ -20,15 +20,12 @@ app.use(function (req, res, next) {
 	//} else {
 		var options = {
 			headers: {'X-Mashape-Authorization': 'aidrLMAQg2x7xqMVUttS6HmWFfBOueRc'},
-			url : 'https://geoip.p.mashape.com/country?ip='+req.ip+'&format=json&lite=true'
 		};
 	
 		request.get(options, function(error, response, body){
 			if(error || response.statusCode != 200) {
 				res.send(500, {error: 'Hey! Where are you from?!'});
 			} else {
-				console.log('COUNTRY:'+body);
-				if(body.toUpperCase().indexOf('ITALY') > -1){
 					 next();
 				} else {
 					res.send(403, {error: 'Forbidden country'});
@@ -36,6 +33,9 @@ app.use(function (req, res, next) {
 			}
 		});
 	//}
+            url: 'https://community-telize-json-ip-and-geoip.p.mashape.com/geoip/' + '217.171.45.204'//req.ip
+                console.log('country_code:' + body.country_code);
+                if (body.country_code.toUpperCase().indexOf('IT') > -1) {
 });
 
 //Canali
