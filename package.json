@@ -1,6 +1,6 @@
 {
   "name": "RAPI",
-  "version": "1.0.7",
+  "version": "1.1.0",
   "description": "Rai.tv API",
   "main": "index.js",
   "scripts": {
@@ -21,8 +21,8 @@
   "author": "Massimiliano Cannarozzo",
   "license": "ISC",
   "dependencies": {
-    "express": "~4.0.0",
-    "request": "~2.34.0"
+    "express": "~4.4.5",
+    "request": "~2.36.0"
   },
   "devDependencies": {}
 }

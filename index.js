@@ -5,41 +5,43 @@ var request = require('request');
 
 var port = Number(process.env.PORT || 8080);
 
-app.enable('trust proxy');
 app.disable('x-powered-by');
 app.set('title', 'Rai API');
 
-app.use(function (req, res, next) {
-    console.log('IP:' + req.ip);
-    console.log('X-Mashape-User:' + req.get('X-Mashape-User'));
-    console.log('X-Mashape-Subscription:' + req.get('X-Mashape-Subscription'));
-    console.log(req.headers);
+if (process.env['env'] != 'development') {
+    app.enable('trust proxy');
+    app.use(function (req, res, next) {
+        console.log('IP:' + req.ip);
+        console.log('X-Mashape-User:' + req.get('X-Mashape-User'));
+        console.log('X-Mashape-Subscription:' + req.get('X-Mashape-Subscription'));
+        console.log(req.headers);
 
-    if (process.env.env != 'development' && req.get('X-Mashape-Proxy-Secret') != 'x9nH57BIII9F5bbdYoW3TAcaZYF1Mu') {
-        res.send(403, {error: 'Forbidden'});
-    } else {
-        var options = {
-            headers: {
-                'X-Mashape-Authorization': 'aidrLMAQg2x7xqMVUttS6HmWFfBOueRc'
-            },
-            json: true,
-            url: 'https://community-telize-json-ip-and-geoip.p.mashape.com/geoip/' + '217.171.45.204'//req.ip
-        };
+        if (req.get('X-Mashape-Proxy-Secret') != 'x9nH57BIII9F5bbdYoW3TAcaZYF1Mu') {
+            res.send(403, {error: 'Forbidden'});
+        } else {
+            var options = {
+                headers: {
+                    'X-Mashape-Authorization': 'aidrLMAQg2x7xqMVUttS6HmWFfBOueRc'
+                },
+                json: true,
+                url: 'https://community-telize-json-ip-and-geoip.p.mashape.com/geoip/' + req.ip
+            };
 
-        request.get(options, function (error, response, body) {
-            if (error || response.statusCode != 200) {
-                res.send(500, {error: 'Hey! Where are you from?!'});
-            } else {
-                console.log('country_code:' + body.country_code);
-                if (body.country_code.toUpperCase().indexOf('IT') > -1) {
-                    next();
+            request.get(options, function (error, response, body) {
+                if (error || response.statusCode != 200) {
+                    res.send(500, {error: 'Hey! Where are you from?!'});
                 } else {
-                    res.send(403, {error: 'Forbidden country'});
+                    console.log('country_code:' + body.country_code);
+                    if (body.country_code.toUpperCase().indexOf('IT') > -1) {
+                        next();
+                    } else {
+                        res.send(403, {error: 'Forbidden country'});
+                    }
                 }
-            }
-        });
-    }
-});
+            });
+        }
+    });
+}
 
 //Canali
 app.get('/canali', raiapi.handleRequest);
