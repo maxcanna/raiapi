@@ -23,7 +23,9 @@ app.use(morgan('common'));
         if (proxy_secret == 'e3b3f56615d1e5f2608d2f1130a7ef54') {//md5('override')
             next();
         } else if (proxy_secret != 'x9nH57BIII9F5bbdYoW3TAcaZYF1Mu') {
-            res.send(403, {error: 'Forbidden'});
+            const eF = new Error('Forbidden');
+            eF.status = 403;
+            next(eF);
         } else {
             var options = {
                 headers: {
@@ -35,13 +37,17 @@ app.use(morgan('common'));
 
             request.get(options, function (error, response, body) {
                 if (error || response.statusCode != 200) {
-                    res.send(500, {error: 'Hey! Where are you from?!'});
+                    const eG = new Error('Hey! Where are you from?!');
+                    eG.status = 500;
+                    next(eG);
                 } else {
                     console.log('country_code:' + body.country_code);
                     if (body.country_code.toUpperCase().indexOf('IT') > -1) {
                         next();
                     } else {
-                        res.send(403, {error: 'Forbidden country'});
+                        const eF = new Error('Forbidden country');
+                        eF.status = 403;
+                        next(eF);
                     }
                 }
             });
