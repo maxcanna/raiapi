@@ -1,9 +1,6 @@
-var express = require('express');
-var app = express();
-var raiapi = require('./raiapi.js');
-var request = require('request');
-
-var port = Number(process.env.PORT || 8080);
+var express = require('express')
+    , app = express()
+    , request = require('request')
     , morgan = require('morgan');
 
 app.disable('x-powered-by');
@@ -39,7 +36,7 @@ if (process.env['ENV'] != 'development') {
                     next(eG);
                 } else {
                     console.log('country_code:' + body.country_code);
-                    if (body.country_code.toUpperCase().indexOf('IT') > -1) {
+                    if (body['country_code'].toUpperCase().indexOf('IT') > -1) {
                         next();
                     } else {
                         const eF = new Error('Forbidden country');
