@@ -4,11 +4,14 @@ var raiapi = require('./raiapi.js');
 var request = require('request');
 
 var port = Number(process.env.PORT || 8080);
+    , morgan = require('morgan');
 
 app.disable('x-powered-by');
 app.set('title', 'Rai API');
 
 if (process.env['env'] != 'development') {
+app.use(morgan('common'));
+
     app.enable('trust proxy');
     app.use(function (req, res, next) {
         console.log('IP:' + req.ip);
