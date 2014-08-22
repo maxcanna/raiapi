@@ -49,27 +49,55 @@ if (process.env['ENV'] != 'development') {
     });
 }
 
-//Canali
-app.get('/canali', raiapi.handleRequest);
+app.use('/', require('./raiapi.js'));
 
-//Programmi
-app.get('/canali/:canale/programmi', raiapi.handleRequest);
+// catch 404 and forward to error handler
+app.use(function (req, res, next) {
+    const err = new Error('Not Found');
+    err.status = 404;
+    next(err);
+});
 
-//Qualita
-app.get('/canali/:canale/programmi/:programma/qualita', raiapi.handleRequest);
+// error handlers
 
-//Risorsa
-app.get('/canali/:canale/programmi/:programma/qualita/:qualita/:action', raiapi.handleRequest);
+// development error handler
+// will print stacktrace
+if (process.env['ENV'] == 'development') {
+    app.use(function (err, req, res, next) {
+        res.status(err.status || 500)
+            .format({
+                json: function () {
+                    res.json({
+                        message: err.message,
+                        error: err
+                    })
+                },
+                html: function () {
+                    res.send('Error: ' + err.message);
+                }
+            });
+    });
+}
 
+// production error handler
+// no stacktraces leaked to user
 app.use(function (err, req, res, next) {
-    if (err) {
+    if (err.status != 404) {
         console.error(err.stack);
-        res.send(500, {error: 'Aw, Snap!'});
-    } else next();
+    }
+    res.status(err.status || 500)
+        .format({
+            json: function () {
+                res.json({
+                    error: err.message
+                })
+            },
+            html: function () {
+                res.send(err.message);
+            }
+        });
 });
 
-app.use(function (req, res) {
-    res.send(404);
+app.listen((process.env['PORT'] || 3000), function () {
+    console.log('Server started');
 });
-
-app.listen(port);
