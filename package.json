@@ -2,7 +2,6 @@
     "name": "RAPI",
     "version": "1.2.0",
     "description": "Rai.tv API",
-
     "main": "index.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
@@ -28,7 +27,7 @@
     "dependencies": {
         "express": "~4.8.4",
         "request": "~2.40.0",
-        "moment": "~2.8.1",
+        "moment-timezone": "~0.2.1",
         "morgan": "~1.2.3"
     },
     "devDependencies": {}
