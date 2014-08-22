@@ -14,9 +14,6 @@ app.use(morgan('common'));
 
     app.enable('trust proxy');
     app.use(function (req, res, next) {
-        console.log('IP:' + req.ip);
-        console.log('X-Mashape-User:' + req.get('X-Mashape-User'));
-        console.log('X-Mashape-Subscription:' + req.get('X-Mashape-Subscription'));
         console.log(req.headers);
 
         const proxy_secret = req.get('X-Mashape-Proxy-Secret');
