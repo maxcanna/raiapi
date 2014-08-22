@@ -9,9 +9,9 @@ var port = Number(process.env.PORT || 8080);
 app.disable('x-powered-by');
 app.set('title', 'Rai API');
 
-if (process.env['env'] != 'development') {
 app.use(morgan('common'));
 
+if (process.env['ENV'] != 'development') {
     app.enable('trust proxy');
     app.use(function (req, res, next) {
         console.log(req.headers);
