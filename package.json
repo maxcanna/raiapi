@@ -1,28 +1,35 @@
 {
-  "name": "RAPI",
-  "version": "1.1.0",
-  "description": "Rai.tv API",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "engines": {
-    "node": "0.10.29"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git@heroku.com:raiapi.git"
-  },
-  "keywords": [
-    "rai",
-    "api",
-    "replay"
-  ],
-  "author": "Massimiliano Cannarozzo",
-  "license": "ISC",
-  "dependencies": {
-    "express": "~4.4.5",
-    "request": "~2.36.0"
-  },
-  "devDependencies": {}
+    "name": "RAPI",
+    "version": "1.2.0",
+    "description": "Rai.tv API",
+
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "engines": {
+        "node": "0.10.29"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git@bitbucket.org:mcannarozzo/raiapi.git"
+    },
+    "keywords": [
+        "rai",
+        "api",
+        "replay"
+    ],
+    "author": {
+        "name": "Massimiliano Cannarozzo",
+        "email": "massi@massi.ws",
+        "url": "http://massi.ws/"
+    },
+    "license": "ISC",
+    "dependencies": {
+        "express": "~4.8.4",
+        "request": "~2.40.0",
+        "moment": "~2.8.1",
+        "morgan": "~1.2.3"
+    },
+    "devDependencies": {}
 }
