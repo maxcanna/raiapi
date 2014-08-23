@@ -52,10 +52,11 @@ if (process.env['ENV'] != 'development') {
 }
 
 app.use(function (req, res, next) {
+    const eod = moment().endOf('day').tz('GMT');
     res.set({
-        'Cache-Control': 'private, max-age=' + moment().endOf('day').diff(moment(), 'seconds') ,
+        'Cache-Control': 'private, max-age=' + eod.diff(moment(), 'seconds') ,
         'Last-Modified': moment().tz('Europe/Rome').startOf('day').tz('GMT').format('ddd, DD MMM YYYY HH:mm:ss z'),
-        'Expires': moment().tz('Europe/Rome').endOf('day').tz('GMT').format('ddd, DD MMM YYYY HH:mm:ss z')
+        'Expires': eod.format('ddd, DD MMM YYYY HH:mm:ss z')
     });
     next();
 });
