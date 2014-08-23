@@ -117,7 +117,7 @@ app.use(function (err, req, res, next) {
                 })
             },
             html: function () {
-                res.send(err.message);
+                res.send('Error: ' + err.message);
             }
         });
 });
