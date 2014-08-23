@@ -61,12 +61,17 @@ app.use(function (req, res, next) {
 });
 
 app.use(require('./raiapi.js'));
-
-// catch 404 and forward to error handler
 app.use(function (req, res, next) {
-    const err = new Error('Not Found');
-    err.status = 404;
-    next(err);
+    res.format({
+        json: function () {
+            const err = new Error('Please see available doc at: http://goo.gl/XlbWnK');
+            err.status = 400;
+            next(err);
+        },
+        html: function() {
+            res.redirect('http://goo.gl/XlbWnK');
+        }
+    });
 });
 
 // error handlers
