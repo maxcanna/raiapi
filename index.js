@@ -52,11 +52,13 @@ if (process.env['ENV'] != 'development') {
 }
 
 app.use(function (req, res, next) {
-    const eod = moment().endOf('day').tz('GMT');
+    const now = moment().tz('Europe/Rome')
+        , eod = now.endOf('day')
+        , sod = now.startOf('day');
     res.set({
-        'Cache-Control': 'private, max-age=' + eod.diff(moment().tz('Europe/Rome'), 'seconds') ,
-        'Last-Modified': moment().tz('Europe/Rome').startOf('day').tz('GMT').format('ddd, DD MMM YYYY HH:mm:ss z'),
-        'Expires': eod.format('ddd, DD MMM YYYY HH:mm:ss z')
+        'Cache-Control': 'private, max-age=' + eod.diff(now, 'seconds') ,
+        'Last-Modified': sod.tz('GMT').format('ddd, DD MMM YYYY HH:mm:ss z'),
+        'Expires': eod.tz('GMT').format('ddd, DD MMM YYYY HH:mm:ss z')
     });
     next();
 });
