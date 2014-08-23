@@ -51,13 +51,13 @@ if (process.env['ENV'] != 'development') {
     });
 }
 
-app.use('/', function (req, res, next) {
+app.use(function (req, res, next) {
     res.set('Cache-Control', 'private');
     res.set('Last-Modified', moment().tz('Europe/Rome').startOf('day').tz('GMT').format('ddd, DD MMM YYYY HH:mm:ss z'));
     next();
 });
 
-app.use('/', require('./raiapi.js'));
+app.use(require('./raiapi.js'));
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
