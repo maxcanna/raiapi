@@ -52,8 +52,11 @@ if (process.env['ENV'] != 'development') {
 }
 
 app.use(function (req, res, next) {
-    res.set('Cache-Control', 'private');
-    res.set('Last-Modified', moment().tz('Europe/Rome').startOf('day').tz('GMT').format('ddd, DD MMM YYYY HH:mm:ss z'));
+    res.set({
+        'Cache-Control': 'private, max-age=' + moment().endOf('day').diff(moment(), 'seconds') ,
+        'Last-Modified': moment().tz('Europe/Rome').startOf('day').tz('GMT').format('ddd, DD MMM YYYY HH:mm:ss z'),
+        'Expires': moment().tz('Europe/Rome').endOf('day').tz('GMT').format('ddd, DD MMM YYYY HH:mm:ss z')
+    });
     next();
 });
 
@@ -67,6 +70,13 @@ app.use(function (req, res, next) {
 });
 
 // error handlers
+
+app.use(function (err, req, res, next) {
+    res.removeHeader('Cache-Control');
+    res.removeHeader('Last-Modified');
+    res.removeHeader('Expires');
+    next(err);
+});
 
 // development error handler
 // will print stacktrace
