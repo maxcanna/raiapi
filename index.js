@@ -4,6 +4,7 @@ var express = require('express')
     , morgan = require('morgan');
 
 app.disable('x-powered-by');
+app.disable('etag');
 app.set('title', 'Rai API');
 
 app.use(morgan('common'));
