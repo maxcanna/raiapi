@@ -36,7 +36,7 @@ var request = require('request').defaults({
             return;
         }
 
-        var programma = programmi[req.param('programma')];
+        const programma = programmi[req.param('programma')];
 
         if (programma === undefined) {
             eIR.message = 'Programma non valido';
@@ -44,7 +44,7 @@ var request = require('request').defaults({
             return;
         }
 
-        var h264sizes = getSizesOfProgramma(programma)
+        const h264sizes = getSizesOfProgramma(programma)
             , url = programma[h264sizes[req.param('qualita')]];
 
         if (url === undefined || url == '') {
@@ -65,12 +65,14 @@ var request = require('request').defaults({
             if (action == 'file') {
                 res.redirect(response.headers.location);
             } else if (action == 'url') {
-                res.send({url: response.headers.location});
+                res.send({
+                    url: response.headers.location
+                });
             }
         });
     }
     , listQualita = function (req, res, next, programmi) {
-        var programma = programmi[req.param('programma')]
+        const programma = programmi[req.param('programma')]
             , h264sizes = getSizesOfProgramma(programma);
 
         if (programma === undefined) {
@@ -79,10 +81,9 @@ var request = require('request').defaults({
             return;
         }
 
-        var response = [];
+        const response = [];
         for (var i = 0; i < h264sizes.length; i++) {
-            var url = programma[h264sizes[i]];
-            if (url) {
+            if (programma[h264sizes[i]]) {
                 response.push({
                     id: i,
                     name: h264sizes[i]
@@ -92,7 +93,7 @@ var request = require('request').defaults({
         res.send(response);
     }
     , listProgrammi = function (req, res, next, programmi) {
-        var response = [];
+        const response = [];
         for (var i = 0; i < programmi.length; i++) {
             var programma = programmi[i]
                 , h264sizes = getSizesOfProgramma(programma);
@@ -109,7 +110,7 @@ var request = require('request').defaults({
         res.send(response);
     }
     , listCanali = function (req, res) {
-        var response = [];
+        const response = [];
         for (var i = 0; i < canali.length; i++) {
             response.push({
                 id: i,
@@ -130,9 +131,10 @@ var request = require('request').defaults({
             }
         }
 
-        var yesterday = moment().tz('Europe/Rome').subtract(offset, 'days')
+        const yesterday = moment().tz('Europe/Rome').subtract(offset, 'days')
             , canale = canali[req.param('canale')]
-            , fileName = canale + '_' + yesterday.format('YYYY_MM_DD') + '.html';
+            , fileName = canale + '_' + yesterday.format('YYYY_MM_DD') + '.html'
+            , url = 'http://www.rai.it/dl/portale/html/palinsesti/replaytv/static/';
 
         if (canale === undefined) {
             eIR.message = 'Canale non valido';
@@ -140,7 +142,6 @@ var request = require('request').defaults({
             return;
         }
 
-        const url = 'http://www.rai.it/dl/portale/html/palinsesti/replaytv/static/';
         request.get(url + fileName, function (error, response, body) {
             if (error || response.statusCode != 200) {
                 const e = new Error('Errore generico: ' + error || response.statusCode);
@@ -148,7 +149,7 @@ var request = require('request').defaults({
                 next(e);
             } else {
         //TODO Usare redis per salvare in cache il body response con una validita' di sette giorni evitando il fetch
-                var programmi = body[channelMap[canale]][yesterday.format('YYYY-MM-DD')]
+                const programmi = body[channelMap[canale]][yesterday.format('YYYY-MM-DD')]
                     , programmiArr = [];
 
                 Object.keys(programmi).forEach(function (orario) {
