@@ -52,9 +52,9 @@ if (process.env['ENV'] != 'development') {
 }
 
 app.use(function (req, res, next) {
-    const now = moment().tz('Europe/Rome')
-        , eod = now.endOf('day')
-        , sod = now.startOf('day');
+    const now = moment().tz('Europe/rome')
+        , eod = moment().tz('Europe/Rome').endOf('day')
+        , sod = moment().tz('Europe/Rome').startOf('day');
     res.set({
         'Cache-Control': 'private, max-age=' + eod.diff(now, 'seconds') ,
         'Last-Modified': sod.tz('GMT').format('ddd, DD MMM YYYY HH:mm:ss z'),
