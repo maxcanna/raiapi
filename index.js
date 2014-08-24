@@ -8,7 +8,7 @@ app.disable('x-powered-by');
 app.disable('etag');
 app.set('title', 'Rai API');
 
-app.use(morgan('common'));
+app.use(morgan('combined'));
 
 if (process.env['ENV'] != 'development') {
     app.enable('trust proxy');
