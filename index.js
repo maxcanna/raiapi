@@ -13,7 +13,8 @@ app.use(morgan('common'));
 if (process.env['ENV'] != 'development') {
     app.enable('trust proxy');
     app.use(function (req, res, next) {
-        console.log(req.headers);
+        console.log('X-Mashape-User: ' + req.get('X-Mashape-User'));
+        console.log('X-Mashape-Subscription: ' + req.get('X-Mashape-Subscription'));
 
         const proxy_secret = req.get('X-Mashape-Proxy-Secret');
         if (proxy_secret == 'e3b3f56615d1e5f2608d2f1130a7ef54') {//md5('override')
@@ -37,7 +38,7 @@ if (process.env['ENV'] != 'development') {
                     eG.status = 500;
                     next(eG);
                 } else {
-                    console.log('country_code:' + body.country_code);
+                    console.log('country_code:' + body['country_code']);
                     if (body['country_code'].toUpperCase().indexOf('IT') > -1) {
                         next();
                     } else {
