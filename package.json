@@ -2,12 +2,13 @@
     "name": "RAPI",
     "version": "1.2.0",
     "description": "Rai.tv API",
+    "private": true,
     "main": "index.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "engines": {
-        "node": "0.10.29"
+        "node": "0.10.31"
     },
     "repository": {
         "type": "git",
