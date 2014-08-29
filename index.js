@@ -13,8 +13,8 @@ app.use(morgan('combined'));
 if (process.env['ENV'] != 'development') {
     app.enable('trust proxy');
     app.use(function (req, res, next) {
-        console.log('X-Mashape-User: ' + req.get('X-Mashape-User'));
-        console.log('X-Mashape-Subscription: ' + req.get('X-Mashape-Subscription'));
+        console.log('X-Mashape-User: ' + req.get('X-Mashape-User') +
+            ' - X-Mashape-Subscription: ' + req.get('X-Mashape-Subscription'));
 
         const proxy_secret = req.get('X-Mashape-Proxy-Secret');
         if (proxy_secret == 'e3b3f56615d1e5f2608d2f1130a7ef54') {//md5('override')
