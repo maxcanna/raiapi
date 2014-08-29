@@ -26,7 +26,7 @@ if (process.env['ENV'] != 'development') {
         } else {
             var options = {
                 headers: {
-                    'X-Mashape-Authorization': 'aidrLMAQg2x7xqMVUttS6HmWFfBOueRc'
+                    'X-Mashape-Key': 'CJKhzsHwm7mshRdKfeHO2nlYIcVep1OaBQAjsnjSCmncdyqi9O'
                 },
                 json: true,
                 url: 'https://community-telize-json-ip-and-geoip.p.mashape.com/geoip/' + req.ip
