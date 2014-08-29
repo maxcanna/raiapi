@@ -144,7 +144,7 @@ var request = require('request').defaults({
 
         request.get(url + fileName, function (error, response, body) {
             if (error || response.statusCode != 200) {
-                const e = new Error('Errore generico: ' + error || response.statusCode);
+                const e = new Error('Errore generico: (' + response.statusCode + ': ' + error + ')');
                 e.status = 500;
                 next(e);
             } else {
