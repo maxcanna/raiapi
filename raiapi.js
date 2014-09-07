@@ -143,8 +143,12 @@ var request = require('request').defaults({
         }
 
         request.get(url + fileName, function (error, response, body) {
-            if (error || response.statusCode != 200) {
-                const e = new Error('Errore generico: (' + response.statusCode + ': ' + error + ')');
+            if (response.statusCode == 404) {
+                const nf = new Error('Dati non disponibili');
+                nf.status = 404;
+                next(nf);
+            } else if (error || response.statusCode != 200) {
+                const e = new Error('Errore generico: (' + response.statusCode + ')');
                 e.status = 500;
                 next(e);
             } else {
