@@ -1,4 +1,4 @@
-![Logo_RaiTv.png](https://bitbucket.org/repo/nR4Aby/images/1316539824-Logo_RaiTv.png)
+![rai-api-logo.png](https://bitbucket.org/repo/nR4Aby/images/1231472162-rai-api-logo.png)
 # Rai Replay API #
 
 This project provides a [Rai Replay](http://www.raireplay.rai.it/) API to retrieve tv program information and files for the past seven days.
