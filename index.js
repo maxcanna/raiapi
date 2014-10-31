@@ -1,13 +1,16 @@
 var express = require('express')
     , app = express()
     , request = require('request')
+    , compression = require('compression')
     , morgan = require('morgan')
     , moment = require('moment-timezone');
 
 app.disable('x-powered-by');
 app.disable('etag');
-app.set('title', 'Rai API');
-
+app.enable('trust proxy');
+app.use(compression({threshold: 0}));
+morgan.token('remote-user', function(req, res){return req.get('X-Mashape-User');});
+morgan.token('referrer', function(req, res){return req.get('X-Mashape-Subscription');});
 app.use(morgan('combined'));
 
 if (process.env['ENV'] != 'development') {
