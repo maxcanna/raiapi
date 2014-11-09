@@ -8,7 +8,7 @@ var express = require('express')
 app.disable('x-powered-by');
 app.disable('etag');
 app.enable('trust proxy');
-app.use(compression({threshold: 0}));
+app.use(compression());
 morgan.token('remote-user', function(req, res){return req.get('X-Mashape-User');});
 morgan.token('referrer', function(req, res){return req.get('X-Mashape-Subscription');});
 app.use(morgan('combined'));
