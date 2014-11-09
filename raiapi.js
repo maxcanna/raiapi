@@ -6,7 +6,12 @@ const channelMap = {
         "RaiPremium": 32,
         "RaiYoyo": 38
     }
-    , eIR = new Error();
+    , eIR = new Error()
+    , eNF = new Error('Dati non disponibili')
+    , eGE = new Error('Errore generico');
+
+eGE.status = 500;
+eNF.status = 404;
 eIR.status = 400;
 
 var request = require('request').defaults({
@@ -62,7 +67,12 @@ var request = require('request').defaults({
 
         request.get(options, function (error, response) {
             res.set('X-Mashape-Billing', 'full request=1');
-            if (action == 'file') {
+            if (response.error ||
+                response.statusCode != 302 ||
+                response.headers.location == undefined) {
+                eGE.message = 'Errore generico: (' + response.statusCode + ')';
+                next(eGE);
+            } else if (action == 'file') {
                 res.redirect(response.headers.location);
             } else if (action == 'url') {
                 res.send({
@@ -144,13 +154,10 @@ var request = require('request').defaults({
 
         request.get(url + fileName, function (error, response, body) {
             if (response.statusCode == 404) {
-                const nf = new Error('Dati non disponibili');
-                nf.status = 404;
-                next(nf);
+                next(eNF);
             } else if (error || response.statusCode != 200) {
-                const e = new Error('Errore generico: (' + response.statusCode + ')');
-                e.status = 500;
-                next(e);
+                eGE.message = 'Errore generico: (' + response.statusCode + ')';
+                next(eGE);
             } else {
         //TODO Usare redis per salvare in cache il body response con una validita' di sette giorni evitando il fetch
                 const programmi = body[channelMap[canale]][yesterday.format('YYYY-MM-DD')]
