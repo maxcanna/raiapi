@@ -25,14 +25,18 @@ var request = require('request').defaults({
     })
     , moment = require('moment-timezone')
     , router = require('express').Router()
+    , redisClient
     , canali = Object.keys(channelMap)
     , onSuccess
+    , req
+    , res
+    , next
     , getSizesOfProgramma = function (programma) {
         return Object.keys(programma).filter(function (entry) {
             return entry.indexOf("h264_") == 0;
         });
     }
-    , getFile = function (req, res, next, programmi) {
+    , getFile = function (programmi) {
         const action = req.param('action');
 
         if (action != 'file' && action != 'url') {
@@ -81,7 +85,7 @@ var request = require('request').defaults({
             }
         });
     }
-    , listQualita = function (req, res, next, programmi) {
+    , listQualita = function (programmi) {
         const programma = programmi[req.param('programma')]
             , h264sizes = getSizesOfProgramma(programma);
 
@@ -102,11 +106,10 @@ var request = require('request').defaults({
         }
         res.send(response);
     }
-    , listProgrammi = function (req, res, next, programmi) {
+    , listProgrammi = function (programmi) {
         const response = [];
-        for (var i = 0; i < programmi.length; i++) {
-            var programma = programmi[i]
-                , h264sizes = getSizesOfProgramma(programma);
+        programmi.forEach(function(programma, i){
+            var h264sizes = getSizesOfProgramma(programma);
             for (var j = 0; j < h264sizes.length; j++) {
                 if (programma[h264sizes[j]]) {
                     response.push({
@@ -116,10 +119,11 @@ var request = require('request').defaults({
                     break;
                 }
             }
-        }
+        });
+
         res.send(response);
     }
-    , listCanali = function (req, res) {
+    , listCanali = function () {
         const response = [];
         for (var i = 0; i < canali.length; i++) {
             response.push({
@@ -130,7 +134,7 @@ var request = require('request').defaults({
 
         res.send(response);
     }
-    , handleRequest = function (req, res, next) {
+    , handleRequest = function () {
         var offset = 1;
         if (req.query.offset) {
             offset = Number(req.query.offset);
@@ -143,8 +147,7 @@ var request = require('request').defaults({
 
         const yesterday = moment().tz('Europe/Rome').subtract(offset, 'days')
             , canale = canali[req.param('canale')]
-            , fileName = canale + '_' + yesterday.format('YYYY_MM_DD') + '.html'
-            , url = 'http://www.rai.it/dl/portale/html/palinsesti/replaytv/static/';
+            , redisKey = canale + '_' + yesterday.format('YYYY_MM_DD');
 
         if (canale === undefined) {
             eIR.message = 'Canale non valido';
@@ -152,14 +155,36 @@ var request = require('request').defaults({
             return;
         }
 
-        request.get(url + fileName, function (error, response, body) {
+        if (redisClient.connected) {
+            redisClient.get(redisKey, function (err, reply) {
+                if (!err) {
+                    try {
+                        var programmi = JSON.parse(reply)
+                    } catch (e) {
+                        programmi = null;
+                    }
+                    if (programmi) {
+                        onSuccess(programmi);
+                    } else fetchPage();
+                }
+            });
+        } else fetchPage();
+    }
+
+    , fetchPage = function () {
+        const offset = Number(req.query.offset) || 1
+            , yesterday = moment().tz('Europe/Rome').subtract(offset, 'days')
+            , canale = canali[req.param('canale')]
+            , redisKey = canale + '_' + yesterday.format('YYYY_MM_DD')
+            , url = 'http://www.rai.it/dl/portale/html/palinsesti/replaytv/static/';
+
+        request.get(url + redisKey + '.html', function (error, response, body) {
             if (response.statusCode == 404) {
                 next(eNF);
             } else if (error || response.statusCode != 200) {
                 eGE.message = 'Errore generico: (' + response.statusCode + ')';
                 next(eGE);
             } else {
-        //TODO Usare redis per salvare in cache il body response con una validita' di sette giorni evitando il fetch
                 const programmi = body[channelMap[canale]][yesterday.format('YYYY-MM-DD')]
                     , programmiArr = [];
 
@@ -167,30 +192,47 @@ var request = require('request').defaults({
                     programmiArr.push(programmi[orario]);
                 });
 
-                onSuccess(req, res, next, programmiArr);
+                onSuccess(programmiArr);
             }
         });
     };
 
 //Canali
-router.get('/canali', listCanali);
+router.get('/canali', function (request, response, n) {
+    req = request;
+    res = response;
+    next = n;
+    listCanali();
+});
 
 //Programmi
-router.get('/canali/:canale/programmi', function (req, res, next) {
+router.get('/canali/:canale/programmi', function (request, response, n) {
+    req = request;
+    res = response;
+    next = n;
     onSuccess = listProgrammi;
-    handleRequest(req, res, next);
+    handleRequest();
 });
 
 //Qualita
-router.get('/canali/:canale/programmi/:programma/qualita', function (req, res, next) {
+router.get('/canali/:canale/programmi/:programma/qualita', function (request, response, n) {
+    req = request;
+    res = response;
+    next = n;
     onSuccess = listQualita;
-    handleRequest(req, res, next);
+    handleRequest();
 });
 
 //Risorsa
-router.get('/canali/:canale/programmi/:programma/qualita/:qualita/:action', function (req, res, next) {
+router.get('/canali/:canale/programmi/:programma/qualita/:qualita/:action', function (request, response, n) {
+    req = request;
+    res = response;
+    next = n;
     onSuccess = getFile;
-    handleRequest(req, res, next);
+    handleRequest();
 });
 
 module.exports = router;
+module.exports.setRedisClient = function (client) {
+    redisClient = client
+};
