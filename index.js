@@ -3,6 +3,9 @@ var express = require('express')
     , request = require('request')
     , compression = require('compression')
     , morgan = require('morgan')
+    , redis = require('redis')
+    , urlRedis = require('url').parse(process.env['REDISCLOUD_URL'])
+    , redisClient = redis.createClient(urlRedis.port, urlRedis.hostname)
     , moment = require('moment-timezone');
 
 app.disable('x-powered-by');
@@ -67,7 +70,13 @@ app.use(function (req, res, next) {
     next();
 });
 
-app.use(require('./raiapi.js'));
+var api = require('./raiapi.js');
+
+redisClient.on('error', console.error);
+redisClient.auth(urlRedis.auth.split(":")[1]);
+api.setRedisClient(redisClient);
+
+app.use(api);
 app.use(function (req, res, next) {
     res.format({
         json: function () {
