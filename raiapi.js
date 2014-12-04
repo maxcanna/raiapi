@@ -182,7 +182,7 @@ var request = require('request').defaults({
             if (response.statusCode == 404) {
                 next(eNF);
             } else if (error || response.statusCode != 200) {
-                eGE.message = 'Errore generico: (' + response.statusCode + ')';
+                eGE.message = 'Errore generico: (' + error.message || response.statusCode + ')';
                 next(eGE);
             } else {
                 const programmi = body[channelMap[canale]][yesterday.format('YYYY-MM-DD')]
