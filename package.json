@@ -1,40 +1,40 @@
 {
-    "name": "RAPI",
-    "version": "1.2.0",
-    "description": "Rai.tv API",
-    "private": true,
-    "main": "index.js",
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
-        "start": "node index.js"
-    },
-    "engines": {
-        "node": "0.10.31"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git@bitbucket.org:mcannarozzo/raiapi.git"
-    },
-    "keywords": [
-        "rai",
-        "api",
-        "replay"
-    ],
-    "author": {
-        "name": "Massimiliano Cannarozzo",
-        "email": "massi@massi.ws",
-        "url": "http://massi.ws/"
-    },
-    "license": "ISC",
-    "dependencies": {
-        "express": "~4.8.4",
-        "request": "~2.40.0",
-        "moment-timezone": "~0.2.1",
-        "morgan": "~1.2.3",
-        "redis": "~0.12.1",
-        "throng": "~1.0.1",
-        "underscore": "~1.8.3",
-        "compression": "~1.2.0"
-    },
-    "devDependencies": {}
+  "name": "RAPI",
+  "version": "1.2.0",
+  "description": "Rai.tv API",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "engines": {
+    "node": "0.10.31"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@bitbucket.org:mcannarozzo/raiapi.git"
+  },
+  "keywords": [
+    "rai",
+    "api",
+    "replay"
+  ],
+  "author": {
+    "name": "Massimiliano Cannarozzo",
+    "email": "massi@massi.ws",
+    "url": "http://massi.ws/"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "express": "~4.8.4",
+    "request": "~2.40.0",
+    "moment-timezone": "~0.2.1",
+    "morgan": "~1.2.3",
+    "redis": "~0.12.1",
+    "underscore": "~1.8.3",
+    "throng": "~1.0.1",
+    "compression": "~1.2.0"
+  },
+  "devDependencies": {}
 }
