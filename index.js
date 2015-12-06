@@ -34,6 +34,7 @@ app.use(function (req, res, next) {
 var api = require('./raiapi.js');
 
 redisClient.on('error', console.error);
+redisClient.on('connect', function(){console.log('Connected to redis')});
 redisClient.auth(urlRedis.auth.split(":")[1]);
 api.setRedisClient(redisClient);
 
@@ -41,12 +42,12 @@ app.use(api);
 app.use(function (req, res, next) {
     res.format({
         json: function () {
-            const err = new Error('Please see available doc at: http://goo.gl/XlbWnK');
+            const err = new Error('Bad request');
             err.status = 400;
             next(err);
         },
         html: function() {
-            res.redirect('http://goo.gl/XlbWnK');
+            res.redirect('http://massi.ws');
         }
     });
 });
