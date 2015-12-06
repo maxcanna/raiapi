@@ -6,27 +6,21 @@ require('throng')(start, {
 function start() {
 var express = require('express')
     , app = express()
-    , compression = require('compression')
-    , morgan = require('morgan')
     , redis = require('redis')
     , urlRedis = require('url').parse(process.env['REDISCLOUD_URL'])
     , redisClient = redis.createClient(urlRedis.port, urlRedis.hostname)
     , moment = require('moment-timezone');
 
 app.disable('x-powered-by');
-app.disable('etag');
-app.enable('trust proxy');
-app.use(compression());
-app.use(morgan('combined'));
+app.use(require('compression')());
+app.use(require('morgan')('combined'));
 
 app.use(function (req, res, next) {
-    const now = moment().tz('Europe/rome')
-        , eod = moment().tz('Europe/Rome').endOf('day')
-        , sod = moment().tz('Europe/Rome').startOf('day');
+    const eod = moment().tz('GMT').endOf('day');
     res.set({
-        'Cache-Control': 'private, max-age=' + eod.diff(now, 'seconds') ,
-        'Last-Modified': sod.tz('GMT').format('ddd, DD MMM YYYY HH:mm:ss z'),
-        'Expires': eod.tz('GMT').format('ddd, DD MMM YYYY HH:mm:ss z')
+        'Cache-Control': 'private, max-age=' + eod.diff(moment().tz('GMT'), 'seconds') ,
+        'Last-Modified': moment().tz('GMT').startOf('day').format('ddd, DD MMM YYYY HH:mm:ss z'),
+        'Expires': eod.format('ddd, DD MMM YYYY HH:mm:ss z')
     });
     next();
 });
@@ -53,14 +47,6 @@ app.use(function (req, res, next) {
 });
 
 // error handlers
-
-app.use(function (err, req, res, next) {
-    res.removeHeader('Cache-Control');
-    res.removeHeader('Last-Modified');
-    res.removeHeader('Expires');
-    next(err);
-});
-
 // development error handler
 // will print stacktrace
 if (process.env['ENV'] == 'development') {
