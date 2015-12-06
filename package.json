@@ -5,7 +5,8 @@
     "private": true,
     "main": "index.js",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "node index.js"
     },
     "engines": {
         "node": "0.10.31"
@@ -32,6 +33,7 @@
         "morgan": "~1.2.3",
         "redis": "~0.12.1",
         "throng": "~1.0.1",
+        "underscore": "~1.8.3",
         "compression": "~1.2.0"
     },
     "devDependencies": {}
