@@ -6,7 +6,6 @@ require('throng')(start, {
 function start() {
 var express = require('express')
     , app = express()
-    , request = require('request')
     , compression = require('compression')
     , morgan = require('morgan')
     , redis = require('redis')
@@ -18,24 +17,7 @@ app.disable('x-powered-by');
 app.disable('etag');
 app.enable('trust proxy');
 app.use(compression());
-morgan.token('remote-user', function(req, res){return req.get('X-Mashape-User');});
-morgan.token('referrer', function(req, res){return req.get('X-Mashape-Subscription');});
 app.use(morgan('combined'));
-
-if (process.env['ENV'] != 'development') {
-    app.enable('trust proxy');
-    app.use(function (req, res, next) {
-        console.log('X-Mashape-User: ' + req.get('X-Mashape-User') +
-            ' - X-Mashape-Subscription: ' + req.get('X-Mashape-Subscription'));
-
-        const proxy_secret = req.get('X-Mashape-Proxy-Secret');
-        if (proxy_secret != 'x9nH57BIII9F5bbdYoW3TAcaZYF1Mu') {
-            const eF = new Error('Forbidden');
-            eF.status = 403;
-            next(eF);
-        }
-    });
-}
 
 app.use(function (req, res, next) {
     const now = moment().tz('Europe/rome')
