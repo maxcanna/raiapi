@@ -37,7 +37,7 @@ RaiApi.prototype.getSizesOfProgramma = function (programma) {
     });
 };
 RaiApi.prototype.getFile = function (req, res, next, programmi) {
-    const action = req.param('action');
+    const action = req.params['action'];
 
     if (action != 'file' && action != 'url') {
         eIR.message = 'Azione non valida';
@@ -45,7 +45,7 @@ RaiApi.prototype.getFile = function (req, res, next, programmi) {
         return;
     }
 
-    const programma = programmi[req.param('programma')];
+    const programma = programmi[req.params['programma']];
 
     if (!programma) {
         eIR.message = 'Programma non valido';
@@ -54,7 +54,7 @@ RaiApi.prototype.getFile = function (req, res, next, programmi) {
     }
 
     const h264sizes = this.getSizesOfProgramma(programma)
-        , url = programma[_.keys(h264sizes)[req.param('qualita')]];
+        , url = programma[_.keys(h264sizes)[req.params['qualita']]];
 
     if (!url || url == '') {
         eIR.message = 'Qualita non valida';
@@ -85,7 +85,7 @@ RaiApi.prototype.getFile = function (req, res, next, programmi) {
     });
 };
 RaiApi.prototype.listQualita = function (req, res, next, programmi) {
-    const programma = programmi[req.param('programma')]
+    const programma = programmi[req.params['programma']]
         , h264sizes = this.getSizesOfProgramma(programma);
 
     if (!programma) {
@@ -128,7 +128,7 @@ RaiApi.prototype.handleRequest = function (req, res, next, onSuccess) {
     }
 
     const yesterday = moment().tz('Europe/Rome').subtract(offset, 'days')
-        , canale = this.canali[req.param('canale')]
+        , canale = this.canali[req.params['canale']]
         , redisKey = canale + ':' + yesterday.format('YYYY:MM:DD');
 
     if (canale === undefined) {
@@ -154,7 +154,7 @@ RaiApi.prototype.handleRequest = function (req, res, next, onSuccess) {
 };
 RaiApi.prototype.fetchPage = function (req, res, next, offset, onSuccess) {
     const day = moment().tz('Europe/Rome').subtract(offset, 'days')
-        , canale = this.canali[req.param('canale')]
+        , canale = this.canali[req.params['canale']]
         , redisKey = canale + ':' + day.format('YYYY:MM:DD')
         , url = 'http://www.rai.it/dl/portale/html/palinsesti/replaytv/static/';
 
