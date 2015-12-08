@@ -1,3 +1,9 @@
+require('throng')(start, {
+    workers: process.env['WEB_CONCURRENCY'] || 1,
+    lifetime: Infinity
+});
+
+function start() {
 var express = require('express')
     , app = express()
     , request = require('request')
@@ -140,3 +146,4 @@ app.use(function (err, req, res, next) {
 app.listen((process.env['PORT'] || 3000), function () {
     console.log('Server started');
 });
+}
