@@ -31,18 +31,6 @@ redisClient.auth(urlRedis.auth.split(":")[1]);
 api.setRedisClient(redisClient);
 
 app.use(api);
-app.use(function (req, res, next) {
-    res.format({
-        json: function () {
-            const err = new Error('Bad request');
-            err.status = 400;
-            next(err);
-        },
-        html: function () {
-            res.redirect('http://massi.ws');
-        }
-    });
-});
 
 // error handlers
 app.use(function (err, req, res, next) {
