@@ -40,44 +40,56 @@ class RaiApi {
 
     getFileUrl(canale, offset, programma, qualita, onSuccess) {
         this.getData(canale, offset, programmi => {
-            const h264sizes = RaiApi.getSizesOfProgramma(programmi[programma])
-                , url = programmi[programma][h264sizes[qualita]];
-
-            if (_.isEmpty(url)) {
+            if (_.isEmpty(programmi)) {
                 onSuccess();
             } else {
-                request.get({
-                    headers: {
-                        'User-Agent': null
-                    },
-                    url: url
-                }, (error, response) => {
-                    if (error || response.error || response.statusCode != 302) {
-                        onSuccess();
-                    } else {
-                        onSuccess(response.headers.location);
-                    }
-                });
+                const h264sizes = RaiApi.getSizesOfProgramma(programmi[programma])
+                    , url = programmi[programma][h264sizes[qualita]];
+
+                if (_.isEmpty(url)) {
+                    onSuccess();
+                } else {
+                    request.get({
+                        headers: {
+                            'User-Agent': null
+                        },
+                        url: url
+                    }, (error, response) => {
+                        if (error || response.error || response.statusCode != 302) {
+                            onSuccess();
+                        } else {
+                            onSuccess(response.headers.location);
+                        }
+                    });
+                }
             }
         });
     }
 
     listQualita(canale, offset, programma, onSuccess) {
         this.getData(canale, offset, (programmi) => {
-            onSuccess(RaiApi.getSizesOfProgramma(programmi[programma]).map((size, i) => ({
-                    id: i,
-                    name: size.replace(/_/g, ' ')
-                })
-            ));
+            if (_.isEmpty(programmi)) {
+                onSuccess();
+            } else {
+                onSuccess(RaiApi.getSizesOfProgramma(programmi[programma]).map((size, i) => ({
+                        id: i,
+                        name: size.replace(/_/g, ' ')
+                    })
+                ));
+            }
         });
     }
 
     listProgrammi(canale, offset, onSuccess) {
         this.getData(canale, offset, programmi => {
-            onSuccess(programmi.map((programma, i) => ({
-                id: i,
-                name: programma['t']
-            })));
+            if (_.isEmpty(programmi)) {
+                onSuccess();
+            } else {
+                onSuccess(programmi.map((programma, i) => ({
+                    id: i,
+                    name: programma['t']
+                })));
+            }
         });
     }
 
