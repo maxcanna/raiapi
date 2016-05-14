@@ -36,18 +36,10 @@ app.use(api);
 // error handlers
 app.use(function (err, req, res, next) {
     var status = err.status || 500;
-    res.status(status)
-        .format({
-            json: function () {
-                res.json({
-                    stack: development ? err.stack : undefined,
-                    error: err.message
-                });
-            },
-            html: function () {
-                res.send('Error: ' + err.message);
-            }
-        });
+    res.status(status).json({
+        stack: development ? err.stack : undefined,
+        error: err.message
+    });
 });
 
 app.listen((process.env['PORT'] || 3000), function () {
