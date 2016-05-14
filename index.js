@@ -1,11 +1,8 @@
 /* jshint unused: false */
 var express = require('express')
     , app = express()
-    , redis = require('redis')
     , environment = app.get('env') || 'production'
     , development = environment === 'development'
-    , urlRedis = require('url').parse(process.env['REDISCLOUD_URL'])
-    , redisClient = redis.createClient(urlRedis.port, urlRedis.hostname)
     , moment = require('moment-timezone');
 
 app.disable('x-powered-by');
@@ -22,14 +19,7 @@ app.use(function (req, res, next) {
     next();
 });
 
-var api = require('./raiapi.js');
-
-redisClient.on('error', console.error);
-redisClient.on('connect', function () {
-    console.log('Connected to redis');
-});
-redisClient.auth(urlRedis.auth.split(":")[1]);
-api.setRedisClient(redisClient);
+var api = require('./routes.js');
 
 app.use(api);
 
