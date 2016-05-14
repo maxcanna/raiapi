@@ -32,132 +32,95 @@ class RaiApi {
         this.canali = _.keys(this.channelMap);
         this.redisClient = null;
 
-        this.handleRequest = _.bind(this.handleRequest, this);
-        this.getFile = _.bind(this.getFile, this);
-        this.listQualita = _.bind(this.listQualita, this);
-        this.listProgrammi = _.bind(this.listProgrammi, this);
-        this.listCanali = _.bind(this.listCanali, this);
-        this.fetchPage = _.bind(this.fetchPage, this);
+        this.getData = this.getData.bind(this);
+        this.getFileUrl = this.getFileUrl.bind(this);
+        this.listQualita = this.listQualita.bind(this);
+        this.listProgrammi = this.listProgrammi.bind(this);
+        this.listCanali = this.listCanali.bind(this);
+        this.fetchPage = this.fetchPage.bind(this);
     }
 
-    static getSizesOfProgramma(programma) {
-        return _.pick(programma, function (value, key) {
-            return key.indexOf('h264_') === 0 && value !== '';
-        });
-    }
-
-    getFile(req, res, next) {
-        const action = req.params['action'];
-
-        if (action != 'file' && action != 'url') {
-            eIR.message = 'Azione non valida';
-            next(eIR);
-            return;
-        }
-        this.handleRequest(req, res, next, function (programmi) {
-            const programma = programmi[req.params['programma']];
-
-            if (!programma) {
-                eIR.message = 'Programma non valido';
-                next(eIR);
-                return;
-            }
-
-            const h264sizes = RaiApi.getSizesOfProgramma(programma)
-                , url = programma[_.keys(h264sizes)[req.params['qualita']]];
-
-            if (!url || url === '') {
-                eIR.message = 'Qualita non valida';
-                next(eIR);
-                return;
-            }
-
-            const options = {
-                headers: {
-                    'User-Agent': null
-                },
-                url: url
-            };
-
-            request.get(options, function (error, response) {
-                if (response.error ||
-                    response.statusCode != 302 ||
-                    response.headers.location === undefined) {
-                    eGE.message = 'Errore generico: (' + response.statusCode + ')';
-                    next(eGE);
-                } else if (action == 'file') {
-                    res.redirect(response.headers.location);
-                } else if (action == 'url') {
-                    res.send({
-                        url: response.headers.location
-                    });
-                }
-            });
-        });
-    }
-
-    listQualita(req, res, next) {
-        this.handleRequest(req, res, next, function (programmi) {
-            const programma = programmi[req.params['programma']]
-                , h264sizes = RaiApi.getSizesOfProgramma(programma);
-
-            if (!programma) {
-                eIR.message = 'Programma non valido';
-                next(eIR);
-                return;
-            }
-
-            res.send(_.map(_.keys(h264sizes), function (size, i) {
-                return {
-                    id: i,
-                    name: size.replace(/_/g, ' ')
-                };
-            }));
-        });
-    }
-
-    listProgrammi(req, res, next) {
-        this.handleRequest(req, res, next, function (programmi) {
-            res.send(_.map(programmi, function (programma, i) {
-                return {
-                    id: i,
-                    name: programma['t']
-                };
-            }));
-        });
-    }
-
-    listCanali(req, res) {
-        res.send(_.map(this.canali, function (name, id) {
-            return {
-                id: id,
-                name: name
-            };
-        }));
-    }
-
-    handleRequest(req, res, next, onSuccess) {
-        const offset = (req.query && Number(req.query.offset)) || 1;
-        onSuccess = _.bind(onSuccess, this);
+    static handleRequest(req) {
+        const offset = (req.query && Number(req.query.offset)) || 1
+            , canale = raiapi.canali[req.params['canale']];
 
         if (_.isNaN(offset) || offset > 7 || offset < 1) {
             eIR.message = 'Offset non valido';
-            next(eIR);
-            return;
+            return eIR;
+        } else if (canale === undefined) {
+            eIR.message = 'Canale non valido';
+            return eIR;
+        } else {
+            req.programma = req.params['programma'];
+            req.canale = canale;
+            req.offset = offset;
+            req.action = req.params['action'];
+            req.qualita = req.params['qualita'];
         }
+    }
+
+    static getSizesOfProgramma(programma) {
+        return _.keys(_.pick(programma, (value, key) => key.indexOf('h264_') === 0 && value !== ''));
+    }
+
+    getFileUrl(canale, offset, programma, qualita, onSuccess) {
+        this.getData(canale, offset, programmi => {
+            const h264sizes = RaiApi.getSizesOfProgramma(programmi[programma])
+                , url = programmi[programma][h264sizes[qualita]];
+
+            if (_.isEmpty(url)) {
+                onSuccess();
+            } else {
+                request.get({
+                    headers: {
+                        'User-Agent': null
+                    },
+                    url: url
+                }, (error, response) => {
+                    if (error || response.error || response.statusCode != 302) {
+                        onSuccess();
+                    } else {
+                        onSuccess(response.headers.location);
+                    }
+                });
+            }
+        });
+    }
+
+    listQualita(canale, offset, programma, onSuccess) {
+        this.getData(canale, offset, (programmi) => {
+            onSuccess(RaiApi.getSizesOfProgramma(programmi[programma]).map((size, i) => ({
+                    id: i,
+                    name: size.replace(/_/g, ' ')
+                })
+            ));
+        });
+    }
+
+    listProgrammi(canale, offset, onSuccess) {
+        this.getData(canale, offset, programmi => {
+            onSuccess(programmi.map((programma, i) => ({
+                id: i,
+                name: programma['t']
+            })));
+        });
+    }
+
+    listCanali() {
+        return this.canali.map((name, id) => ({
+            id: id,
+            name: name
+        }));
+    }
+
+    getData(canale, offset, onSuccess) {
+        onSuccess = onSuccess.bind(this);
 
         const yesterday = moment().tz('Europe/Rome').subtract(offset, 'days')
-            , canale = this.canali[req.params['canale']]
-            , redisKey = canale + ':' + yesterday.format('YYYY:MM:DD');
-
-        if (canale === undefined) {
-            eIR.message = 'Canale non valido';
-            next(eIR);
-            return;
-        }
+            , redisKey = `${canale}:${yesterday.format('YYYY:MM:DD')}`;
 
         if (this.redisClient && this.redisClient.connected) {
-            this.redisClient.get(redisKey, _.bind(function (err, reply) {
+            this.redisClient.get(redisKey, (err, reply) => {
                 if (!err) {
                     var programmi = null;
                     try {
@@ -167,25 +130,29 @@ class RaiApi {
                     }
                     if (programmi) {
                         onSuccess(programmi);
-                    } else this.fetchPage(req, next, offset, onSuccess);
+                    } else {
+                        this.fetchPage(canale, offset, programmi => onSuccess(programmi));
+                    }
+                } else {
+                    this.fetchPage(canale, offset, programmi => onSuccess(programmi));
                 }
-            }, this));
-        } else this.fetchPage(req, next, offset, onSuccess);
+            });
+        } else this.fetchPage(canale, offset, programmi => onSuccess(programmi));
     }
 
-    fetchPage(req, next, offset, onSuccess) {
+    fetchPage(canale, offset, onSuccess) {
         const day = moment().tz('Europe/Rome').subtract(offset, 'days')
-            , canale = this.canali[req.params['canale']]
             , redisKey = `${canale}:${day.format('YYYY:MM:DD')}`
             , url = `http://www.rai.it/dl/portale/html/palinsesti/replaytv/static/${redisKey.replace(/:/g, '_')}.html`;
-        request(url, _.bind(function (error, response, body) {
+        console.log(url);
+        request(url, (error, response, body) => {
                 if (error) {
                     throw error;
                 } else if (response.statusCode == 404) {
-                    next(eNF);
+                    throw eNF;
                 } else if (error || response.statusCode != 200) {
-                    eGE.message = 'Errore generico: (' + error.message || response.statusCode + ')';
-                    next(eGE);
+                    eGE.message = `Errore generico: (${response.statusCode})`;
+                    throw eGE;
                 } else {
                     const programmi = _.values(body[this.channelMap[canale]][day.format('YYYY-MM-DD')]);
 
@@ -195,7 +162,7 @@ class RaiApi {
 
                     onSuccess(programmi);
                 }
-            }, this)
+            }
         );
     }
 }
@@ -203,18 +170,55 @@ class RaiApi {
 const raiapi = new RaiApi();
 
 //Canali
-router.get('/canali', raiapi.listCanali);
+router.get('/canali', (req, res) => res.send(raiapi.listCanali()));
 
 //Programmi
-router.get('/canali/:canale/programmi', raiapi.listProgrammi);
+router.get('/canali/:canale/programmi', (req, res, next) => {
+    const err = RaiApi.handleRequest(req);
+    if (err) {
+        next(err);
+    } else {
+        raiapi.listProgrammi(req.canale, req.offset, programmi => res.send(programmi));
+    }
+});
 
 //Qualita
-router.get('/canali/:canale/programmi/:programma/qualita', raiapi.listQualita);
+router.get('/canali/:canale/programmi/:programma/qualita', (req, res, next) => {
+    const err = RaiApi.handleRequest(req);
+    if (err) {
+        next(err);
+    } else if (!req.programma) {
+        eIR.message = 'Programma non valido';
+        next(eIR);
+    } else {
+        raiapi.listQualita(req.canale, req.offset, req.programma, qualita => res.send(qualita));
+    }
+});
 
 //Risorsa
-router.get('/canali/:canale/programmi/:programma/qualita/:qualita/:action', raiapi.getFile);
+router.get('/canali/:canale/programmi/:programma/qualita/:qualita/:action', (req, res, next) => {
+    const err = RaiApi.handleRequest(req);
+    if (err) {
+        next(eGE);
+    } else if (!req.programma) {
+        eIR.message = 'Programma non valido';
+        next(eIR);
+    } else if (req.action != 'file' && req.action != 'url') {
+        eIR.message = 'Azione non valida';
+        next(eIR);
+    } else {
+        raiapi.getFileUrl(req.canale, req.offset, req.programma, req.qualita, fileUrl => {
+            if(!fileUrl){
+                eNF.message = 'Qualita non valida';
+                next(eNF);
+            } else if (req.action == 'file') {
+                res.redirect(fileUrl);
+            } else if (req.action == 'url') {
+                res.send({url: fileUrl});
+            }
+        });
+    }
+});
 
 module.exports = router;
-module.exports.setRedisClient = function (client) {
-    raiapi.redisClient = client;
-};
+module.exports.setRedisClient = (client) => raiapi.redisClient = client;
