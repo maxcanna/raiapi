@@ -33,7 +33,7 @@ var handleRequest = (req) => {
 };
 
 //Canali
-router.get('/canali', (req, res) => res.send(raiapi.listCanali()));
+router.get('/canali', (req, res) => raiapi.listCanali(canali => res.send(canali)));
 
 //Programmi
 router.get('/canali/:canale/programmi', (req, res, next) => {

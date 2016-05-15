@@ -74,8 +74,8 @@ class RaiApi {
                 onSuccess(RaiApi.getSizesOfProgramma(programmi[programma]).map((size, i) => ({
                         id: i,
                         name: size.replace(/_/g, ' ')
-                    })
-                ));
+                    }))
+                );
             }
         });
     }
@@ -93,11 +93,11 @@ class RaiApi {
         });
     }
 
-    listCanali() {
-        return this.canali.map((name, id) => ({
+    listCanali(onSuccess) {
+        onSuccess(this.canali.map((name, id) => ({
             id: id,
             name: name
-        }));
+        })));
     }
 
     getData(canale, offset, onSuccess) {

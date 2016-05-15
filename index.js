@@ -3,7 +3,8 @@ var express = require('express')
     , app = express()
     , environment = app.get('env') || 'production'
     , development = environment === 'development'
-    , moment = require('moment-timezone');
+    , moment = require('moment-timezone')
+    , api = require('./routes.js');
 
 app.disable('x-powered-by');
 app.use(require('compression')());
@@ -18,8 +19,6 @@ app.use(function (req, res, next) {
     });
     next();
 });
-
-var api = require('./routes.js');
 
 app.use(api);
 
