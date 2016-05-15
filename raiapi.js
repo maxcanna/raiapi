@@ -35,7 +35,7 @@ class RaiApi {
     }
 
     static getSizesOfProgramma(programma) {
-        return _.keys(_.pick(programma, (value, key) => key.indexOf('h264_') === 0 && value !== ''));
+        return _.filter(_.keys(programma), (key) => _.startsWith(key, 'h264_') && programma[key] !== '');
     }
 
     getFileUrl(canale, offset, programma, qualita, onSuccess) {
