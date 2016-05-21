@@ -30,7 +30,6 @@
   "dependencies": {
     "express": "~4.13.3",
     "request": "~2.72.0",
-    "moment-timezone": "~0.5.4",
     "morgan": "~1.7.0",
     "redis": "~2.6.0-2",
     "lodash": "~4.12.0",

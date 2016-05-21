@@ -14,11 +14,23 @@ eNF.status = 404;
 eIR.status = 400;
 
 var handleRequest = (req) => {
-    const offset = (req.query && Number(req.query.offset)) || 1
+    var data = new Date()
         , canale = raiapi.canali[req.params['canale']];
 
-    if (_.isNaN(offset) || offset > 7 || offset < 1) {
-        eIR.message = 'Offset non valido';
+    data.setDate(data.getDate() - 1);
+
+    if (req.query.data !== undefined) {
+        data = new Date(req.query.data);
+        if (isNaN(data.getDate())) {
+            eIR.message = 'Data non valida';
+            return eIR;
+        }
+    }
+
+    var diff = Math.floor((new Date() - data) / (1000 * 60 * 60 * 24));
+
+    if (diff > 7 || diff < 1) {
+        eIR.message = 'Data non valida';
         return eIR;
     } else if (canale === undefined) {
         eIR.message = 'Canale non valido';
@@ -26,7 +38,7 @@ var handleRequest = (req) => {
     } else {
         req.programma = req.params['programma'];
         req.canale = canale;
-        req.offset = offset;
+        req.data = data;
         req.action = req.params['action'];
         req.qualita = req.params['qualita'];
     }
@@ -41,7 +53,7 @@ router.get('/canali/:canale/programmi', (req, res, next) => {
     if (err) {
         next(err);
     } else {
-        raiapi.listProgrammi(req.canale, req.offset, programmi => programmi ? res.send(programmi) : next(eGE));
+        raiapi.listProgrammi(req.canale, req.data, programmi => programmi ? res.send(programmi) : next(eGE));
     }
 });
 
@@ -54,7 +66,7 @@ router.get('/canali/:canale/programmi/:programma/qualita', (req, res, next) => {
         eIR.message = 'Programma non valido';
         next(eIR);
     } else {
-        raiapi.listQualita(req.canale, req.offset, req.programma, qualita => qualita ? res.send(qualita) : next(eGE));
+        raiapi.listQualita(req.canale, req.data, req.programma, qualita => qualita ? res.send(qualita) : next(eGE));
     }
 });
 
@@ -70,7 +82,7 @@ router.get('/canali/:canale/programmi/:programma/qualita/:qualita/:action', (req
         eIR.message = 'Azione non valida';
         next(eIR);
     } else {
-        raiapi.getFileUrl(req.canale, req.offset, req.programma, req.qualita, fileUrl => {
+        raiapi.getFileUrl(req.canale, req.data, req.programma, req.qualita, fileUrl => {
             if (!fileUrl) {
                 eNF.message = 'Qualita non valida';
                 next(eNF);

@@ -10,7 +10,6 @@ var request = require('request').defaults({
     json: true,
     followRedirect: false
 })
-    , moment = require('moment-timezone')
     , _ = require('lodash');
 
 class RaiApi {
@@ -38,58 +37,73 @@ class RaiApi {
         return _.filter(_.keys(programma), (key) => _.startsWith(key, 'h264_') && programma[key] !== '');
     }
 
-    getFileUrl(canale, offset, programma, qualita, onSuccess) {
-        this.getData(canale, offset, programmi => {
+    getFileUrl(idCanale, data, idProgramma, qualita, onSuccess) {
+        this.getData(idCanale, data, programmi => {
             if (_.isEmpty(programmi)) {
                 onSuccess();
-            } else {
-                const h264sizes = RaiApi.getSizesOfProgramma(programmi[programma])
-                    , url = programmi[programma][h264sizes[qualita]];
+                return;
+            }
 
-                if (_.isEmpty(url)) {
+            const programma = programmi[idProgramma];
+
+            if (programma === undefined) {
+                onSuccess();
+                return;
+            }
+
+            const h264sizes = RaiApi.getSizesOfProgramma(programma)
+                , url = programma[h264sizes[qualita]];
+
+            if (_.isEmpty(url)) {
+                onSuccess();
+                return;
+            }
+            request.get({
+                headers: {
+                    'User-Agent': null
+                },
+                url: url
+            }, (error, response) => {
+                if (error || response.error || response.statusCode != 302) {
                     onSuccess();
                 } else {
-                    request.get({
-                        headers: {
-                            'User-Agent': null
-                        },
-                        url: url
-                    }, (error, response) => {
-                        if (error || response.error || response.statusCode != 302) {
-                            onSuccess();
-                        } else {
-                            onSuccess(response.headers.location);
-                        }
-                    });
+                    onSuccess(response.headers.location);
                 }
-            }
+            });
         });
     }
 
-    listQualita(canale, offset, programma, onSuccess) {
-        this.getData(canale, offset, (programmi) => {
+    listQualita(idCanale, data, idProgramma, onSuccess) {
+        this.getData(idCanale, data, (programmi) => {
             if (_.isEmpty(programmi)) {
                 onSuccess();
-            } else {
-                onSuccess(RaiApi.getSizesOfProgramma(programmi[programma]).map((size, i) => ({
-                        id: i,
-                        name: size.replace(/_/g, ' ')
-                    }))
-                );
+                return;
             }
-        });
-    }
+            const programma = programmi[idProgramma];
 
-    listProgrammi(canale, offset, onSuccess) {
-        this.getData(canale, offset, programmi => {
-            if (_.isEmpty(programmi)) {
+            if (programma === undefined) {
                 onSuccess();
-            } else {
-                onSuccess(programmi.map((programma, i) => ({
+                return;
+            }
+
+            onSuccess(RaiApi.getSizesOfProgramma(programma).map((size, i) => ({
                     id: i,
-                    name: programma['t']
-                })));
+                    name: size.replace(/_/g, ' ')
+                }))
+            );
+        });
+    }
+
+    listProgrammi(idCanale, data, onSuccess) {
+        this.getData(idCanale, data, programmi => {
+            if (_.isEmpty(programmi)) {
+                onSuccess();
+                return;
             }
+            onSuccess(programmi.map((programma, i) => ({
+                id: i,
+                name: programma['t']
+            })));
         });
     }
 
@@ -100,10 +114,10 @@ class RaiApi {
         })));
     }
 
-    getData(canale, offset, onSuccess) {
+    getData(idCanale, data, onSuccess) {
         onSuccess = onSuccess.bind(this);
 
-        const redisKey = `${canale}:${moment().tz('Europe/Rome').subtract(offset, 'days').format('YYYY:MM:DD')}`;
+        const redisKey = `${idCanale}:${data.getFullYear()}:${('0'+(data.getMonth()+1)).slice(-2)}:${data.getDate()}`;
 
         if (this.redisClient && this.redisClient.connected) {
             this.redisClient.get(redisKey, (err, reply) => {
@@ -114,31 +128,30 @@ class RaiApi {
                     } catch (e) {
                         programmi = null;
                     }
-                    if (programmi) {
+                    if (programmi && programmi.length > 0) {
                         onSuccess(programmi);
-                    } else {
-                        this.fetchPage(canale, offset, programmi => onSuccess(programmi));
+                        return;
                     }
+                    this.fetchPage(idCanale, data, onSuccess);
                 } else {
-                    this.fetchPage(canale, offset, programmi => onSuccess(programmi));
+                    this.fetchPage(idCanale, data, onSuccess);
                 }
             });
-        } else this.fetchPage(canale, offset, programmi => onSuccess(programmi));
+        } else this.fetchPage(idCanale, data, onSuccess);
     }
 
-    fetchPage(canale, offset, onSuccess) {
-        const day = moment().tz('Europe/Rome').subtract(offset, 'days')
-            , redisKey = `${canale}:${day.format('YYYY:MM:DD')}`
+    fetchPage(idCanale, data, onSuccess) {
+        const redisKey = `${idCanale}:${data.getFullYear()}:${('0'+(data.getMonth()+1)).slice(-2)}:${data.getDate()}`
             , url = `http://www.rai.it/dl/portale/html/palinsesti/replaytv/static/${redisKey.replace(/:/g, '_')}.html`;
 
-        request(url, (error, response, body) => {
+        request.get(url, (error, response, body) => {
                 if (error || response.statusCode == 404 || response.statusCode != 200) {
                     onSuccess();
                 } else {
-                    const programmi = _.values(body[this.channelMap[canale]][day.format('YYYY-MM-DD')]);
+                    const programmi = _.values(body[this.channelMap[idCanale]][`${data.getFullYear()}-${('0'+(data.getMonth()+1)).slice(-2)}-${data.getDate()}`]);
 
-                    if (this.redisClient && this.redisClient.connected) {
-                        this.redisClient.set(redisKey, JSON.stringify(programmi), 'EX', 86400 * (7 - offset + 1));
+                    if (programmi.length > 0 && this.redisClient && this.redisClient.connected) {
+                        this.redisClient.set(redisKey, JSON.stringify(programmi), 'EX', 86400 * 7);
                     }
 
                     onSuccess(programmi);
