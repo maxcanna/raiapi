@@ -8,6 +8,8 @@ var express = require('express')
 app.disable('x-powered-by');
 app.use(require('compression')());
 app.use(require('morgan')('combined'));
+app.use(express.static(__dirname));
+app.use(express.static(__dirname + 'public'));
 
 app.use(api);
 
