@@ -1,0 +1,9 @@
+image: node:6.2.1
+
+pipelines:
+  default:
+    - step:
+        script:
+          - npm --version
+          - npm install
+          - npm test
