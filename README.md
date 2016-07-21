@@ -5,4 +5,9 @@ This project provides a [Rai Replay](http://www.raireplay.rai.it/) API to retrie
 
 ### How do I get set up? ###
 
-Just git pull it and push it to a properly configured node env
+* `npm install`
+* `npm start`
+
+Or, alternatively, you can use Heroku
+
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)

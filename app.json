@@ -1,0 +1,12 @@
+{
+    "name": "Rai API",
+    "website": "https://github.com/maxcanna/raiapi",
+    "repository": "https://github.com/maxcanna/raiapi",
+    "description": "Rai Replay API to retrieve tv program information and files for the past seven days",
+    "logo": "https://bitbucket.org/repo/nR4Aby/images/1231472162-rai-api-logo.png",
+    "image": "heroku/nodejs",
+    "success_url": "/",
+    "addons": [
+        "rediscloud"
+    ]
+}
