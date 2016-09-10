@@ -37,6 +37,10 @@ class RaiApi {
         return _.filter(_.keys(programma), (key) => _.startsWith(key, 'h264_') && programma[key] !== '');
     }
 
+    static getKeyOfData(data) {
+        return `${data.getFullYear()}:${('0'+(data.getMonth()+1)).slice(-2)}:${('0'+(data.getDate())).slice(-2)}`;
+    }
+
     getFileUrl(idCanale, data, idProgramma, qualita, onSuccess) {
         this.getData(idCanale, data, programmi => {
             if (_.isEmpty(programmi)) {
@@ -117,7 +121,7 @@ class RaiApi {
     getData(idCanale, data, onSuccess) {
         onSuccess = onSuccess.bind(this);
 
-        const redisKey = `${idCanale}:${data.getFullYear()}:${('0'+(data.getMonth()+1)).slice(-2)}:${data.getDate()}`;
+        const redisKey = `${idCanale}:${RaiApi.getKeyOfData(data)}`;
 
         if (this.redisClient && this.redisClient.connected) {
             this.redisClient.get(redisKey, (err, reply) => {
@@ -141,14 +145,14 @@ class RaiApi {
     }
 
     fetchPage(idCanale, data, onSuccess) {
-        const redisKey = `${idCanale}:${data.getFullYear()}:${('0'+(data.getMonth()+1)).slice(-2)}:${data.getDate()}`
+        const redisKey = `${idCanale}:${RaiApi.getKeyOfData(data)}`
             , url = `http://www.rai.it/dl/portale/html/palinsesti/replaytv/static/${redisKey.replace(/:/g, '_')}.html`;
 
         request.get(url, (error, response, body) => {
                 if (error || response.statusCode == 404 || response.statusCode != 200) {
                     onSuccess();
                 } else {
-                    const programmi = _.values(body[this.channelMap[idCanale]][`${data.getFullYear()}-${('0'+(data.getMonth()+1)).slice(-2)}-${data.getDate()}`]);
+                    const programmi = _.values(body[this.channelMap[idCanale]][`${RaiApi.getKeyOfData(data).replace(/:/g, '-')}`]);
 
                     if (programmi.length > 0 && this.redisClient && this.redisClient.connected) {
                         this.redisClient.set(redisKey, JSON.stringify(programmi), 'EX', 86400 * 7);
