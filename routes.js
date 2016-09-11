@@ -14,8 +14,7 @@ eNF.status = 404;
 eIR.status = 400;
 
 var handleRequest = (req) => {
-    var data = new Date()
-        , canale = raiapi.canali[req.params['canale']];
+    var data = new Date();
 
     data.setDate(data.getDate() - 1);
 
@@ -32,12 +31,12 @@ var handleRequest = (req) => {
     if (diff > 7 || diff < 1) {
         eIR.message = 'Data non valida';
         return eIR;
-    } else if (canale === undefined) {
+    } else if (req.params.canale > raiapi.canali.length) {
         eIR.message = 'Canale non valido';
         return eIR;
     } else {
         req.programma = req.params['programma'];
-        req.canale = canale;
+        req.canale = req.params['canale'];
         req.data = data;
         req.action = req.params['action'];
         req.qualita = req.params['qualita'];

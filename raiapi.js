@@ -121,7 +121,7 @@ class RaiApi {
     getData(idCanale, data, onSuccess) {
         onSuccess = onSuccess.bind(this);
 
-        const redisKey = `${idCanale}:${RaiApi.getKeyOfData(data)}`;
+        const redisKey = `${this.canali[idCanale]}:${RaiApi.getKeyOfData(data)}`;
 
         if (this.redisClient && this.redisClient.connected) {
             this.redisClient.get(redisKey, (err, reply) => {
@@ -145,14 +145,14 @@ class RaiApi {
     }
 
     fetchPage(idCanale, data, onSuccess) {
-        const redisKey = `${idCanale}:${RaiApi.getKeyOfData(data)}`
+        const redisKey = `${this.canali[idCanale]}:${RaiApi.getKeyOfData(data)}`
             , url = `http://www.rai.it/dl/portale/html/palinsesti/replaytv/static/${redisKey.replace(/:/g, '_')}.html`;
 
         request.get(url, (error, response, body) => {
                 if (error || response.statusCode == 404 || response.statusCode != 200) {
                     onSuccess();
                 } else {
-                    const programmi = _.values(body[this.channelMap[idCanale]][`${RaiApi.getKeyOfData(data).replace(/:/g, '-')}`]);
+                    const programmi = _.values(body[this.channelMap[this.canali[idCanale]]][`${RaiApi.getKeyOfData(data).replace(/:/g, '-')}`]);
 
                     if (programmi.length > 0 && this.redisClient && this.redisClient.connected) {
                         this.redisClient.set(redisKey, JSON.stringify(programmi), 'EX', 86400 * 7);
