@@ -12,6 +12,6 @@ printf "\033[34m* Creating AWS Lambda function package\n\033[0m"
 rm -rf node_modules
 npm i --production > /dev/null
 
-zip -r9q lambda.zip index.js raiapi.js routes.js node_modules
+zip -r9q lambda.zip lambda.js raiapi.js node_modules
 ls -lh lambda.zip
 printf "\033[34m* Done\n\033[0m"
