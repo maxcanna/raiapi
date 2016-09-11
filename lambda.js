@@ -13,19 +13,28 @@ exports.handler = function (event, context, callback) {
     eNF.status = 404;
     eIR.status = 400;
 
-    var offset = Number(event.offset) || 1
-        , canale = raiapi.canali[event.canale]
-        , err;
+    var canale = raiapi.canali[event.canale]
+        , err
+        , data = new Date();
 
-    if (_.isNaN(offset) || offset > 7 || offset < 1) {
-        eIR.message = 'Offset non valido';
-        err = eIR;
+    data.setDate(data.getDate() - 1);
+
+    if (event.data !== undefined) {
+        data = new Date(event.data);
+        if (isNaN(data.getDate())) {
+            eIR.message = 'Data non valida';
+            return eIR;
+        }
+    }
+
+    var diff = Math.floor((new Date() - data) / (1000 * 60 * 60 * 24));
+
+    if (diff > 7 || diff < 1) {
+        eIR.message = 'Data non valida';
+        return eIR;
     } else if (canale === undefined) {
         eIR.message = 'Canale non valido';
         err = eIR;
-    } else {
-        event.canale = canale;
-        event.offset = offset;
     }
 
     if (event.action) {
@@ -39,7 +48,7 @@ exports.handler = function (event, context, callback) {
             eIR.message = 'Azione non valida';
             callback(eIR);
         } else {
-            raiapi.getFileUrl(event.canale, event.offset, event.programma, event.qualita, fileUrl => {
+            raiapi.getFileUrl(event.canale, event.data, event.programma, event.qualita, fileUrl => {
                 if (!fileUrl) {
                     eNF.message = 'Qualita non valida';
                     callback(eNF);
@@ -55,14 +64,14 @@ exports.handler = function (event, context, callback) {
         if (err !== undefined) {
             callback(err);
         } else {
-            raiapi.listQualita(event.canale, event.offset, event.programma, qualita => qualita ? callback(null, qualita) : callback(eGE));
+            raiapi.listQualita(event.canale, event.data, event.programma, qualita => qualita ? callback(null, qualita) : callback(eGE));
         }
     } else if (event.canale) {
         //Programmi
         if (err !== undefined) {
             callback(err);
         } else {
-            raiapi.listProgrammi(event.canale, event.offset, programmi => programmi ? callback(null, programmi) : callback(eGE));
+            raiapi.listProgrammi(event.canale, event.data, programmi => programmi ? callback(null, programmi) : callback(eGE));
         }
     } else {
         //Canali
