@@ -11,6 +11,13 @@ There are several options.
   * `npm i`
   * `npm start`
 
+* You can use [AWS Lambda](https://aws.amazon.com/lambda/)
+
+  * Create a new function
+  * Generate the function package using provided `lambda.sh`
+  * Upload generated package
+  * Import [API Gateway Definition](raiapi-aws-api-gateway.json) (be sure to use your values in it)
+
 * You can use Heroku
 
   [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
