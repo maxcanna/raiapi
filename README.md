@@ -5,9 +5,13 @@ This project provides a [Rai Replay](http://www.raireplay.rai.it/) API to retrie
 
 ### How do I get set up? ###
 
-* `npm install`
+There are several options.
+
+You can run it locally:
+
+* `npm i`
 * `npm start`
 
-Or, alternatively, you can use Heroku
+You can use Heroku
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
