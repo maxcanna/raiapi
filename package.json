@@ -5,7 +5,7 @@
   "private": true,
   "main": "index.js",
   "scripts": {
-    "test": "node_modules/.bin/jshint $(find . ! -path '*node_modules*' -name '*.js')",
+    "test": "./test.sh",
     "start": "node index.js"
   },
   "engines": {
@@ -36,6 +36,6 @@
     "compression": "~1.6.0"
   },
   "devDependencies": {
-    "jshint": "~2.9.1"
+    "eslint": "^3.5.0"
   }
 }

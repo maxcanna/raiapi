@@ -2,6 +2,7 @@
  * Created by massimilianocannarozzo on 21/05/16.
  */
 /* globals Backbone, moment, _ */
+/* eslint-env browser */
 /* exported UrlModel */
 var UrlModel = Backbone.Model.extend({
     setOptions: function (options) {
@@ -12,5 +13,5 @@ var UrlModel = Backbone.Model.extend({
     },
     formatDate: function () {
         return moment(this.get('data')).toISOString();
-    }
+    },
 });
