@@ -5,7 +5,7 @@
   },
   "name": "RAPI",
   "version": "2.0.0",
-  "description": "Rai.tv API",
+  "description": "RaiPlay API",
   "private": true,
   "main": "index.js",
   "scripts": {
@@ -29,11 +29,11 @@
   },
   "homepage": "https://github.com/maxcanna/raiapi#readme",
   "dependencies": {
-    "express": "~4.13.3",
-    "request": "~2.72.0",
+    "express": "~4.14.0",
+    "request": "~2.74.0",
     "morgan": "~1.7.0",
     "redis": "~2.6.0-2",
-    "lodash": "~4.12.0",
+    "lodash": "~4.15.0",
     "compression": "~1.6.0"
   },
   "devDependencies": {
