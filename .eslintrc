@@ -1,0 +1,13 @@
+{
+  "env": {
+    "es6": true
+  },
+  "rules": {
+    "comma-style": ["error", "first", {"exceptions": {"ObjectExpression": true}}],
+    "comma-dangle": ["error", "always-multiline"],
+    "dot-notation": "error",
+    "no-unused-vars": "error",
+    "no-undef": "error",
+    "one-var-declaration-per-line": ["error", "initializations"]
+  }
+}

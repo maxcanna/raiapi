@@ -1,4 +1,5 @@
-/* jshint unused: false */
+/* eslint no-unused-vars: "off" */
+/* eslint-env node */
 var express = require('express')
     , app = express()
     , environment = app.get('env') || 'production'
@@ -18,10 +19,10 @@ app.use(function (err, req, res, next) {
     var status = err.status || 500;
     res.status(status).json({
         stack: development ? err.stack : undefined,
-        error: err.message
+        error: err.message,
     });
 });
 
-app.listen((process.env['PORT'] || 3000), function () {
+app.listen((process.env.PORT || 3000), function () {
     console.log('Server started');
 });

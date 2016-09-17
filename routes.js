@@ -1,11 +1,11 @@
 /**
  * Created by massimilianocannarozzo on 14/05/16.
  */
-/* jshint unused: false */
+/* eslint no-unused-vars: "off" */
+/* eslint-env node */
 const raiapi = new (require('./raiapi'))()
     , router = require('express').Router()
-    , _ = require('lodash')
-    , redisClient = require('redis').createClient(process.env['REDISCLOUD_URL'])
+    , redisClient = require('redis').createClient(process.env.REDISCLOUD_URL)
     , eIR = new Error()
     , eNF = new Error('Dati non disponibili')
     , eGE = new Error('Errore generico');
@@ -35,11 +35,11 @@ var handleRequest = (req) => {
         eIR.message = 'Canale non valido';
         return eIR;
     } else {
-        req.programma = req.params['programma'];
-        req.canale = req.params['canale'];
+        req.programma = req.params.programma;
+        req.canale = req.params.canale;
         req.data = data;
-        req.action = req.params['action'];
-        req.qualita = req.params['qualita'];
+        req.action = req.params.action;
+        req.qualita = req.params.qualita;
     }
 };
 

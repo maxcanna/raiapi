@@ -1,8 +1,8 @@
 /**
  * Created by massimilianocannarozzo on 21/05/16.
  */
-/* globals Backbone, $, _, Dropbox, gapi, CanaliCollection, ProgrammiCollection, QualitaCollection, UrlModel */
-/* jshint browser: true, unused: false */
+/* globals Backbone, $, _, Dropbox, CanaliCollection, ProgrammiCollection, QualitaCollection, UrlModel */
+/* eslint-env browser */
 /* exported CanaliView */
 var RaiCollectionView = Backbone.View.extend({
     setOptions: function (options) {
@@ -13,11 +13,11 @@ var RaiCollectionView = Backbone.View.extend({
         this.collection.fetch({reset: true});
     },
     events: {
-        'click a': 'click'
-    }
+        'click a': 'click',
+    },
 });
 var CanaliView = RaiCollectionView.extend({
-    initialize: function (options) {
+    initialize: function () {
         this.setElement($('#canali'));
         this.collection = new CanaliCollection();
         this.collection.on('reset', this.render, this);
@@ -42,9 +42,9 @@ var CanaliView = RaiCollectionView.extend({
             , model = this.collection.get(canaleId);
         this.programmiView.setOptions({
             data: model.get('data'),
-            canale: model.get('id')
+            canale: model.get('id'),
         });
-    }
+    },
 });
 var ProgrammiView = RaiCollectionView.extend({
     initialize: function () {
@@ -72,14 +72,14 @@ var ProgrammiView = RaiCollectionView.extend({
             data: model.get('data'),
             canale: model.get('canale'),
             programma: model.get('id'),
-            nomeProgramma: model.get('name')
+            nomeProgramma: model.get('name'),
         });
     },
     close: function () {
         this.$('li').remove();
         this.$el.hide();
         this.qualitaView.close();
-    }
+    },
 });
 var QualitaView = RaiCollectionView.extend({
     initialize: function () {
@@ -113,14 +113,14 @@ var QualitaView = RaiCollectionView.extend({
             canale: model.get('canale'),
             programma: model.get('programma'),
             qualita: model.get('id'),
-            nomeProgramma: this.nomeProgramma
+            nomeProgramma: this.nomeProgramma,
         });
     },
     close: function () {
         this.$('li').remove();
         this.$el.hide();
         this.linkView.close();
-    }
+    },
 });
 
 var CanaleView = Backbone.View.extend({
@@ -130,7 +130,7 @@ var CanaleView = Backbone.View.extend({
     render: function () {
         this.$el.html(this.template({model: this.model, url: this.model.url()}));
         return this;
-    }
+    },
 });
 var ProgrammaView = Backbone.View.extend({
     initialize: function () {
@@ -140,10 +140,10 @@ var ProgrammaView = Backbone.View.extend({
         this.$el.html(this.template({
             data: this.model.get('data'),
             model: this.model,
-            url: this.model.url()
+            url: this.model.url(),
         }));
         return this;
-    }
+    },
 });
 var QualitaItemView = Backbone.View.extend({
     initialize: function () {
@@ -153,10 +153,10 @@ var QualitaItemView = Backbone.View.extend({
         this.$el.html(this.template({
             data: this.model.get('data'),
             model: this.model,
-            url: this.model.url()
+            url: this.model.url(),
         }));
         return this;
-    }
+    },
 });
 var LinkView = Backbone.View.extend({
     initialize: function () {
@@ -198,7 +198,7 @@ var LinkView = Backbone.View.extend({
         });
         this.$('li').remove();
         this.$el.hide();
-    }
+    },
 });
 var FileView = Backbone.View.extend({
     initialize: function () {
@@ -219,7 +219,7 @@ var FileView = Backbone.View.extend({
     },
     close: function () {
         this.$('a').attr('href', null);
-    }
+    },
 });
 var DropboxView = FileView.extend({
     render: function () {
@@ -231,12 +231,12 @@ var DropboxView = FileView.extend({
     click: function (ev) {
         ev.preventDefault();
         Dropbox.save(this.model.get('url'), this.model.get('nomeProgramma') + '.mp4', {});
-    }
+    },
 });
 var DownloadView = FileView.extend({
     render: function () {
         FileView.prototype.render.call(this);
         this.$('a').attr('download', this.model.get('nomeProgramma') + '.mp4');
         return this;
-    }
+    },
 });

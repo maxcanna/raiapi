@@ -2,7 +2,7 @@
  * Created by massimilianocannarozzo on 21/05/16.
  */
 /* globals Backbone, _, moment */
-/* jshint browser: true */
+/* eslint-env browser */
 /* exported CanaliCollection, ProgrammiCollection, QualitaCollection */
 var RaiCollection = Backbone.Collection.extend({
     setOptions: function (options) {
@@ -13,7 +13,7 @@ var RaiCollection = Backbone.Collection.extend({
     },
     formatDate: function () {
         return moment(this.data).toISOString();
-    }
+    },
 });
 var CanaliCollection = RaiCollection.extend({
     parse: function (response) {
@@ -24,7 +24,7 @@ var CanaliCollection = RaiCollection.extend({
     },
     updateUrl: function () {
         this.url = '/canali';
-    }
+    },
 });
 var ProgrammiCollection = RaiCollection.extend({
     parse: function (response) {
@@ -36,7 +36,7 @@ var ProgrammiCollection = RaiCollection.extend({
     },
     updateUrl: function () {
         this.url = '/canali/' + this.canale + '/programmi?data=' + this.formatDate();
-    }
+    },
 });
 var QualitaCollection = RaiCollection.extend({
     parse: function (response) {
@@ -49,5 +49,5 @@ var QualitaCollection = RaiCollection.extend({
     },
     updateUrl: function () {
         this.url = '/canali/' + this.canale + '/programmi/' + this.programma + '/qualita?data=' + this.formatDate();
-    }
+    },
 });

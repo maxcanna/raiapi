@@ -1,32 +1,33 @@
 {
+  "engines": {
+    "node": "6.0.0",
+    "npm": "3.8.7"
+  },
   "name": "RAPI",
   "version": "2.0.0",
   "description": "Rai.tv API",
   "private": true,
   "main": "index.js",
   "scripts": {
-    "test": "node_modules/.bin/jshint $(find . ! -path '*node_modules*' -name '*.js')",
-    "start": "node index.js"
-  },
-  "engines": {
-    "node": "6.0.0",
-    "npm": "3.8.7"
+    "start": "node index.js",
+    "test": "./test.sh",
+    "postinstall": "npm prune"
   },
   "repository": {
     "type": "git",
-    "url": "git@bitbucket.org:mcannarozzo/raiapi.git"
+    "url": "git+https://github.com/maxcanna/raiapi.git"
   },
   "keywords": [
     "rai",
     "api",
     "replay"
   ],
-  "author": {
-    "name": "Massimiliano Cannarozzo",
-    "email": "massi@massi.ws",
-    "url": "http://massi.ws/"
+  "author": "Massimiliano Cannarozzo <massi@massi.ws>",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/maxcanna/raiapi/issues"
   },
-  "license": "ISC",
+  "homepage": "https://github.com/maxcanna/raiapi#readme",
   "dependencies": {
     "express": "~4.13.3",
     "request": "~2.72.0",
@@ -36,6 +37,6 @@
     "compression": "~1.6.0"
   },
   "devDependencies": {
-    "jshint": "~2.9.1"
+    "eslint": "^3.5.0"
   }
 }

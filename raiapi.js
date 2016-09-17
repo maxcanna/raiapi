@@ -1,14 +1,15 @@
 /**
  * Created by massimilianocannarozzo on 13/04/14.
  */
+/* eslint-env node */
 var request = require('request').defaults({
     headers: {
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_4) AppleWebKit/537.36 (KHTML, like Gecko)' +
-        ' Chrome/50.0.2661.94 Safari/537.36'
+        ' Chrome/50.0.2661.94 Safari/537.36',
     },
     timeout: 25000,
     json: true,
-    followRedirect: false
+    followRedirect: false,
 })
     , _ = require('lodash');
 
@@ -20,7 +21,7 @@ class RaiApi {
             "RaiTre": 3,
             "RaiCinque": 31,
             "RaiPremium": 32,
-            "RaiYoyo": 38
+            "RaiYoyo": 38,
         };
         this.canali = _.keys(this.channelMap);
         this.redisClient = null;
@@ -64,9 +65,9 @@ class RaiApi {
             }
             request.get({
                 headers: {
-                    'User-Agent': null
+                    'User-Agent': null,
                 },
-                url: url
+                url: url,
             }, (error, response) => {
                 if (error || response.error || response.statusCode != 302) {
                     onSuccess();
@@ -92,7 +93,7 @@ class RaiApi {
 
             onSuccess(RaiApi.getSizesOfProgramma(programma).map((size, i) => ({
                     id: i,
-                    name: size.replace(/_/g, ' ')
+                    name: size.replace(/_/g, ' '),
                 }))
             );
         });
@@ -106,7 +107,7 @@ class RaiApi {
             }
             onSuccess(programmi.map((programma, i) => ({
                 id: i,
-                name: programma['t']
+                name: programma.t,
             })));
         });
     }
@@ -114,7 +115,7 @@ class RaiApi {
     listCanali(onSuccess) {
         onSuccess(this.canali.map((name, id) => ({
             id: id,
-            name: name
+            name: name,
         })));
     }
 
