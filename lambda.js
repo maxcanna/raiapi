@@ -1,11 +1,10 @@
 /**
  * Created by massimilianocannarozzo on 14/05/16.
  */
-/* jshint unused: false, node: true, esversion: 6 */
+/* eslint-env node */
 "use strict";
 exports.handler = function (event, context, callback) {
     const raiapi = new (require('./raiapi'))()
-        , _ = require('lodash')
         , eIR = new Error()
         , eNF = new Error('Dati non disponibili')
         , eGE = new Error('Errore generico');
