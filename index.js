@@ -14,7 +14,7 @@ app.use(express.static(__dirname + 'public'));
 app.use(api);
 
 // error handlers
-app.use(function (err, req, res, next) {
+app.use((err, req, res, next) => {
     var status = err.status || 500;
     res.status(status).json({
         stack: development ? err.stack : undefined,
@@ -22,6 +22,7 @@ app.use(function (err, req, res, next) {
     });
 });
 
-app.listen((process.env.PORT || 3000), function () {
+app.listen((process.env.PORT || 3000), () => {
     console.log('Server started');
 });
+
