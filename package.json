@@ -20,7 +20,7 @@
   "keywords": [
     "rai",
     "api",
-    "replay"
+    "raiplay"
   ],
   "author": "Massimiliano Cannarozzo <massi@massi.ws>",
   "license": "GPL-3.0",
@@ -29,12 +29,12 @@
   },
   "homepage": "https://github.com/maxcanna/raiapi#readme",
   "dependencies": {
-    "express": "~4.14.0",
-    "request": "~2.74.0",
-    "morgan": "~1.7.0",
-    "redis": "~2.6.0-2",
-    "lodash": "~4.15.0",
-    "compression": "~1.6.0"
+    "express": "^4.14.0",
+    "request": "^2.74.0",
+    "morgan": "^1.7.0",
+    "redis": "^2.6.0-2",
+    "lodash": "^4.15.0",
+    "compression": "^1.6.0"
   },
   "devDependencies": {
     "eslint": "^3.5.0"
