@@ -162,22 +162,27 @@ var LinkView = Backbone.View.extend({
     initialize: function () {
         this.setElement($('#link ul'));
         this.views = [];
-        this.videoView = new FileView();
+        this.model = new UrlModel();
+        this.model.on('change:url', this.render, this);
+        this.videoView = new FileView({model: this.model});
         this.videoView.setElement($('#video'));
         this.views.push(this.videoView);
-        this.fileView = new DownloadView();
+        this.fileView = new DownloadView({model: this.model});
         this.fileView.setElement($('#file'));
         this.views.push(this.fileView);
-        this.dropboxView = new DropboxView();
+        this.dropboxView = new DropboxView({model: this.model});
         this.dropboxView.setElement($('#dropbox'));
         this.views.push(this.dropboxView);
     },
     render: function () {
-        this.views.forEach((function (view) {
-            this.$el.append(view.render().el);
-        }).bind(this));
-
-        this.$el.fadeIn();
+        this.close();
+        if(this.model.get('url')) {
+            this.views.forEach((function (view) {
+                this.$el.append(view.render().el);
+            }).bind(this));
+        } else {
+            this.$el.append(_.template($('#template-na').html()));
+        }
 
         return this;
     },
@@ -186,39 +191,26 @@ var LinkView = Backbone.View.extend({
             this[key] = value;
         }, this);
 
-        this.render();
+        this.model.clear();
+        this.model.setOptions(options);
 
-        this.views.forEach(function (view) {
-            view.setOptions(options);
+        this.close();
+
+        this.model.fetch({
+            error: function (model) {
+                model.set('url', null);
+            },
         });
     },
     close: function () {
-        this.views.forEach(function (view) {
-            view.close();
-        });
         this.$('li').remove();
-        this.$el.hide();
     },
 });
 var FileView = Backbone.View.extend({
-    initialize: function () {
-        this.model = new UrlModel();
-        this.model.on('change', this.render, this);
-    },
     render: function () {
-        if(this.model.get('url')) {
-            this.$('a').attr('href', this.model.get('url'));
-        }
+        this.$('a').attr('href', this.model.get('url'));
 
         return this;
-    },
-    setOptions: function (options) {
-        this.model.clear();
-        this.model.setOptions(options);
-        this.model.fetch();
-    },
-    close: function () {
-        this.$('a').attr('href', null);
     },
 });
 var DropboxView = FileView.extend({
