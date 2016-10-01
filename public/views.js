@@ -175,11 +175,14 @@ var LinkView = Backbone.View.extend({
         this.views.push(this.dropboxView);
     },
     render: function () {
-        this.views.forEach((function (view) {
-            this.$el.append(view.render().el);
-        }).bind(this));
-
-        this.$el.fadeIn();
+        this.close();
+        if(this.model.get('url')) {
+            this.views.forEach((function (view) {
+                this.$el.append(view.render().el);
+            }).bind(this));
+        } else {
+            this.$el.append(_.template($('#template-na').html()));
+        }
 
         return this;
     },
@@ -188,18 +191,19 @@ var LinkView = Backbone.View.extend({
             this[key] = value;
         }, this);
 
-        this.render();
+        this.model.clear();
+        this.model.setOptions(options);
 
-        this.views.forEach(function (view) {
-            view.setOptions(options);
+        this.close();
+
+        this.model.fetch({
+            error: function (model) {
+                model.set('url', null);
+            },
         });
     },
     close: function () {
-        this.views.forEach(function (view) {
-            view.close();
-        });
         this.$('li').remove();
-        this.$el.hide();
     },
 });
 var FileView = Backbone.View.extend({
