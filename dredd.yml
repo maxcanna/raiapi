@@ -1,0 +1,12 @@
+reporter: apiary
+language: nodejs
+server: node index.js
+server-wait: 3
+inline-errors: false
+details: false
+color: true
+level: info
+silent: false
+path: []
+blueprint: apiary.apib
+endpoint: 'http://localhost:3000'

@@ -45,6 +45,7 @@
     "request": "^2.74.0"
   },
   "devDependencies": {
+    "dredd": "^2.1.0",
     "eslint": "^3.5.0",
     "nodemon": "^1.11.0"
   }
