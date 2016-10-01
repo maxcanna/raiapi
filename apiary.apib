@@ -1,0 +1,102 @@
+FORMAT: 1A
+
+# raiapi
+
+RaiPlay API to retrieve tv program information and files for the past seven days
+
+## Canali Collection [/canali]
+
+### List All Canali [GET]
+
+Lists all the available channels
+
++ Response 200 (application/json; charset=utf-8)
+
+        [
+            {
+                "id": 0,
+                "name": "RaiUno"
+            }
+        ]
+
+## Programmi Collection [/canali/{canaleId}/programmi]
+
+### List All Programmi [GET]
+
+Lists available programs given a channel
+
++ Parameters
+    + canaleId: `0` (int) - Canale ID
+
++ Response 200 (application/json; charset=utf-8)
+
+        [
+            {
+                "id": 0,
+                "name": "TG1 NOTTE"
+            }
+        ]
+
+## Qualità Collection [/canali/{canaleId}/programmi/{programmaId}/qualita]
+
+### List All Qualità [GET]
+
+Lists available quality for a given program
+
++ Parameters
+    + canaleId: `0` (int) - Canale ID
+    + programmaId: `0` (int) - Programma ID
+
++ Response 200 (application/json; charset=utf-8)
+
+        [
+            {
+                "id": 0,
+                "name": "h264 800"
+            },
+            {
+                "id": 1,
+                "name": "h264 1200"
+            },
+            {
+                "id": 2,
+                "name": "h264 1800"
+            }
+        ]
+        
+## File URL [/canali/{canaleId}/programmi/{programmaId}/qualita/{qualitaId}/url]
+
+### Get URL [GET]
+
+Gets video file URL
+
++ Parameters
+    + canaleId: `0` (int) - Canale ID
+    + programmaId: `0` (int) - Programma ID
+    + qualitaId: `0` (int) - Qualita ID
+
++ Response 200 (application/json; charset=utf-8)
+
+        {
+            "url": "http://distribution.bbb3d.renderfarming.net/video/mp4/bbb_sunflower_1080p_30fps_normal.mp4"
+        }
+        
+## File [/canali/{canaleId}/programmi/{programmaId}/qualita/{qualitaId}/file]
+
+### Get File [GET]
+
+Redirects to te file URL
+
++ Parameters
+    + canaleId: `0` (int) - Canale ID
+    + programmaId: `0` (int) - Programma ID
+    + qualitaId: `0` (int) - Qualita ID
+
++ Response 302
+
+    + Headers
+
+            Location: http://distribution.bbb3d.renderfarming.net/video/mp4/bbb_sunflower_1080p_30fps_normal.mp4
+    + Body
+
+            Found Redirecting to http://distribution.bbb3d.renderfarming.net/video/mp4/bbb_sunflower_1080p_30fps_normal.mp4

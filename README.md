@@ -15,26 +15,6 @@ There are several options.
 
   [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
 
-### Routes
+## Documentation
 
-* `/`
-  
-  Serves the web UI
-
-* `/canali`
-  
-  Lists all the available channels
-
-* `/canali/{channel ID}/programmi`
-
-  Lists available programs given a channel
-
-* `/canali/{channel ID}/programmi/{program ID}/qualita`
-
-  Lists available quality for a given program
-
-* `/canali/{channel ID}/programmi/{program ID}/qualita/{quality ID}/{action}`
-
-  Gets video file using two available actions:
-  * `url` returns file URL
-  * `file` redirects to te file URL
+Available on [Apiary](http://docs.raiapi.apiary.io/)
