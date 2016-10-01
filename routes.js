@@ -5,7 +5,7 @@
 /* eslint-env node */
 const raiapi = new (require('./raiapi'))()
     , router = require('express').Router()
-    , redisClient = require('redis').createClient(process.env.REDISCLOUD_URL)
+    , redisClient = process.env.REDISCLOUD_URL ? require('redis').createClient(process.env.REDISCLOUD_URL) : null
     , eIR = new Error()
     , eNF = new Error('Dati non disponibili')
     , eGE = new Error('Errore generico');
@@ -94,8 +94,10 @@ router.get('/canali/:canale/programmi/:programma/qualita/:qualita/:action', (req
     }
 });
 
-redisClient.on('error', console.error);
-redisClient.on('connect', () => console.log('Connected to redis'));
+if(redisClient) {
+    redisClient.on('error', console.error);
+    redisClient.on('connect', () => console.log('Connected to redis'));
+}
 
 raiapi.setRedisClient(redisClient);
 
