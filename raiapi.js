@@ -72,7 +72,19 @@ class RaiApi {
                 if (error || response.error || response.statusCode != 302) {
                     onSuccess();
                 } else {
-                    onSuccess(response.headers.location);
+                    const url = response.headers.location;
+                    request.head({
+                        headers: {
+                            'User-Agent': null,
+                        },
+                        url: url,
+                    }, (error, response) => {
+                        if (error || response.error || response.statusCode != 200) {
+                            onSuccess();
+                        } else {
+                            onSuccess(url);
+                        }
+                    });
                 }
             });
         });
