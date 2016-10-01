@@ -113,10 +113,34 @@ class RaiApi {
     }
 
     listCanali(onSuccess) {
-        onSuccess(this.canali.map((name, id) => ({
-            id: id,
-            name: name,
-        })));
+        onSuccess = onSuccess.bind(this);
+
+        if (this.redisClient && this.redisClient.connected) {
+            this.redisClient.get('canali', (err, reply) => {
+                if (!err) {
+                    var channelMap = null;
+                    try {
+                        channelMap = JSON.parse(reply);
+                    } catch (e) {
+                        channelMap = null;
+                    }
+                    if (channelMap && _.keys(channelMap).length > 0) {
+                        this.channelMap = channelMap;
+                        this.canali = _.keys(this.channelMap);
+
+                        onSuccess(this.canali.map((name, id) => ({
+                            id: id,
+                            name: name,
+                        })));
+
+                        return;
+                    }
+                    this.fetchCanali(onSuccess);
+                } else {
+                    this.fetchCanali(onSuccess);
+                }
+            });
+        } else this.fetchCanali(onSuccess);
     }
 
     getData(idCanale, data, onSuccess) {
@@ -160,6 +184,34 @@ class RaiApi {
                     }
 
                     onSuccess(programmi);
+                }
+            }
+        );
+    }
+
+    fetchCanali(onSuccess) {
+        const url = 'http://www.rai.it/dl/RaiTV/iphone/android/smartphone/advertising_config.html';
+
+        request.get(url, (error, response, body) => {
+                if (error || response.statusCode == 404 || response.statusCode != 200) {
+                    onSuccess(this.canali);
+                } else {
+                    this.canali = {};
+
+                    _.filter(body.Channels, _.iteratee({hasReplay: 'YES'})).map(canale => {
+                        this.canali[canale.tag] = canale.id;
+                    });
+
+                    this.canali = _.keys(this.channelMap);
+
+                    if (this.canali.length > 0 && this.redisClient && this.redisClient.connected) {
+                        this.redisClient.set('canali', JSON.stringify(this.channelMap), 'EX', 86400);
+                    }
+
+                    onSuccess(this.canali.map((name, id) => ({
+                        id: id,
+                        name: name,
+                    })));
                 }
             }
         );
