@@ -1,7 +1,7 @@
 /**
  * Created by massimilianocannarozzo on 21/05/16.
  */
-/* globals Backbone, moment, _ */
+/* globals Backbone, _ */
 /* eslint-env browser */
 /* exported UrlModel */
 var UrlModel = Backbone.Model.extend({
@@ -12,6 +12,6 @@ var UrlModel = Backbone.Model.extend({
         this.url = '/canali/' + this.get('canale') + '/programmi/' + this.get('programma') + '/qualita/' + this.get('qualita') + '/url?data=' + this.formatDate();
     },
     formatDate: function () {
-        return moment(this.get('data')).toISOString();
+        return this.get('data').toISOString();
     },
 });
