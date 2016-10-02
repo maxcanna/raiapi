@@ -163,7 +163,7 @@ var LinkView = Backbone.View.extend({
         this.setElement($('#link ul'));
         this.views = [];
         this.model = new UrlModel();
-        this.model.on('change:url', this.render, this);
+        this.model.on('error change:url', this.render, this);
         this.videoView = new FileView({model: this.model});
         this.videoView.setElement($('#video'));
         this.views.push(this.videoView);
@@ -196,11 +196,7 @@ var LinkView = Backbone.View.extend({
 
         this.close();
 
-        this.model.fetch({
-            error: function (model) {
-                model.set('url', null);
-            },
-        });
+        this.model.fetch();
     },
     close: function () {
         this.$('li').remove();

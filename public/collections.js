@@ -12,7 +12,7 @@ var RaiCollection = Backbone.Collection.extend({
         this.updateUrl();
     },
     formatDate: function () {
-        return moment(this.data).toISOString();
+        return moment(this.data).tz('Europe/Rome').format('YYYY-MM-DD');
     },
 });
 var CanaliCollection = RaiCollection.extend({
