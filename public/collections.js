@@ -1,7 +1,7 @@
 /**
  * Created by massimilianocannarozzo on 21/05/16.
  */
-/* globals Backbone, _ */
+/* globals Backbone, _, moment */
 /* eslint-env browser */
 /* exported CanaliCollection, ProgrammiCollection, QualitaCollection */
 var RaiCollection = Backbone.Collection.extend({
@@ -12,7 +12,7 @@ var RaiCollection = Backbone.Collection.extend({
         this.updateUrl();
     },
     formatDate: function () {
-        return this.data.toISOString();
+        return moment(this.data).tz('Europe/Rome').format('YYYY-MM-DD');
     },
 });
 var CanaliCollection = RaiCollection.extend({

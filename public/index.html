@@ -99,6 +99,7 @@
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.3.3/backbone-min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.13.0/moment.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.5/moment-timezone-with-data-2010-2020.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.13.0/locale/it.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/js/bootstrap-datetimepicker.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
@@ -118,8 +119,8 @@
     $(function () {
         var canaliView = new CanaliView();
         var datepicker = $('#datepicker');
-        var yesterday = moment().subtract(1, 'd').startOf('day');
-        var aweekago = moment().subtract(1, 'w').startOf('day');;
+        var yesterday = moment().tz('Europe/Rome').subtract(1, 'd').startOf('day');
+        var aweekago = moment().tz('Europe/Rome').subtract(1, 'w').startOf('day');;
 
         $('#loadingModal').modal({backdrop: 'static'});
         datepicker.datetimepicker({
