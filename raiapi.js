@@ -11,6 +11,7 @@ var request = require('request').defaults({
     json: true,
     followRedirect: false,
 })
+    , moment = require('moment')
     , _ = require('lodash');
 
 class RaiApi {
@@ -36,10 +37,6 @@ class RaiApi {
 
     static getSizesOfProgramma(programma) {
         return _.filter(_.keys(programma), (key) => _.startsWith(key, 'h264_') && programma[key] !== '');
-    }
-
-    static getKeyOfData(data) {
-        return `${data.getFullYear()}:${('0'+(data.getMonth()+1)).slice(-2)}:${('0'+(data.getDate())).slice(-2)}`;
     }
 
     getFileUrl(idCanale, data, idProgramma, qualita, onSuccess) {
@@ -158,7 +155,7 @@ class RaiApi {
     getData(idCanale, data, onSuccess) {
         onSuccess = onSuccess.bind(this);
 
-        const redisKey = `${this.canali[idCanale]}:${RaiApi.getKeyOfData(data)}`;
+        const redisKey = `${this.canali[idCanale]}:${moment(data).format('YYYY:MM:DD')}`;
 
         if (this.redisClient && this.redisClient.connected) {
             this.redisClient.get(redisKey, (err, reply) => {
@@ -182,14 +179,16 @@ class RaiApi {
     }
 
     fetchPage(idCanale, data, onSuccess) {
-        const redisKey = `${this.canali[idCanale]}:${RaiApi.getKeyOfData(data)}`
-            , url = `http://www.rai.it/dl/portale/html/palinsesti/replaytv/static/${redisKey.replace(/:/g, '_')}.html`;
+        const canale = this.canali[idCanale]
+            , m = moment(data)
+            , redisKey = `${canale}:${m.format('YYYY:MM:DD')}`
+            , url = `http://www.rai.it/dl/portale/html/palinsesti/replaytv/static/${canale}_${m.format('YYYY_MM_DD')}.html`;
 
         request.get(url, (error, response, body) => {
                 if (error || response.statusCode == 404 || response.statusCode != 200) {
                     onSuccess();
                 } else {
-                    const programmi = _.values(body[this.channelMap[this.canali[idCanale]]][`${RaiApi.getKeyOfData(data).replace(/:/g, '-')}`]);
+                    const programmi = _.values(body[this.channelMap[canale]][`${m.format('YYYY-MM-DD')}`]);
 
                     if (programmi.length > 0 && this.redisClient && this.redisClient.connected) {
                         this.redisClient.set(redisKey, JSON.stringify(programmi), 'EX', 86400 * 7);
