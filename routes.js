@@ -6,6 +6,7 @@
 const raiapi = new (require('./raiapi'))()
     , router = require('express').Router()
     , redisClient = process.env.REDISCLOUD_URL ? require('redis').createClient(process.env.REDISCLOUD_URL) : null
+    , moment = require('moment-timezone')
     , eIR = new Error()
     , eNF = new Error('Dati non disponibili')
     , eGE = new Error('Errore generico');
@@ -14,19 +15,20 @@ eNF.status = 404;
 eIR.status = 400;
 
 var handleRequest = (req) => {
-    var data = new Date();
+    const tz = 'Europe/rome';
+    var m;
 
-    data.setDate(data.getDate() - 1);
-
-    if (req.query.data !== undefined) {
-        data = new Date(req.query.data);
-        if (isNaN(data.getDate())) {
+    if (req.query.data === undefined) {
+        m = moment.tz(tz).startOf('day').subtract(1, 'day');
+    } else {
+        m = moment(req.query.data, 'YYYY-MM-DD').tz(tz);
+        if (!m.isValid()) {
             eIR.message = 'Data non valida';
             return eIR;
         }
     }
 
-    var diff = Math.floor((new Date() - data) / (1000 * 60 * 60 * 24));
+    const diff = moment.tz(tz).diff(m, 'days');
 
     if (diff > 7 || diff < 1) {
         eIR.message = 'Data non valida';
@@ -37,7 +39,7 @@ var handleRequest = (req) => {
     } else {
         req.programma = req.params.programma;
         req.canale = req.params.canale;
-        req.data = data;
+        req.data = m.toDate();
         req.action = req.params.action;
         req.qualita = req.params.qualita;
     }
