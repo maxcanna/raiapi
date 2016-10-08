@@ -29,12 +29,14 @@
   },
   "homepage": "https://github.com/maxcanna/raiapi#readme",
   "dependencies": {
+    "compression": "^1.6.0",
     "express": "^4.14.0",
-    "request": "^2.74.0",
+    "lodash": "^4.15.0",
+    "moment": "^2.15.1",
+    "moment-timezone": "^0.5.5",
     "morgan": "^1.7.0",
     "redis": "^2.6.0-2",
-    "lodash": "^4.15.0",
-    "compression": "^1.6.0"
+    "request": "^2.74.0"
   },
   "devDependencies": {
     "eslint": "^3.5.0"
