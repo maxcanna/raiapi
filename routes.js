@@ -8,9 +8,7 @@ const raiapi = new (require('./raiapi'))()
     , redisClient = process.env.REDISCLOUD_URL ? require('redis').createClient(process.env.REDISCLOUD_URL) : null
     , moment = require('moment-timezone')
     , eIR = new Error()
-    , eNF = new Error('Dati non disponibili')
-    , eGE = new Error('Errore generico');
-eGE.status = 500;
+    , eNF = new Error('Dati non disponibili');
 eNF.status = 404;
 eIR.status = 400;
 
@@ -43,13 +41,25 @@ router.use((req, res, next) => {
 });
 
 //Canali
-router.get('/canali', (req, res, next) => raiapi.listCanali(canali => res.send(canali)));
+router.get('/canali', (req, res, next) => {
+    raiapi.listCanali((error, canali) => {
+        error ? next(error) : res.send(canali)
+    });
+});
 
 //Programmi
-router.get('/canali/:canale/programmi', (req, res, next) => raiapi.listProgrammi(req.params.canale, req.query.data, programmi => programmi ? res.send(programmi) : next(eNF)));
+router.get('/canali/:canale/programmi', (req, res, next) => {
+    raiapi.listProgrammi(req.params.canale, req.query.data, (error, programmi) => {
+        error ? next(error) : res.send(programmi)
+    });
+});
 
 //Qualita
-router.get('/canali/:canale/programmi/:programma/qualita', (req, res, next) => raiapi.listQualita(req.params.canale, req.query.data, req.params.programma, qualita => qualita ? res.send(qualita) : next(eNF)));
+router.get('/canali/:canale/programmi/:programma/qualita', (req, res, next) => {
+    raiapi.listQualita(req.params.canale, req.query.data, req.params.programma, (error, qualita) => {
+        error ? next(error) : res.send(qualita)
+    });
+});
 
 //Risorsa
 router.get('/canali/:canale/programmi/:programma/qualita/:qualita/:action', (req, res, next) => {
@@ -57,10 +67,9 @@ router.get('/canali/:canale/programmi/:programma/qualita/:qualita/:action', (req
         eIR.message = 'Azione non valida';
         next(eIR);
     } else {
-        raiapi.getFileUrl(req.params.canale, req.query.data, req.params.programma, req.params.qualita, fileUrl => {
-            if (!fileUrl) {
-                eIR.message = 'Qualita non valida';
-                next(eIR);
+        raiapi.getFileUrl(req.params.canale, req.query.data, req.params.programma, req.params.qualita, (error, fileUrl) => {
+            if (error) {
+                next(error);
             } else if (req.params.action == 'file') {
                 res.redirect(fileUrl);
             } else if (req.params.action == 'url') {
