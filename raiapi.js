@@ -12,7 +12,10 @@ var request = require('request').defaults({
     followRedirect: false,
 })
     , moment = require('moment')
+    , eNF = new Error('Dati non disponibili')
     , _ = require('lodash');
+
+eNF.status = 404;
 
 class RaiApi {
     constructor() {
@@ -39,17 +42,22 @@ class RaiApi {
         return _.filter(_.keys(programma), (key) => _.startsWith(key, 'h264_') && programma[key] !== '');
     }
 
-    getFileUrl(idCanale, data, idProgramma, qualita, onSuccess) {
-        this.getData(idCanale, data, programmi => {
+    getFileUrl(idCanale, data, idProgramma, qualita, callback) {
+        this.getData(idCanale, data, (error, programmi) => {
+            if (error) {
+                callback(error);
+                return;
+            }
+
             if (_.isEmpty(programmi)) {
-                onSuccess();
+                callback(eNF);
                 return;
             }
 
             const programma = programmi[idProgramma];
 
             if (programma === undefined) {
-                onSuccess();
+                callback(eNF);
                 return;
             }
 
@@ -57,7 +65,7 @@ class RaiApi {
                 , url = programma[h264sizes[qualita]];
 
             if (_.isEmpty(url)) {
-                onSuccess();
+                callback(eNF);
                 return;
             }
             request.get({
@@ -67,40 +75,33 @@ class RaiApi {
                 url: url,
             }, (error, response) => {
                 if (error || response.error || response.statusCode != 302) {
-                    onSuccess();
+                    callback(eNF);
                 } else {
-                    const url = response.headers.location;
-                    request.head({
-                        headers: {
-                            'User-Agent': null,
-                        },
-                        url: url,
-                    }, (error, response) => {
-                        if (error || response.error || response.statusCode != 200) {
-                            onSuccess();
-                        } else {
-                            onSuccess(url);
-                        }
-                    });
+                    callback(null, response.headers.location);
                 }
             });
         });
     }
 
-    listQualita(idCanale, data, idProgramma, onSuccess) {
-        this.getData(idCanale, data, (programmi) => {
+    listQualita(idCanale, data, idProgramma, callback) {
+        this.getData(idCanale, data, (error, programmi) => {
+            if (error) {
+                callback(error);
+                return;
+            }
+
             if (_.isEmpty(programmi)) {
-                onSuccess();
+                callback(eNF);
                 return;
             }
             const programma = programmi[idProgramma];
 
             if (programma === undefined) {
-                onSuccess();
+                callback(eNF);
                 return;
             }
 
-            onSuccess(RaiApi.getSizesOfProgramma(programma).map((size, i) => ({
+            callback(null, RaiApi.getSizesOfProgramma(programma).map((size, i) => ({
                     id: i,
                     name: size.replace(/_/g, ' '),
                 }))
@@ -108,21 +109,26 @@ class RaiApi {
         });
     }
 
-    listProgrammi(idCanale, data, onSuccess) {
-        this.getData(idCanale, data, programmi => {
-            if (_.isEmpty(programmi)) {
-                onSuccess();
+    listProgrammi(idCanale, data, callback) {
+        this.getData(idCanale, data, (error, programmi) => {
+            if (error) {
+                callback(error);
                 return;
             }
-            onSuccess(programmi.map((programma, i) => ({
+
+            if (_.isEmpty(programmi)) {
+                callback(eNF);
+                return;
+            }
+            callback(null, programmi.map((programma, i) => ({
                 id: i,
                 name: programma.t,
             })));
         });
     }
 
-    listCanali(onSuccess) {
-        onSuccess = onSuccess.bind(this);
+    listCanali(callback) {
+        callback = callback.bind(this);
 
         if (this.redisClient && this.redisClient.connected) {
             this.redisClient.get('canali', (err, reply) => {
@@ -137,23 +143,23 @@ class RaiApi {
                         this.channelMap = channelMap;
                         this.canali = _.keys(this.channelMap);
 
-                        onSuccess(this.canali.map((name, id) => ({
+                        callback(null, this.canali.map((name, id) => ({
                             id: id,
                             name: name,
                         })));
 
                         return;
                     }
-                    this.fetchCanali(onSuccess);
+                    this.fetchCanali(callback);
                 } else {
-                    this.fetchCanali(onSuccess);
+                    this.fetchCanali(callback);
                 }
             });
-        } else this.fetchCanali(onSuccess);
+        } else this.fetchCanali(callback);
     }
 
-    getData(idCanale, data, onSuccess) {
-        onSuccess = onSuccess.bind(this);
+    getData(idCanale, data, callback) {
+        callback = callback.bind(this);
 
         const redisKey = `${this.canali[idCanale]}:${moment(data).format('YYYY:MM:DD')}`;
 
@@ -167,18 +173,18 @@ class RaiApi {
                         programmi = null;
                     }
                     if (programmi && programmi.length > 0) {
-                        onSuccess(programmi);
+                        callback(null, programmi);
                         return;
                     }
-                    this.fetchPage(idCanale, data, onSuccess);
+                    this.fetchPage(idCanale, data, callback);
                 } else {
-                    this.fetchPage(idCanale, data, onSuccess);
+                    this.fetchPage(idCanale, data, callback);
                 }
             });
-        } else this.fetchPage(idCanale, data, onSuccess);
+        } else this.fetchPage(idCanale, data, callback);
     }
 
-    fetchPage(idCanale, data, onSuccess) {
+    fetchPage(idCanale, data, callback) {
         const canale = this.canali[idCanale]
             , m = moment(data)
             , redisKey = `${canale}:${m.format('YYYY:MM:DD')}`
@@ -186,7 +192,7 @@ class RaiApi {
 
         request.get(url, (error, response, body) => {
                 if (error || response.statusCode == 404 || response.statusCode != 200) {
-                    onSuccess();
+                    callback(error || new Error(response.statusCode));
                 } else {
                     const programmi = _.values(body[this.channelMap[canale]][`${m.format('YYYY-MM-DD')}`]);
 
@@ -194,18 +200,19 @@ class RaiApi {
                         this.redisClient.set(redisKey, JSON.stringify(programmi), 'EX', 86400 * 7);
                     }
 
-                    onSuccess(programmi);
+                    callback(null, programmi);
                 }
             }
         );
     }
 
-    fetchCanali(onSuccess) {
+    fetchCanali(callback) {
         const url = 'http://www.rai.it/dl/RaiTV/iphone/android/smartphone/advertising_config.html';
 
         request.get(url, (error, response, body) => {
                 if (error || response.statusCode == 404 || response.statusCode != 200) {
-                    onSuccess(this.canali);
+                    // Use static channel map
+                    callback(null, this.canali);
                 } else {
                     this.canali = {};
 
@@ -219,7 +226,7 @@ class RaiApi {
                         this.redisClient.set('canali', JSON.stringify(this.channelMap), 'EX', 86400);
                     }
 
-                    onSuccess(this.canali.map((name, id) => ({
+                    callback(null, this.canali.map((name, id) => ({
                         id: id,
                         name: name,
                     })));
