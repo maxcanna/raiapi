@@ -14,7 +14,7 @@ eGE.status = 500;
 eNF.status = 404;
 eIR.status = 400;
 
-var handleRequest = (req) => {
+router.use((req, res, next) => {
     const tz = 'Europe/rome';
     var m;
 
@@ -24,7 +24,8 @@ var handleRequest = (req) => {
         m = moment(req.query.data, 'YYYY-MM-DD').tz(tz);
         if (!m.isValid()) {
             eIR.message = 'Data non valida';
-            return eIR;
+            next(eIR);
+            return;
         }
     }
 
@@ -32,71 +33,44 @@ var handleRequest = (req) => {
 
     if (diff > 7 || diff < 1) {
         eIR.message = 'Data non valida';
-        return eIR;
+        next(eIR);
     } else if (req.params.canale > raiapi.canali.length) {
         eIR.message = 'Canale non valido';
-        return eIR;
-    } else {
-        req.programma = req.params.programma;
-        req.canale = req.params.canale;
-        req.data = m.toDate();
-        req.action = req.params.action;
-        req.qualita = req.params.qualita;
+        next(eIR);
     }
-};
+    req.query.data = m.toDate();
+    next();
+});
 
 //Canali
-router.get('/canali', (req, res) => raiapi.listCanali(canali => res.send(canali)));
+router.get('/canali', (req, res, next) => raiapi.listCanali(canali => res.send(canali)));
 
 //Programmi
-router.get('/canali/:canale/programmi', (req, res, next) => {
-    const err = handleRequest(req);
-    if (err) {
-        next(err);
-    } else {
-        raiapi.listProgrammi(req.canale, req.data, programmi => programmi ? res.send(programmi) : next(eGE));
-    }
-});
+router.get('/canali/:canale/programmi', (req, res, next) => raiapi.listProgrammi(req.params.canale, req.query.data, programmi => programmi ? res.send(programmi) : next(eNF)));
 
 //Qualita
-router.get('/canali/:canale/programmi/:programma/qualita', (req, res, next) => {
-    const err = handleRequest(req);
-    if (err) {
-        next(err);
-    } else if (!req.programma) {
-        eIR.message = 'Programma non valido';
-        next(eIR);
-    } else {
-        raiapi.listQualita(req.canale, req.data, req.programma, qualita => qualita ? res.send(qualita) : next(eGE));
-    }
-});
+router.get('/canali/:canale/programmi/:programma/qualita', (req, res, next) => raiapi.listQualita(req.params.canale, req.query.data, req.params.programma, qualita => qualita ? res.send(qualita) : next(eNF)));
 
 //Risorsa
 router.get('/canali/:canale/programmi/:programma/qualita/:qualita/:action', (req, res, next) => {
-    const err = handleRequest(req);
-    if (err) {
-        next(err);
-    } else if (!req.programma) {
-        eIR.message = 'Programma non valido';
-        next(eIR);
-    } else if (req.action != 'file' && req.action != 'url') {
+    if (['file', 'url'].indexOf(req.params.action) < 0) {
         eIR.message = 'Azione non valida';
         next(eIR);
     } else {
-        raiapi.getFileUrl(req.canale, req.data, req.programma, req.qualita, fileUrl => {
+        raiapi.getFileUrl(req.params.canale, req.query.data, req.params.programma, req.params.qualita, fileUrl => {
             if (!fileUrl) {
-                eNF.message = 'Qualita non valida';
-                next(eNF);
-            } else if (req.action == 'file') {
+                eIR.message = 'Qualita non valida';
+                next(eIR);
+            } else if (req.params.action == 'file') {
                 res.redirect(fileUrl);
-            } else if (req.action == 'url') {
+            } else if (req.params.action == 'url') {
                 res.send({url: fileUrl});
             }
         });
     }
 });
 
-if(redisClient) {
+if (redisClient) {
     redisClient.on('error', console.error);
     redisClient.on('connect', () => console.log('Connected to redis'));
 }
