@@ -58,15 +58,15 @@
     </div>
     <div class="row">
         <div class="col-md-2">
-            <h2>Canali</h2>
-            <ul id="canali"></ul>
             <h2>Data</h2>
-            <div class='input-group date' id='datepicker'>
-                <input type='text' class="form-control"/>
+            <div class="input-group date col-md-12 col-xs-6" id="datepicker">
+                <input type="text" class="form-control"/>
                 <span class="input-group-addon">
                     <span class="glyphicon glyphicon-calendar"></span>
                 </span>
             </div>
+            <h2>Canali</h2>
+            <ul id="canali"></ul>
         </div>
         <div class="col-md-5"><h2>Programmi</h2><ul id="programmi"></ul></div>
         <div class="col-md-2"><h2>Qualit&agrave;</h2><ul id="qualita"></ul></div>
@@ -128,7 +128,12 @@
                     format: 'L',
                     maxDate: yesterday,
                     minDate: aweekago,
-                    defaultDate: yesterday
+                    defaultDate: yesterday,
+                    focusOnShow: false,
+                    widgetPositioning: {
+                        horizontal: 'left',
+                        vertical: 'auto',
+                    },
                 })
                 .on('dp.change', function (e) {
                     canaliView.setOptions({data: e.date.toDate()});
