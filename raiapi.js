@@ -12,6 +12,7 @@ var request = require('request').defaults({
     followRedirect: false,
 })
     , moment = require('moment')
+    , async = require('async')
     , eNF = new Error('Dati non disponibili')
     , _ = require('lodash');
 
