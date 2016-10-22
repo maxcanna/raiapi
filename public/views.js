@@ -173,6 +173,9 @@ var LinkView = Backbone.View.extend({
         this.dropboxView = new DropboxView({model: this.model});
         this.dropboxView.setElement($('#dropbox'));
         this.views.push(this.dropboxView);
+        this.copyView = new CopyView({model: this.model});
+        this.copyView.setElement($('#copy'));
+        this.views.push(this.copyView);
     },
     render: function () {
         this.close();
@@ -225,6 +228,18 @@ var DownloadView = FileView.extend({
     render: function () {
         FileView.prototype.render.call(this);
         this.$('a').attr('download', this.model.get('nomeProgramma') + '.mp4');
+        return this;
+    },
+});
+var CopyView = FileView.extend({
+    initialize: function () {
+        new Clipboard('.btn');
+    },
+    render: function () {
+        FileView.prototype.render.call(this);
+        this.$('a').attr('href', null);
+        this.$('.btn').attr('data-clipboard-text', this.model.get('url'));
+
         return this;
     },
 });
