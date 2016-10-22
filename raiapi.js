@@ -142,7 +142,7 @@ class RaiApi {
 
             callback(null, RaiApi.getSizesOfProgramma(programma).map((size, i) => ({
                     id: i,
-                    name: size.replace(/_/g, ' '),
+                    name: size.replace('_', ' '),
                 }))
             );
         });
