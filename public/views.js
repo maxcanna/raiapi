@@ -1,7 +1,7 @@
 /**
  * Created by massimilianocannarozzo on 21/05/16.
  */
-/* globals Backbone, $, _, Dropbox, CanaliCollection, ProgrammiCollection, QualitaCollection, UrlModel, Clipboard */
+/* globals Backbone, $, _, Dropbox, CanaliCollection, ProgrammiCollection, QualitaCollection, UrlModel, Clipboard, moment */
 /* eslint-env browser */
 /* exported CanaliView */
 var RaiCollectionView = Backbone.View.extend({
@@ -221,7 +221,10 @@ var DropboxView = FileView.extend({
     },
     click: function (ev) {
         ev.preventDefault();
-        Dropbox.save(this.model.get('url'), this.model.get('nomeProgramma') + '.mp4', {});
+        var nomeFile = this.model.get('nomeProgramma').replace(/ - /g, '.').replace(/ /g, '.') +
+            moment(this.model.get('data')).format('.YYYY.MM.DD.') +
+            'WEBRip.AAC.x264.mp4';
+        Dropbox.save(this.model.get('url'), nomeFile, {});
     },
 });
 var DownloadView = FileView.extend({
