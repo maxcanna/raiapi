@@ -43,6 +43,21 @@ class RaiApi {
         return _.filter(_.keys(programma), (key) => _.startsWith(key, 'h264_') && programma[key] !== '');
     }
 
+    static getEffectiveUrl(url, callback) {
+        request.get({
+            headers: {
+                'User-Agent': null,
+            },
+            url: url,
+        }, (error, response) => {
+            if (error || response.error || response.statusCode != 302) {
+                callback(eNF);
+            } else {
+                callback(null, response.headers.location);
+            }
+        });
+    }
+
     getFileUrl(idCanale, data, idProgramma, qualita, callback) {
         this.getData(idCanale, data, (error, programmi) => {
             if (error) {
@@ -69,18 +84,7 @@ class RaiApi {
                 callback(eNF);
                 return;
             }
-            request.get({
-                headers: {
-                    'User-Agent': null,
-                },
-                url: url,
-            }, (error, response) => {
-                if (error || response.error || response.statusCode != 302) {
-                    callback(eNF);
-                } else {
-                    callback(null, response.headers.location);
-                }
-            });
+            RaiApi.getEffectiveUrl(url, callback);
         });
     }
 
