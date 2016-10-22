@@ -1,7 +1,7 @@
 /**
  * Created by massimilianocannarozzo on 21/05/16.
  */
-/* globals Backbone, $, _, Dropbox, CanaliCollection, ProgrammiCollection, QualitaCollection, UrlModel */
+/* globals Backbone, $, _, Dropbox, CanaliCollection, ProgrammiCollection, QualitaCollection, UrlModel, Clipboard */
 /* eslint-env browser */
 /* exported CanaliView */
 var RaiCollectionView = Backbone.View.extend({
