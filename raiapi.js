@@ -58,6 +58,40 @@ class RaiApi {
         });
     }
 
+    getAll(idCanale, data, callback) {
+        this.getData(idCanale, data, (error, programmi) => {
+            if (error) {
+                callback(error);
+                return;
+            }
+
+            if (_.isEmpty(programmi)) {
+                callback(eNF);
+                return;
+            }
+
+            async.concat(programmi, (programma, concatCallback) => {
+                async.map(RaiApi.getSizesOfProgramma(programma), (size, sizesCallback) => {
+                    sizesCallback(null, {
+                        name: programma.t,
+                        qualita: size.replace('_', ' '),
+                        url: programma[size],
+                    });
+                }, (err, sizes) => {
+                    // Ugly way to remove duplicate URLs keeping the best available one
+                    concatCallback(null, _.reverse(_.uniqBy(_.reverse(sizes), 'url')))
+                });
+            }, (err, items) => {
+                async.filter(items, (item, urlCallback) => {
+                    RaiApi.getEffectiveUrl(item.url, (err, url) => {
+                        item.url = url;
+                        urlCallback(null, !err);
+                    });
+                }, callback);
+            });
+        });
+    }
+
     getFileUrl(idCanale, data, idProgramma, qualita, callback) {
         this.getData(idCanale, data, (error, programmi) => {
             if (error) {
