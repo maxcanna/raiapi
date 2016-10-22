@@ -79,6 +79,25 @@ router.get('/canali/:canale/programmi/:programma/qualita/:qualita/:action', (req
     }
 });
 
+//RSS
+router.get('/canali/:canale/rss.xml', (req, res, next) => {
+    raiapi.getAll(req.params.canale, req.query.data, (error, programmi) => {
+        if (error) {
+            next(error);
+        }
+
+        res.set({
+            'Content-Type': 'text/xml',
+            'Cache-Control': 'public, max-age=86400',
+            'Last-Modified': moment.utc().startOf('day').format('ddd, DD MMM YYYY HH:mm:ss [GMT]'),
+            'Expires': moment.utc().endOf('day').format('ddd, DD MMM YYYY HH:mm:ss [GMT]'),
+        }).render('rss.ejs', {
+            programmi: programmi,
+            hostname: req.hostname,
+        });
+    });
+});
+
 if (redisClient) {
     redisClient.on('error', console.error);
     redisClient.on('connect', () => console.log('Connected to redis'));

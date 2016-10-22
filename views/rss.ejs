@@ -1,0 +1,28 @@
+<%
+var now = new Date();
+var yesterday = new Date();
+yesterday.setDate(now.getDate()-1);
+var nameTag = `.${yesterday.getFullYear()}.${('0'+(yesterday.getMonth()+1)).slice(-2)}.${('0'+(yesterday.getDate())).slice(-2)}.WEBRip.AAC.x264.mp4`;
+%>
+<rss version="2.0" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+    <channel>
+        <title>Rai API</title>
+        <description>Rai API rss feed direct download</description>
+        <generator>raiapi.js</generator>
+        <link>https://<%= hostname %></link>
+        <language>it-IT</language>
+        <lastBuildDate><%= now.toGMTString(); %></lastBuildDate>
+        <copyright>(c) <%= now.getFullYear() %> <%= hostname %></copyright>
+        <% programmi.forEach(programma => { %>
+        <item>
+            <title><![CDATA[<%= programma.name %>]]></title>
+            <description>
+                <![CDATA[<%= programma.name.replace(/( - | )/g, '.') + nameTag %>]]>
+            </description>
+            <link><%= programma.url %></link>
+            <guid><%= programma.url %></guid>
+            <pubDate><%= now.toGMTString(); %></pubDate>
+        </item>
+        <% }); %>
+    </channel>
+</rss>
