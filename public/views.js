@@ -1,7 +1,7 @@
 /**
  * Created by massimilianocannarozzo on 21/05/16.
  */
-/* globals Backbone, $, _, Dropbox, CanaliCollection, ProgrammiCollection, QualitaCollection, UrlModel */
+/* globals Backbone, $, _, Dropbox, CanaliCollection, ProgrammiCollection, QualitaCollection, UrlModel, Clipboard, moment */
 /* eslint-env browser */
 /* exported CanaliView */
 var RaiCollectionView = Backbone.View.extend({
@@ -173,6 +173,9 @@ var LinkView = Backbone.View.extend({
         this.dropboxView = new DropboxView({model: this.model});
         this.dropboxView.setElement($('#dropbox'));
         this.views.push(this.dropboxView);
+        this.copyView = new CopyView({model: this.model});
+        this.copyView.setElement($('#copy'));
+        this.views.push(this.copyView);
     },
     render: function () {
         this.close();
@@ -218,13 +221,28 @@ var DropboxView = FileView.extend({
     },
     click: function (ev) {
         ev.preventDefault();
-        Dropbox.save(this.model.get('url'), this.model.get('nomeProgramma') + '.mp4', {});
+        var nomeFile = this.model.get('nomeProgramma').replace(/ - /g, '.').replace(/ /g, '.') +
+            moment(this.model.get('data')).format('.YYYY.MM.DD.') +
+            'WEBRip.AAC.x264.mp4';
+        Dropbox.save(this.model.get('url'), nomeFile, {});
     },
 });
 var DownloadView = FileView.extend({
     render: function () {
         FileView.prototype.render.call(this);
         this.$('a').attr('download', this.model.get('nomeProgramma') + '.mp4');
+        return this;
+    },
+});
+var CopyView = FileView.extend({
+    initialize: function () {
+        new Clipboard('.btn');
+    },
+    render: function () {
+        FileView.prototype.render.call(this);
+        this.$('a').attr('href', null);
+        this.$('.btn').attr('data-clipboard-text', this.model.get('url'));
+
         return this;
     },
 });
