@@ -100,3 +100,29 @@ Redirects to te file URL
     + Body
 
             Found Redirecting to http://distribution.bbb3d.renderfarming.net/video/mp4/bbb_sunflower_1080p_30fps_normal.mp4
+
+## RSS [/canali/{canaleId}/rss.xml]
+
+### Get RSS [GET]
+
+Gets video files RSS feed
+
++ Parameters
+    + canaleId: `0` (int) - Canale ID
+
++ Response 200 (text/xml; charset=utf-8)
+
+    + Headers
+
+            Cache-Control: public, max-age=86400
+    + Body
+
+            <rss version="2.0" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+                <channel>
+                    <title>Rai API</title>
+                    <description>Rai API rss feed direct download</description>
+                    <generator>raiapi.js</generator>
+                    <link>https://localhost</link>
+                    <language>it-IT</language>
+                    <copyright>(c) 2016 localhost</copyright>
+                </channel>

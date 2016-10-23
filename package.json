@@ -29,7 +29,9 @@
   },
   "homepage": "https://github.com/maxcanna/raiapi#readme",
   "dependencies": {
+    "async": "^2.1.1",
     "compression": "^1.6.0",
+    "ejs": "^2.5.2",
     "express": "^4.14.0",
     "lodash": "^4.15.0",
     "moment": "^2.15.1",
@@ -39,6 +41,7 @@
     "request": "^2.74.0"
   },
   "devDependencies": {
-    "eslint": "^3.5.0"
+    "eslint": "^3.5.0",
+    "nodemon": "^1.11.0"
   }
 }
