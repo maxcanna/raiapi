@@ -19,7 +19,7 @@ var handleRequest = (req) => {
     var m;
 
     if (req.query.data === undefined) {
-        m = moment.tz(tz).startOf('day').subtract(1, 'day');
+        m = moment().startOf('day').subtract(1, 'day').tz(tz);
     } else {
         m = moment(req.query.data, 'YYYY-MM-DD').tz(tz);
         if (!m.isValid()) {
