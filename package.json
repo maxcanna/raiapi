@@ -1,10 +1,10 @@
 {
   "engines": {
-    "node": "6.0.0",
-    "npm": "3.8.7"
+    "node": "6.9.0",
+    "npm": "3.10.8"
   },
   "name": "RAPI",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "RaiPlay API",
   "private": true,
   "main": "index.js",
