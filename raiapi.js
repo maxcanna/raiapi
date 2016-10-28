@@ -73,7 +73,7 @@ class RaiApi {
             async.concat(programmi, (programma, concatCallback) => {
                 async.map(RaiApi.getSizesOfProgramma(programma), (size, sizesCallback) => {
                     sizesCallback(null, {
-                        name: programma.t,
+                        name: programma.t.trim(),
                         qualita: size.replace('_', ' '),
                         url: programma[size],
                     });
@@ -161,7 +161,7 @@ class RaiApi {
             }
             callback(null, programmi.map((programma, i) => ({
                 id: i,
-                name: programma.t,
+                name: programma.t.trim(),
             })));
         });
     }
