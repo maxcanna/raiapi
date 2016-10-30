@@ -12,6 +12,7 @@
     "start": "node index.js",
     "test": "npm run lint",
     "lint": "node_modules/.bin/eslint .",
+    "dev": "node_modules/.bin/nodemon index.js",
     "postinstall": "npm prune"
   },
   "repository": {
