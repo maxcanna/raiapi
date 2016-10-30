@@ -10,7 +10,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "test": "./test.sh",
+    "test": "npm run lint",
+    "lint": "node_modules/.bin/eslint .",
     "postinstall": "npm prune"
   },
   "repository": {
