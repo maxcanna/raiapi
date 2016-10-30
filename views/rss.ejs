@@ -2,7 +2,8 @@
 var now = new Date();
 var yesterday = new Date();
 yesterday.setDate(now.getDate()-1);
-var nameTag = `.${yesterday.getFullYear()}.${('0'+(yesterday.getMonth()+1)).slice(-2)}.${('0'+(yesterday.getDate())).slice(-2)}.WEBRip.AAC.x264.mp4`;
+var dateTag = `${yesterday.getFullYear()} ${('0'+(yesterday.getMonth()+1)).slice(-2)} ${('0'+(yesterday.getDate())).slice(-2)}`;
+var nameTag = `${dateTag}.WEBRip.AAC.x264.mp4`;
 %><rss version="2.0" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:atom="http://www.w3.org/2005/Atom">
     <channel>
         <title>Rai API - <%- canale %></title>
@@ -14,9 +15,9 @@ var nameTag = `.${yesterday.getFullYear()}.${('0'+(yesterday.getMonth()+1)).slic
         <copyright>(c) <%- now.getFullYear() %> <%- hostname %></copyright>
         <atom:link href="https://<%- hostname+url %>" rel="self" type="application/rss+xml" />
         <% programmi.forEach(programma => { %><item>
-            <title><![CDATA[<%- programma.name %>]]></title>
+            <title><![CDATA[<%- `${programma.name} ${dateTag}` %>]]></title>
             <description>
-                <![CDATA[<%- programma.name.replace(/( - | )/g, '.').replace(/\.+/g, '.') + nameTag %>]]>
+                <![CDATA[<%- `${programma.name}.${nameTag}`.replace(/( - | )/g, '.').replace(/\.+/g, '.') %>]]>
             </description>
             <link><%- programma.url %></link>
             <guid><%- programma.url %></guid>
