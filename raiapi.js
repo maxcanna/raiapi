@@ -13,10 +13,9 @@ var request = require('request').defaults({
 })
     , moment = require('moment')
     , async = require('async')
-    , eNF = new Error('Dati non disponibili')
+    , createError = require('http-errors')
+    , eNF = createError.NotFound('Dati non disponibili')
     , _ = require('lodash');
-
-eNF.status = 404;
 
 class RaiApi {
     constructor() {
