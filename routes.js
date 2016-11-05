@@ -5,7 +5,9 @@
 /* eslint-env node */
 const raiapi = new (require('./raiapi'))()
     , router = require('express').Router()
-    , redisClient = process.env.REDISCLOUD_URL ? require('redis').createClient(process.env.REDISCLOUD_URL) : null
+    , redisClient = process.env.REDISCLOUD_URL ? require('redis').createClient(process.env.REDISCLOUD_URL, {
+        prefix: process.env.NODE_ENV ? process.env.NODE_ENV + ':' : '',
+    }) : null
     , moment = require('moment-timezone')
     , createError = require('http-errors');
 

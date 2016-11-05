@@ -117,12 +117,14 @@ Gets video files RSS feed
             Cache-Control: public, max-age=86400
     + Body
 
-            <rss version="2.0" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+            <rss version="2.0" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:atom="http://www.w3.org/2005/Atom">
                 <channel>
-                    <title>Rai API</title>
-                    <description>Rai API rss feed direct download</description>
+                    <title>Rai API - RaiUno</title>
+                    <description>Rai API RSS feed for RaiUno</description>
                     <generator>raiapi.js</generator>
                     <link>https://localhost</link>
                     <language>it-IT</language>
                     <copyright>(c) 2016 localhost</copyright>
+                    <atom:link href="https://localhost/canali/0/rss.xml" rel="self" type="application/rss+xml" />
                 </channel>
+            </rss>
