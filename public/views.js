@@ -5,8 +5,22 @@
 /* eslint-env browser */
 /* exported CanaliView */
 var RaiCollectionView = Backbone.View.extend({
-    setOptions: function (options) {
-        _.each(options, function (value, key) {
+    initialize(options) {
+        this.setElement($(options.selector));
+        this.nextView = new options.view();
+        this.collection = new options.collection();
+        this.collection.on('reset', this.render, this);
+    },
+    render() {
+        this.collection.forEach((function (item) {
+            var view = new ItemView({model: item});
+            this.$el.append(view.render().$el);
+        }).bind(this));
+        this.$el.fadeIn();
+        return this;
+    },
+    setOptions(options) {
+        _.each(options, (value, key) => {
             this[key] = value;
         }, this);
         this.collection.setOptions(options);
@@ -15,141 +29,102 @@ var RaiCollectionView = Backbone.View.extend({
     events: {
         'click a': 'click',
     },
+    click(ev) {
+        ev.preventDefault();
+        this.nextView.close();
+        var id = $(ev.target).attr('data-id');
+        this.model = this.collection.get(id);
+    },
+    close() {
+        this.$('li').remove();
+        this.$el.hide();
+        this.nextView.close();
+    },
 });
 var CanaliView = RaiCollectionView.extend({
-    initialize: function () {
-        this.setElement($('#canali'));
-        this.collection = new CanaliCollection();
-        this.collection.on('reset', this.render, this);
-        this.programmiView = new ProgrammiView();
+    initialize() {
+        RaiCollectionView.prototype.initialize.call(this, {
+            selector: '#canali',
+            view: ProgrammiView,
+            collection: CanaliCollection,
+        });
     },
-    render: function () {
+    render() {
         if (this.collection && this.collection.length) {
             $('#loadingModal').modal('hide');
-            this.programmiView.close();
+            this.nextView.close();
             this.$('li').remove();
-            this.collection.forEach((function (item) {
-                var view = new CanaleView({model: item});
-                this.$el.append(view.render().$el);
-            }).bind(this));
+            RaiCollectionView.prototype.render.call(this);
         }
         return this;
     },
-    click: function (ev) {
-        ev.preventDefault();
-        this.programmiView.close();
-        var canaleId = $(ev.target).attr('data-id')
-            , model = this.collection.get(canaleId);
-        this.programmiView.setOptions({
-            data: model.get('data'),
-            canale: model.get('id'),
+    click(ev) {
+        RaiCollectionView.prototype.click.call(this, ev);
+        this.nextView.setOptions({
+            data: this.model.get('data'),
+            canale: this.model.get('id'),
         });
     },
 });
 var ProgrammiView = RaiCollectionView.extend({
-    initialize: function () {
-        this.setElement($('#programmi'));
-        this.qualitaView = new QualitaView();
-        this.collection = new ProgrammiCollection();
-        this.collection.on('reset', this.render, this);
+    initialize() {
+        RaiCollectionView.prototype.initialize.call(this, {
+            selector: '#programmi',
+            view: QualitaView,
+            collection: ProgrammiCollection,
+        });
     },
-    render: function () {
+    render() {
         if (this.collection && this.collection.length) {
-            this.collection.forEach((function (item) {
-                var view = new ProgrammaView({model: item});
-                this.$el.append(view.render().$el);
-            }).bind(this));
-            this.$el.fadeIn();
+            RaiCollectionView.prototype.render.call(this);
         }
         return this;
     },
-    click: function (ev) {
-        ev.preventDefault();
-        this.qualitaView.close();
-        var programmaId = $(ev.target).attr('data-id')
-            , model = this.collection.get(programmaId);
-        this.qualitaView.setOptions({
-            data: model.get('data'),
-            canale: model.get('canale'),
-            programma: model.get('id'),
-            nomeProgramma: model.get('name'),
+    click(ev) {
+        RaiCollectionView.prototype.click.call(this, ev);
+        this.nextView.setOptions({
+            data: this.model.get('data'),
+            canale: this.model.get('canale'),
+            programma: this.model.get('id'),
+            nomeProgramma: this.model.get('name'),
         });
-    },
-    close: function () {
-        this.$('li').remove();
-        this.$el.hide();
-        this.qualitaView.close();
     },
 });
 var QualitaView = RaiCollectionView.extend({
-    initialize: function () {
-        this.setElement($('#qualita'));
-        this.linkView = new LinkView();
-        this.collection = new QualitaCollection();
-        this.collection.on('reset', this.render, this);
+    initialize() {
+        RaiCollectionView.prototype.initialize.call(this, {
+            selector: '#qualita',
+            view: LinkView,
+            collection: QualitaCollection,
+        });
     },
-    render: function () {
-        if (this.collection) {
-            if (this.collection.length) {
-                this.collection.forEach((function (item) {
-                    var view = new QualitaItemView({model: item});
-                    this.$el.append(view.render().$el);
-                }).bind(this));
-            } else {
-                this.$el.append(_.template($('#template-na').html()));
-            }
-            this.$el.fadeIn();
+    render() {
+        if (this.collection && this.collection.length) {
+            return RaiCollectionView.prototype.render.call(this);
         }
+
+        this.$el
+            .append(_.template($('#template-na').html()))
+            .fadeIn();
 
         return this;
     },
-    click: function (ev) {
-        ev.preventDefault();
-        this.linkView.close();
-        var qualitaId = $(ev.target).attr('data-id')
-            , model = this.collection.get(qualitaId);
-        this.linkView.setOptions({
-            data: model.get('data'),
-            canale: model.get('canale'),
-            programma: model.get('programma'),
-            qualita: model.get('id'),
+    click(ev) {
+        RaiCollectionView.prototype.click.call(this, ev);
+        this.nextView.setOptions({
+            data: this.model.get('data'),
+            canale: this.model.get('canale'),
+            programma: this.model.get('programma'),
+            qualita: this.model.get('id'),
             nomeProgramma: this.nomeProgramma,
         });
     },
-    close: function () {
-        this.$('li').remove();
-        this.$el.hide();
-        this.linkView.close();
-    },
 });
-
-var CanaleView = Backbone.View.extend({
-    initialize: function () {
+var ItemView = Backbone.View.extend({
+    initialize() {
         this.template = _.template($('#template-item').html());
     },
-    render: function () {
-        this.$el.html(this.template({model: this.model, url: this.model.url()}));
-        return this;
-    },
-});
-var ProgrammaView = Backbone.View.extend({
-    initialize: function () {
-        this.template = _.template($('#template-item').html());
-    },
-    render: function () {
-        this.$el.html(this.template({
-            data: this.model.get('data'),
-            model: this.model,
-            url: this.model.url(),
-        }));
-        return this;
-    },
-});
-var QualitaItemView = Backbone.View.extend({
-    initialize: function () {
-        this.template = _.template($('#template-item').html());
-    },
-    render: function () {
+    render() {
         this.$el.html(this.template({
             data: this.model.get('data'),
             model: this.model,
@@ -159,8 +134,8 @@ var QualitaItemView = Backbone.View.extend({
     },
 });
 var LinkView = Backbone.View.extend({
-    initialize: function () {
-        this.setElement($('#link ul'));
+    initialize() {
+        this.setElement($('#link').find('ul'));
         this.views = [];
         this.model = new UrlModel();
         this.model.on('error change:url', this.render, this);
@@ -177,7 +152,7 @@ var LinkView = Backbone.View.extend({
         this.copyView.setElement($('#copy'));
         this.views.push(this.copyView);
     },
-    render: function () {
+    render() {
         this.close();
         if(this.model.get('url')) {
             this.views.forEach((function (view) {
@@ -189,7 +164,7 @@ var LinkView = Backbone.View.extend({
 
         return this;
     },
-    setOptions: function (options) {
+    setOptions(options) {
         _.each(options, function (value, key) {
             this[key] = value;
         }, this);
@@ -201,44 +176,44 @@ var LinkView = Backbone.View.extend({
 
         this.model.fetch();
     },
-    close: function () {
+    close() {
         this.$('li').remove();
     },
 });
 var FileView = Backbone.View.extend({
-    render: function () {
+    render() {
         this.$('a').attr('href', this.model.get('url'));
 
         return this;
     },
 });
 var DropboxView = FileView.extend({
-    render: function () {
+    render() {
         FileView.prototype.render.call(this);
         this.$('a').attr('href', null).on('click', this.click.bind(this));
 
         return this;
     },
-    click: function (ev) {
+    click(ev) {
         ev.preventDefault();
-        var nomeFile = this.model.get('nomeProgramma').replace(/ - /g, '.').replace(/ /g, '.') +
+        var nomeFile = this.model.get('nomeProgramma').replace(/( - | )/g, '.') +
             moment(this.model.get('data')).format('.YYYY.MM.DD.') +
             'WEBRip.AAC.x264.mp4';
         Dropbox.save(this.model.get('url'), nomeFile, {});
     },
 });
 var DownloadView = FileView.extend({
-    render: function () {
+    render() {
         FileView.prototype.render.call(this);
         this.$('a').attr('download', this.model.get('nomeProgramma') + '.mp4');
         return this;
     },
 });
 var CopyView = FileView.extend({
-    initialize: function () {
+    initialize() {
         new Clipboard('.btn');
     },
-    render: function () {
+    render() {
         FileView.prototype.render.call(this);
         this.$('a').attr('href', null);
         this.$('.btn').attr('data-clipboard-text', this.model.get('url'));
