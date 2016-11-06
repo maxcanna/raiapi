@@ -27,7 +27,7 @@ var RaiCollectionView = Backbone.View.extend({
         this.collection.fetch({reset: true});
     },
     events: {
-        'click a': 'click',
+        'click #item-link': 'click',
     },
     click(ev) {
         ev.preventDefault();
