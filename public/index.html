@@ -115,7 +115,12 @@
 <script src="views.js"></script>
 
 <script type="text/template" id="template-item">
-    <li><a href="#" data-id="<%= model.id %>"><%= model.get('name') %></a></li>
+    <li>
+        <a id="item-link" href="#" data-id="<%= model.id %>"><%= model.get('name') %></a>
+        <% if(!model.has('canale')){ %>
+            <a href="/canali/<%= model.id %>/rss.xml" target="_blank"><i class="fa fa-rss-square" aria-hidden="true"></i></a>
+        <% } %>
+    </li>
 </script>
 <script type="text/template" id="template-na">
     <li style="list-style-type: none"><div class="text-warning" role="alert">Programma non disponibile</div></li>
