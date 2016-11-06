@@ -56,6 +56,21 @@
             </div>
         </div>
     </div>
+    <div id="videoModal" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog" style="width: 80%">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title"></h4>
+                </div>
+                <div class="modal-body">
+                    <video width="100%" height="100%" controls autoplay>
+                        <source src="" type="video/mp4">
+                        Il tuo browser non supporta i video, scarica il file.
+                    </video>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="row">
         <div class="col-md-2">
             <h2>Data</h2>
@@ -152,6 +167,10 @@
                 .datetimepicker('date', yesterday);
 
         canaliView.setOptions({data: yesterday.toDate()});
+
+        $('#videoModal').on('hidden.bs.modal', function () {
+            $('video')[0].pause();
+        })
     });
 </script>
 

@@ -182,15 +182,22 @@ var LinkView = Backbone.View.extend({
 });
 var FileView = Backbone.View.extend({
     render() {
-        this.$('a').attr('href', this.model.get('url'));
+        this.$('a').attr('href', this.model.get('url')).on('click', this.click.bind(this));
 
         return this;
+    },
+    click(ev) {
+        ev.preventDefault();
+        $('source').attr('src', this.model.get('url'));
+        $('video').load();
+        $('#videoModal .modal-title').html(this.model.get('nomeProgramma'));
+        $('#videoModal').modal();
     },
 });
 var DropboxView = FileView.extend({
     render() {
         FileView.prototype.render.call(this);
-        this.$('a').attr('href', null).on('click', this.click.bind(this));
+        this.$('a').attr('href', null);
 
         return this;
     },
@@ -205,7 +212,7 @@ var DropboxView = FileView.extend({
 var DownloadView = FileView.extend({
     render() {
         FileView.prototype.render.call(this);
-        this.$('a').attr('download', this.model.get('nomeProgramma') + '.mp4');
+        this.$('a').attr('download', this.model.get('nomeProgramma') + '.mp4').off();
         return this;
     },
 });
