@@ -47,6 +47,7 @@ class RaiApi {
             headers: {
                 'User-Agent': null,
             },
+            proxy: process.env.HTTP_PROXY,
             url: url,
         }, (error, response) => {
             if (error || response.error || response.statusCode != 302) {
