@@ -222,7 +222,7 @@ var CopyView = FileView.extend({
     },
     render() {
         FileView.prototype.render.call(this);
-        this.$('a').attr('href', null);
+        this.$('a').attr('href', null).off();
         this.$('.btn').attr('data-clipboard-text', this.model.get('url'));
 
         return this;
