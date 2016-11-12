@@ -38,6 +38,10 @@ class RaiApi {
         this.fetchPage = this.fetchPage.bind(this);
     }
 
+    static isGeofenced(programma) {
+        return _.filter(programma, (value, key) => key.startsWith('dir')).join().toLowerCase().indexOf('geoprotezione') >= 0;
+    }
+
     static getSizesOfProgramma(programma) {
         return _.filter(_.keys(programma), (key) => _.startsWith(key, 'h264_') && programma[key] !== '');
     }
