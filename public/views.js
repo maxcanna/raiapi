@@ -190,8 +190,9 @@ var FileView = Backbone.View.extend({
         ev.preventDefault();
         $('source').attr('src', this.model.get('url'));
         $('video').load();
-        $('#videoModal .modal-title').html(this.model.get('nomeProgramma'));
-        $('#videoModal').modal();
+        var videoModal = $('#videoModal');
+        videoModal.find('.modal-title').html(this.model.get('nomeProgramma'));
+        videoModal.modal();
     },
 });
 var DropboxView = FileView.extend({
@@ -218,12 +219,11 @@ var DownloadView = FileView.extend({
 });
 var CopyView = FileView.extend({
     initialize() {
-        new Clipboard('.btn');
+        new Clipboard('#copy .btn');
     },
     render() {
         FileView.prototype.render.call(this);
-        this.$('a').attr('href', null).off();
-        this.$('.btn').attr('data-clipboard-text', this.model.get('url'));
+        this.$('a').attr('href', null).attr('data-clipboard-text', this.model.get('url')).off();
 
         return this;
     },

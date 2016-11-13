@@ -38,16 +38,20 @@ class RaiApi {
         this.fetchPage = this.fetchPage.bind(this);
     }
 
+    static isGeofenced(programma) {
+        return _.filter(programma, (value, key) => key.startsWith('dir')).join().toLowerCase().indexOf('geoprotezione') >= 0;
+    }
+
     static getSizesOfProgramma(programma) {
         return _.filter(_.keys(programma), (key) => _.startsWith(key, 'h264_') && programma[key] !== '');
     }
 
-    static getEffectiveUrl(url, callback) {
+    static getEffectiveUrl(url, useProxy, callback) {
         request.get({
             headers: {
                 'User-Agent': null,
             },
-            proxy: process.env.HTTP_PROXY,
+            proxy: useProxy ? process.env.HTTP_PROXY_RAI : undefined,
             url: url,
         }, (error, response) => {
             if (error || response.error || response.statusCode != 302) {
@@ -76,6 +80,7 @@ class RaiApi {
                         name: programma.t.trim(),
                         qualita: size.replace('_', ' '),
                         url: programma[size],
+                        geofenced: RaiApi.isGeofenced(programma),
                     });
                 }, (err, sizes) => {
                     // Ugly way to remove duplicate URLs keeping the best available one
@@ -83,7 +88,7 @@ class RaiApi {
                 });
             }, (err, items) => {
                 async.filter(items, (item, urlCallback) => {
-                    RaiApi.getEffectiveUrl(item.url, (err, url) => {
+                    RaiApi.getEffectiveUrl(item.url, item.geofenced, (err, url) => {
                         item.url = url;
                         urlCallback(null, !err);
                     });
@@ -112,13 +117,19 @@ class RaiApi {
             }
 
             const h264sizes = RaiApi.getSizesOfProgramma(programma)
+                , geofenced = RaiApi.isGeofenced(programma)
                 , url = programma[h264sizes[qualita]];
 
             if (_.isEmpty(url)) {
                 callback(eNF);
                 return;
             }
-            RaiApi.getEffectiveUrl(url, callback);
+            RaiApi.getEffectiveUrl(url, geofenced, (error, url) => {
+                callback(error, {
+                    url: url,
+                    geofenced: geofenced,
+                });
+            });
         });
     }
 
