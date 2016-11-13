@@ -9,6 +9,7 @@ const raiapi = new (require('./raiapi'))()
         prefix: process.env.NODE_ENV ? process.env.NODE_ENV + ':' : '',
     }) : null
     , moment = require('moment-timezone')
+    , request = require('request')
     , createError = require('http-errors');
 
 router.use((req, res, next) => {
@@ -33,6 +34,7 @@ router.use((req, res, next) => {
         next(createError.BadRequest('Canale non valido'));
     }
     req.query.data = m.toDate();
+    req.fromItaly = (req.headers.cf_ipcountry || 'IT') === 'IT';
     next();
 });
 
@@ -58,17 +60,35 @@ router.get('/canali/:canale/programmi/:programma/qualita', (req, res, next) => {
 });
 
 //Risorsa
-router.get('/canali/:canale/programmi/:programma/qualita/:qualita/:action', (req, res, next) => {
+router.all('/canali/:canale/programmi/:programma/qualita/:qualita/:action', (req, res, next) => {
     if (['file', 'url'].indexOf(req.params.action) < 0) {
         next(createError.BadRequest('Azione non valida'));
     } else {
-        raiapi.getFileUrl(req.params.canale, req.query.data, req.params.programma, req.params.qualita, (error, fileUrl) => {
+        raiapi.getFileUrl(req.params.canale, req.query.data, req.params.programma, req.params.qualita, (error, data) => {
             if (error) {
                 next(error);
             } else if (req.params.action == 'file') {
-                res.redirect(fileUrl);
+                if(data.geofenced && !req.fromItaly) {
+                    request({
+                        method: req.method,
+                        followRedirect: false,
+                        headers: req.headers,
+                        proxy: process.env.HTTP_PROXY_RAI,
+                        url: data.url,
+                    })
+                        .on('error', next)
+                        .pipe(res);
+                } else {
+                    res.redirect(data.url);
+                }
             } else if (req.params.action == 'url') {
-                res.send({url: fileUrl});
+                var url = data.url;
+                if(data.geofenced && !req.fromItaly) {
+                    url = `${req.protocol}://${req.hostname}:${req.socket.localPort}${req.url.replace('/url', '/file')}`;
+                }
+                res.send({
+                    url: url,
+                });
             }
         });
     }
