@@ -247,7 +247,7 @@ class RaiApi {
                     const programmi = _.values(body[this.channelMap[canale]][`${m.format('YYYY-MM-DD')}`]);
 
                     if (programmi.length > 0 && this.redisClient && this.redisClient.connected) {
-                        this.redisClient.set(redisKey, JSON.stringify(programmi), 'EX', 86400 * 7);
+                        this.redisClient.set(redisKey, JSON.stringify(programmi), 'EX', 1800); //30 minutes
                     }
 
                     callback(null, programmi);
