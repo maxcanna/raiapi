@@ -204,9 +204,9 @@ var DropboxView = FileView.extend({
     },
     click(ev) {
         ev.preventDefault();
-        var nomeFile = this.model.get('nomeProgramma').replace(/( - | )/g, '.') +
-            moment(this.model.get('data')).format('.YYYY.MM.DD.') +
-            'WEBRip.AAC.x264.mp4';
+        var nomeProgramma = this.model.get('nomeProgramma');
+        var date = nomeProgramma.toUpperCase().match(/S\d+E\d+/g) ? '' : moment(this.model.get('data')).format('.YYYY.MM.DD.');
+        var nomeFile = nomeProgramma.replace(/( - | )/g, '.') + date + 'WEBRip.AAC.x264.mp4';
         Dropbox.save(this.model.get('url'), nomeFile, {});
     },
 });
