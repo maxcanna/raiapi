@@ -46,7 +46,7 @@ class RaiApi {
         return _.filter(_.keys(programma), (key) => _.startsWith(key, 'h264_') && programma[key] !== '');
     }
 
-    static getEffectiveUrl(url, useProxy, callback) {
+    static getEffectiveUrl(url, qualita, useProxy, callback) {
         request.get({
             headers: {
                 'User-Agent': null,
@@ -57,7 +57,13 @@ class RaiApi {
             if (error || response.error || response.statusCode != 302) {
                 callback(eNF);
             } else {
-                callback(null, response.headers.location);
+                var fileUrl = response.headers.location;
+                if (fileUrl) {
+                    const parts = fileUrl.match(/.+(\d).*-.+(\/podcast.*,?\d_).*/i);
+                    fileUrl = `http://creativemedia${parts[1]}.rai.it${parts[2]}${qualita}.mp4`
+                }
+
+                callback(null, fileUrl);
             }
         });
     }
@@ -88,7 +94,7 @@ class RaiApi {
                 });
             }, (err, items) => {
                 async.filter(items, (item, urlCallback) => {
-                    RaiApi.getEffectiveUrl(item.url, item.geofenced, (err, url) => {
+                    RaiApi.getEffectiveUrl(item.url, item.qualita.split(' ')[1], item.geofenced, (err, url) => {
                         item.url = url;
                         urlCallback(null, !err);
                     });
@@ -124,7 +130,7 @@ class RaiApi {
                 callback(eNF);
                 return;
             }
-            RaiApi.getEffectiveUrl(url, geofenced, (error, url) => {
+            RaiApi.getEffectiveUrl(url, h264sizes[qualita].split('_')[1], geofenced, (error, url) => {
                 callback(error, {
                     url: url,
                     geofenced: geofenced,
