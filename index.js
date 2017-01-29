@@ -4,9 +4,11 @@ var express = require('express')
     , app = express()
     , environment = app.get('env') || 'production'
     , development = environment === 'development'
+    , port = process.env.PORT || 3000
     , api = require('./routes.js');
 
 app.disable('x-powered-by');
+app.set('port', port);
 app.use(require('compression')());
 app.use(require('morgan')('combined'));
 app.use(express.static('public'));
@@ -22,7 +24,7 @@ app.use((err, req, res, next) => {
     });
 });
 
-app.listen((process.env.PORT || 3000), () => {
+app.listen(port, () => {
     console.log('Server started');
 });
 

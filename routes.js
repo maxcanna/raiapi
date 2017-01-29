@@ -83,7 +83,7 @@ router.all('/canali/:canale/programmi/:programma/qualita/:qualita/:action', (req
                 }
             } else if (req.params.action == 'url') {
                 res.json({
-                    url: `${req.protocol}://${req.hostname}${req.url.replace('/url', '/file')}`,
+                    url: `${req.protocol}://${req.hostname}:${req.app.get('port')}${req.url.replace('/url', '/file')}`,
                 });
             }
         });
