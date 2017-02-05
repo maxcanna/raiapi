@@ -40,7 +40,7 @@
     "lodash": "^4.17.4",
     "moment": "^2.15.1",
     "moment-timezone": "^0.5.5",
-    "morgan": "^1.7.0",
+    "morgan": "^1.8.0",
     "redis": "^2.6.0-2",
     "request": "^2.74.0"
   },
