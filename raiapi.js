@@ -59,8 +59,10 @@ class RaiApi {
             } else {
                 var fileUrl = response.headers.location;
                 if (fileUrl) {
-                    const parts = fileUrl.match(/.+(\d).*-.+(\/podcast.*,?\d_).*/i);
-                    fileUrl = `http://creativemedia${parts[1]}.rai.it${parts[2]}${qualita}.mp4`
+                    const parts = fileUrl.match(/.+(\d).*-.+i(\/.*,?\d_).*/i);
+                    if (fileUrl && parts) {
+                        fileUrl = `http://creativemedia${parts[1]}.rai.it${parts[2]}${qualita}.mp4`
+                    }
                 }
 
                 callback(null, fileUrl);
