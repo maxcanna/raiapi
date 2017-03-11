@@ -182,6 +182,7 @@ var LinkView = Backbone.View.extend({
 });
 var FileView = Backbone.View.extend({
     render() {
+        this.$el.fadeIn();
         this.$('a').attr('href', this.model.get('url')).on('click', this.click.bind(this));
 
         return this;
