@@ -19,11 +19,15 @@ You've several way to get raiapi running:
 
   * Locally: `docker run -d -p 80:3000 maxcanna/raiapi:latest`.
 
+* You can use now:
+
+  [![Deploy to now](https://deploy.now.sh/static/button.svg)](https://deploy.now.sh/?repo=https://github.com/maxcanna/raiapi)
+
 * Or manually:
 
-  `npm i --production`
+  * `npm i --production`
 
-  `npm start`
+  * `npm start`
 
   raiapi will be available on port `3000`.
 
