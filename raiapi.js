@@ -49,7 +49,7 @@ class RaiApi {
     static getEffectiveUrl(url, qualita, useProxy, callback) {
         request.get({
             headers: {
-                'User-Agent': null,
+                'User-Agent': 'raiweb',
             },
             proxy: useProxy ? process.env.HTTP_PROXY_RAI : undefined,
             url: url,
