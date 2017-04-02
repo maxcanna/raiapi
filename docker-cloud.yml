@@ -1,7 +1,7 @@
 raiapi:
   autoredeploy: true
   environment:
-    - NODE_ENV=test
+    - NODE_ENV=production
     - PORT=80
     - 'REDISCLOUD_URL=redis://redis'
   image: 'maxcanna/raiapi:latest'
