@@ -25,10 +25,10 @@ You've several way to get raiapi running:
 
 * Or manually:
 
-  * `npm i --production`
-
-  * `npm start`
-
+```bash
+  $ npm i --production
+  $ npm start
+```
   raiapi will be available on port `3000`.
 
 ## Documentation
