@@ -2,7 +2,7 @@
  * Created by massimilianocannarozzo on 13/04/14.
  */
 /* eslint-env node */
-var request = require('request').defaults({
+const request = require('request').defaults({
     headers: {
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_4) AppleWebKit/537.36 (KHTML, like Gecko)' +
         ' Chrome/50.0.2661.94 Safari/537.36',
@@ -58,7 +58,7 @@ class RaiApi {
             if (error || response.error || response.statusCode !== 302) {
                 callback(eNF);
             } else {
-                var fileUrl = response.headers.location;
+                let { headers: { location: fileUrl } } = response;
                 if (fileUrl) {
                     const parts = fileUrl.match(/.+(\d).*-.+i(\/.*,?\d_).*/i);
                     if (fileUrl && parts) {
@@ -193,7 +193,7 @@ class RaiApi {
         if (this.redisClient && this.redisClient.connected) {
             this.redisClient.get('canali', (err, reply) => {
                 if (!err) {
-                    var channelMap = null;
+                    let channelMap = null;
                     try {
                         channelMap = JSON.parse(reply);
                     } catch (e) {
@@ -226,7 +226,7 @@ class RaiApi {
         if (this.redisClient && this.redisClient.connected) {
             this.redisClient.get(redisKey, (err, reply) => {
                 if (!err) {
-                    var programmi = null;
+                    let programmi = null;
                     try {
                         programmi = JSON.parse(reply);
                     } catch (e) {
@@ -251,7 +251,7 @@ class RaiApi {
             , url = `http://www.rai.it/dl/portale/html/palinsesti/replaytv/static/${canale}_${m.format('YYYY_MM_DD')}.html`;
 
         request.get(url, (error, response, body) => {
-                if (error || response.statusCode == 404 || response.statusCode != 200) {
+                if (error || response.statusCode === 404 || response.statusCode !== 200) {
                     callback(error || new Error(response.statusCode));
                 } else {
                     const programmi = _.values(body[this.channelMap[canale]][`${m.format('YYYY-MM-DD')}`]);
@@ -270,13 +270,13 @@ class RaiApi {
         const url = 'http://www.rai.it/dl/RaiTV/iphone/android/smartphone/advertising_config.html';
 
         request.get(url, (error, response, body) => {
-                if (error || response.statusCode == 404 || response.statusCode != 200) {
+                if (error || response.statusCode === 404 || response.statusCode !== 200) {
                     // Use static channel map
                     callback(null, this.canali);
                 } else {
                     this.canali = {};
 
-                    _.filter(body.Channels, _.iteratee({hasReplay: 'YES'})).map(canale => {
+                    _.filter(body.Channels, _.iteratee({ hasReplay: 'YES' })).map(canale => {
                         this.canali[canale.tag] = canale.id;
                     });
 

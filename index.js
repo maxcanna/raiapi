@@ -1,6 +1,6 @@
 /* eslint no-unused-vars: "off" */
 /* eslint-env node */
-var express = require('express')
+const express = require('express')
     , app = express()
     , environment = app.get('env') || 'production'
     , development = environment === 'development'
@@ -17,7 +17,7 @@ app.use(api);
 
 // error handlers
 app.use((err, req, res, next) => {
-    var status = err.status || 500;
+    const status = err.status || 500;
     res.status(status).json({
         stack: development ? err.stack : undefined,
         error: err.message,
@@ -27,4 +27,3 @@ app.use((err, req, res, next) => {
 app.listen(port, () => {
     console.log('Server started');
 });
-
