@@ -15,6 +15,7 @@ var request = require('request').defaults({
     , async = require('async')
     , createError = require('http-errors')
     , eNF = createError.NotFound('Dati non disponibili')
+    , { HTTP_PROXY_RAI: proxyUrl} = process.env
     , _ = require('lodash');
 
 class RaiApi {
@@ -51,10 +52,10 @@ class RaiApi {
             headers: {
                 'User-Agent': 'raiweb',
             },
-            proxy: useProxy ? process.env.HTTP_PROXY_RAI : undefined,
+            proxy: useProxy ? proxyUrl : undefined,
             url: url,
         }, (error, response) => {
-            if (error || response.error || response.statusCode != 302) {
+            if (error || response.error || response.statusCode !== 302) {
                 callback(eNF);
             } else {
                 var fileUrl = response.headers.location;
@@ -96,7 +97,8 @@ class RaiApi {
                 });
             }, (err, items) => {
                 async.filter(items, (item, urlCallback) => {
-                    RaiApi.getEffectiveUrl(item.url, item.qualita.split(' ')[1], item.geofenced, (err, url) => {
+                    const useProxy = proxyUrl && item.geofenced;
+                    RaiApi.getEffectiveUrl(item.url, item.qualita.split(' ')[1], useProxy, (err, url) => {
                         item.url = url;
                         urlCallback(null, !err);
                     });

@@ -68,7 +68,7 @@ router.all('/canali/:canale/programmi/:programma/qualita/:qualita/:action', (req
             if (error) {
                 next(error);
             } else if (req.params.action == 'file') {
-                if(data.geofenced && !req.fromItaly) {
+                if(data.geofenced && !req.fromItaly && proxyUrl) {
                     request({
                         method: req.method,
                         followRedirect: false,
