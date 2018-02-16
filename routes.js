@@ -8,13 +8,14 @@ const raiapi = new (require('./raiapi'))()
     , redisClient = process.env.REDISCLOUD_URL ? require('redis').createClient(process.env.REDISCLOUD_URL, {
         prefix: process.env.NODE_ENV ? process.env.NODE_ENV + ':' : '',
     }) : null
+    , { HTTP_PROXY_RAI: proxyUrl} = process.env
     , moment = require('moment-timezone')
     , request = require('request')
     , createError = require('http-errors');
 
 router.use((req, res, next) => {
     const tz = 'Europe/rome';
-    var m;
+    let m;
 
     if (req.query.data === undefined) {
         m = moment().startOf('day').subtract(1, 'day').tz(tz);
@@ -67,8 +68,8 @@ router.all('/canali/:canale/programmi/:programma/qualita/:qualita/:action', (req
         raiapi.getFileUrl(req.params.canale, req.query.data, req.params.programma, req.params.qualita, (error, data) => {
             if (error) {
                 next(error);
-            } else if (req.params.action == 'file') {
-                if(data.geofenced && !req.fromItaly) {
+            } else if (req.params.action === 'file') {
+                if(data.geofenced && !req.fromItaly && proxyUrl) {
                     request({
                         method: req.method,
                         followRedirect: false,
@@ -81,7 +82,7 @@ router.all('/canali/:canale/programmi/:programma/qualita/:qualita/:action', (req
                 } else {
                     res.redirect(data.url);
                 }
-            } else if (req.params.action == 'url') {
+            } else if (req.params.action === 'url') {
                 res.json({
                     url: `${req.protocol}://${req.hostname}${req.url.replace('/url', '/file')}`,
                 });
