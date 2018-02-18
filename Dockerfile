@@ -1,10 +1,12 @@
-FROM node:alpine
-MAINTAINER Massimiliano Cannarozzo <maxcanna@gmail.com>
-
-EXPOSE 3000
+FROM alpine as builder
 ADD ./ /var/www/raiapi/
-RUN cd /var/www/raiapi/ && npm i --production
-
 WORKDIR /var/www/raiapi
+RUN apk update && apk add yarn git
+RUN yarn --production --ignore-engines
 
-CMD ["node", "index.js"]
+FROM node:alpine
+LABEL mantainer Massimiliano Cannarozzo <maxcanna@gmail.com>
+WORKDIR /var/www/raiapi
+COPY --from=builder /var/www/raiapi .
+EXPOSE 3000
+CMD ["yarn", "start"]
