@@ -13,11 +13,7 @@ You've several way to get raiapi running:
 
 * You can use `docker`:
 
-  * Using Docker Cloud:
-
-  [![Deploy to Docker Cloud](https://files.cloud.docker.com/images/deploy-to-dockercloud.svg)](https://cloud.docker.com/stack/deploy/)
-
-  * Locally: `docker run -d -p 80:3000 maxcanna/raiapi:latest`.
+  `docker run -d -p 80:3000 maxcanna/raiapi:latest`.
 
 * You can use now:
 
