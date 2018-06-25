@@ -13,8 +13,7 @@
     "test": "npm run lint && npm run test-ci",
     "test-ci": "./test.sh",
     "lint": "node_modules/.bin/eslint .",
-    "dev": "node_modules/.bin/nodemon index.js",
-    "postinstall": "npm prune"
+    "dev": "node_modules/.bin/nodemon index.js"
   },
   "repository": {
     "type": "git",
