@@ -4,7 +4,7 @@
 /* globals Backbone, $, _, Dropbox, CanaliCollection, ProgrammiCollection, QualitaCollection, UrlModel, Clipboard, moment */
 /* eslint-env browser */
 /* exported CanaliView */
-var RaiCollectionView = Backbone.View.extend({
+const RaiCollectionView = Backbone.View.extend({
     initialize(options) {
         this.setElement($(options.selector));
         this.nextView = new options.view();
@@ -12,10 +12,10 @@ var RaiCollectionView = Backbone.View.extend({
         this.collection.on('reset', this.render, this);
     },
     render() {
-        this.collection.forEach((function (item) {
-            var view = new ItemView({model: item});
+        this.collection.forEach(item => {
+            const view = new ItemView({ model: item });
             this.$el.append(view.render().$el);
-        }).bind(this));
+        });
         this.$el.fadeIn();
         return this;
     },
@@ -32,7 +32,7 @@ var RaiCollectionView = Backbone.View.extend({
     click(ev) {
         ev.preventDefault();
         this.nextView.close();
-        var id = $(ev.target).attr('data-id');
+        const id = $(ev.target).attr('data-id');
         this.model = this.collection.get(id);
     },
     close() {
@@ -41,7 +41,7 @@ var RaiCollectionView = Backbone.View.extend({
         this.nextView.close();
     },
 });
-var CanaliView = RaiCollectionView.extend({
+const CanaliView = RaiCollectionView.extend({
     initialize() {
         RaiCollectionView.prototype.initialize.call(this, {
             selector: '#canali',
@@ -66,7 +66,7 @@ var CanaliView = RaiCollectionView.extend({
         });
     },
 });
-var ProgrammiView = RaiCollectionView.extend({
+const ProgrammiView = RaiCollectionView.extend({
     initialize() {
         RaiCollectionView.prototype.initialize.call(this, {
             selector: '#programmi',
@@ -90,7 +90,7 @@ var ProgrammiView = RaiCollectionView.extend({
         });
     },
 });
-var QualitaView = RaiCollectionView.extend({
+const QualitaView = RaiCollectionView.extend({
     initialize() {
         RaiCollectionView.prototype.initialize.call(this, {
             selector: '#qualita',
@@ -120,7 +120,7 @@ var QualitaView = RaiCollectionView.extend({
         });
     },
 });
-var ItemView = Backbone.View.extend({
+const ItemView = Backbone.View.extend({
     initialize() {
         this.template = _.template($('#template-item').html());
     },
@@ -133,7 +133,7 @@ var ItemView = Backbone.View.extend({
         return this;
     },
 });
-var LinkView = Backbone.View.extend({
+const LinkView = Backbone.View.extend({
     initialize() {
         this.setElement($('#link').find('ul'));
         this.views = [];
@@ -155,9 +155,9 @@ var LinkView = Backbone.View.extend({
     render() {
         this.close();
         if(this.model.get('url')) {
-            this.views.forEach((function (view) {
+            this.views.forEach(view => {
                 this.$el.append(view.render().el);
-            }).bind(this));
+            });
         } else {
             this.$el.append(_.template($('#template-na').html()));
         }
@@ -165,9 +165,7 @@ var LinkView = Backbone.View.extend({
         return this;
     },
     setOptions(options) {
-        _.each(options, function (value, key) {
-            this[key] = value;
-        }, this);
+        _.each(options, (value, key) => this[key] = value);
 
         this.model.clear();
         this.model.setOptions(options);
@@ -180,7 +178,7 @@ var LinkView = Backbone.View.extend({
         this.$('li').remove();
     },
 });
-var FileView = Backbone.View.extend({
+const FileView = Backbone.View.extend({
     render() {
         this.$el.fadeIn();
         this.$('a').attr('href', this.model.get('url')).on('click', this.click.bind(this));
@@ -191,12 +189,12 @@ var FileView = Backbone.View.extend({
         ev.preventDefault();
         $('source').attr('src', this.model.get('url'));
         $('video').load();
-        var videoModal = $('#videoModal');
+        const videoModal = $('#videoModal');
         videoModal.find('.modal-title').html(this.model.get('nomeProgramma'));
         videoModal.modal();
     },
 });
-var DropboxView = FileView.extend({
+const DropboxView = FileView.extend({
     render() {
         FileView.prototype.render.call(this);
         this.$('a').attr('href', null);
@@ -205,20 +203,20 @@ var DropboxView = FileView.extend({
     },
     click(ev) {
         ev.preventDefault();
-        var nomeProgramma = this.model.get('nomeProgramma');
-        var date = nomeProgramma.toUpperCase().match(/S\d+E\d+/g) ? '' : moment(this.model.get('data')).format('.YYYY.MM.DD.');
-        var nomeFile = nomeProgramma.replace(/( - | )/g, '.') + date + 'WEBRip.AAC.x264.mp4';
+        const nomeProgramma = this.model.get('nomeProgramma');
+        const date = nomeProgramma.toUpperCase().match(/S\d+E\d+/g) ? '' : moment(this.model.get('data')).format('.YYYY.MM.DD.');
+        const nomeFile = `${nomeProgramma.replace(/( - | )/g, '.')}${date}WEBRip.AAC.x264.mp4`;
         Dropbox.save(this.model.get('url'), nomeFile, {});
     },
 });
-var DownloadView = FileView.extend({
+const DownloadView = FileView.extend({
     render() {
         FileView.prototype.render.call(this);
-        this.$('a').attr('download', this.model.get('nomeProgramma') + '.mp4').off();
+        this.$('a').attr('download', `${this.model.get('nomeProgramma')}.mp4`).off();
         return this;
     },
 });
-var CopyView = FileView.extend({
+const CopyView = FileView.extend({
     initialize() {
         new Clipboard('#copy .btn');
     },
