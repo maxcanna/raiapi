@@ -114,8 +114,7 @@ router.get('/canali/:canale/rss.xml', (req, res, next) => {
 if (redisClient) {
     redisClient.on('error', console.error);
     redisClient.on('connect', () => console.log('Connected to redis'));
+    raiapi.setRedisClient(redisClient);
 }
-
-raiapi.setRedisClient(redisClient);
 
 module.exports = router;
