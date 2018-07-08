@@ -2,7 +2,7 @@
  * Created by massimilianocannarozzo on 05/11/16.
  */
 /* eslint-env node */
-var hooks = require('hooks');
+const hooks = require('hooks');
 const url = 'http://distribution.bbb3d.renderfarming.net/video/mp4/bbb_sunflower_1080p_30fps_normal.mp4';
 
 hooks.beforeValidation('File URL > Get URL', function (transaction) {
