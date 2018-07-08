@@ -2,13 +2,13 @@
  * Created by massimilianocannarozzo on 01/10/16.
  */
 /* eslint-env node */
-const environment = process.env.NODE_ENV || 'production';
+const { env: { NODE_ENV: environment = 'development', REDISCLOUD_URL } } = process;
 
-if(process.env.REDISCLOUD_URL) {
-    var redisClient = require('redis').createClient(
-        process.env.REDISCLOUD_URL,
+if(REDISCLOUD_URL) {
+    const redisClient = require('redis').createClient(
+        REDISCLOUD_URL,
         {
-            prefix: process.env.NODE_ENV ? process.env.NODE_ENV + ':' : '',
+            prefix: environment + ':' ,
         }
     );
     redisClient.on('ready', function () {
