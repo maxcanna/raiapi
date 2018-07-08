@@ -5,10 +5,7 @@
 /* eslint-env node */
 const raiapi = new (require('./raiapi'))()
     , router = require('express').Router()
-    , redisClient = process.env.REDISCLOUD_URL ? require('redis').createClient(process.env.REDISCLOUD_URL, {
-        prefix: process.env.NODE_ENV ? process.env.NODE_ENV + ':' : '',
-    }) : null
-    , { HTTP_PROXY_RAI: proxyUrl} = process.env
+    , { env: { HTTP_PROXY_RAI: proxyUrl } } = process
     , moment = require('moment-timezone')
     , request = require('request')
     , createError = require('http-errors');
@@ -110,11 +107,5 @@ router.get('/canali/:canale/rss.xml', (req, res, next) => {
         });
     });
 });
-
-if (redisClient) {
-    redisClient.on('error', console.error);
-    redisClient.on('connect', () => console.log('Connected to redis'));
-    raiapi.setRedisClient(redisClient);
-}
 
 module.exports = router;
