@@ -79,10 +79,7 @@ const getEffectiveUrl = (url, qualita, useProxy, callback) => {
         } else {
             let { headers: { location: fileUrl } } = response;
             if (fileUrl) {
-                const parts = fileUrl.match(/.+(\d).*-.+i(\/.*,?\d_).*/i);
-                if (fileUrl && parts) {
-                    fileUrl = `http://creativemedia${parts[1]}.rai.it${parts[2]}${qualita}.mp4`
-                }
+                fileUrl = fileUrl.replace(/_\d*?\.mp4$/, `_${qualita}.mp4`);
             }
 
             callback(null, fileUrl);
