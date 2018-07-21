@@ -1,4 +1,3 @@
-.git/
 .idea/
 node_modules/
 app.json
@@ -8,13 +7,11 @@ docker-compose.yml
 .gitignore
 .eslintignore
 .eslintrc
-CHANGELOG.md
 Dockerfile
 LICENSE
 README.md
 apiary.apib
 clear_redis.js
-docker-cloud.yml
 dredd.yml
 test.sh
 test/
