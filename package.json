@@ -24,13 +24,6 @@
     "api",
     "raiplay"
   ],
-  "now": {
-    "name": "raiapi",
-    "alias": "rai.now.sh",
-    "regions": [
-      "bru1"
-    ]
-  },
   "author": "Massimiliano Cannarozzo <massi@massi.ws>",
   "license": "GPL-3.0",
   "bugs": {
