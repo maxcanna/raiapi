@@ -9,5 +9,5 @@ level: info
 silent: false
 path: []
 blueprint: apiary.apib
-endpoint: 'http://localhost:3000'
+endpoint: 'http://localhost:3333'
 hookfiles: test/dreddHooks.js

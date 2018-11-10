@@ -18,18 +18,20 @@ const request = require('request').defaults({
     , {
         env: {
             HTTP_PROXY_RAI: proxyUrl,
-            NODE_ENV: environment = 'development',
-            REDISCLOUD_URL,
+            MONGO_URL,
         },
     } = process
-    , redisClient = REDISCLOUD_URL ? require('redis').createClient(REDISCLOUD_URL, {
-        prefix: environment + ':' ,
-    }) : { connected: false }
     , _ = require('lodash');
 
-if (REDISCLOUD_URL) {
-    redisClient.on('error', console.error);
-    redisClient.on('connect', () => console.log('Connected to redis'));
+let mongoDb;
+
+if (MONGO_URL) {
+    require('mongodb').MongoClient.connect(MONGO_URL, {useNewUrlParser: true})
+        .then(c => {
+            console.log('Connected to mongodb');
+            return c.db();
+        })
+        .then(db => mongoDb = db);
 }
 
 let channelMap = {
@@ -90,7 +92,7 @@ const getEffectiveUrl = (url, qualita, useProxy, callback) => {
 const fetchPage = (idCanale, data, callback) => {
     const canale = getCanali()[idCanale]
         , m = moment(data)
-        , redisKey = `${canale}:${m.format('YYYY:MM:DD')}`
+        , documentId = `${canale}:${m.format('YYYY:MM:DD')}`
         , url = `http://www.rai.it/dl/portale/html/palinsesti/replaytv/static/${canale}_${m.format('YYYY_MM_DD')}.html`;
 
     if (idCanale > getCanali().length) {
@@ -103,8 +105,13 @@ const fetchPage = (idCanale, data, callback) => {
             } else {
                 const programmi = _.values(body[channelMap[canale]][`${m.format('YYYY-MM-DD')}`]);
 
-                if (programmi.length > 0 && redisClient.connected) {
-                    redisClient.set(redisKey, JSON.stringify(programmi), 'EX', 1800); //30 minutes
+                if (programmi.length > 0 && mongoDb) {
+                    mongoDb.collection('programmi')
+                        .updateOne(
+                            { _id: documentId },
+                            { $set: { ...programmi, createdAt: new Date() } },
+                            { upsert: true }
+                        );
                 }
 
                 callback(null, programmi);
@@ -127,8 +134,13 @@ const fetchCanali = (callback) => {
                     .filter(({ hasReplay = 'NO' }) => hasReplay === 'YES')
                     .forEach(({ tag, id }) => channelMap[tag] = id);
 
-                if (getCanali().length > 0 && redisClient.connected) {
-                    redisClient.set('canali', JSON.stringify(channelMap), 'EX', 86400);
+                if (getCanali().length > 0 && mongoDb) {
+                    mongoDb.collection('canali')
+                        .updateOne(
+                            { _id: 'canali' },
+                            { $set: { ...channelMap, createdAt: new Date() } },
+                            { upsert: true }
+                        );
                 }
 
                 callback(null, getCanali().map((name, id) => ({
@@ -257,8 +269,8 @@ class RaiApi {
     listCanali(callback) {
         callback = callback.bind(this);
 
-        if (redisClient.connected) {
-            redisClient.get('canali', (err, reply) => {
+        if (mongoDb) {
+            mongoDb.collection('canali').findOne({ _id: 'canali' }, { projection: { _id: false } }, (err, reply) => {
                 if (!err) {
                     let channelMap = null;
                     try {
@@ -284,10 +296,10 @@ class RaiApi {
     getData(idCanale, data, callback) {
         callback = callback.bind(this);
 
-        const redisKey = `${getCanali()[idCanale]}:${moment(data).format('YYYY:MM:DD')}`;
+        const documentIndex = `${getCanali()[idCanale]}:${moment(data).format('YYYY:MM:DD')}`;
 
-        if (redisClient.connected) {
-            redisClient.get(redisKey, (err, reply) => {
+        if (mongoDb) {
+            mongoDb.collection('canali').findOne({ _id: documentIndex }, { projection: { _id: false } }, (err, reply) => {
                 if (!err) {
                     let programmi = null;
                     try {
