@@ -2,21 +2,37 @@
 set -e
 
 export NODE_ENV=test
+export PORT=3333
 
-printf "\033[34m\n* Clearing Redis cache\n\033[0m\n"
+if [ -z "$MONGO_URL" ]; then
+    export MONGO_URL=mongodb://localhost/raiapi-test
+fi
 
-node clear_redis.js
+printf "\033[34m\n* Running tests with mongodb cache empty\n\033[0m\n"
 
-printf "\033[34m\n* Running tests with Redis cache empty\n\033[0m\n"
+nyc --reporter=none dredd
 
-yarn dredd
+mv .nyc_output{,-empty}
 
-printf "\033[34m\n* Running tests with Redis cache full\n\033[0m\n"
+pkill -f index.js
 
-yarn dredd
+printf "\033[34m\n* Running tests with mongodb cache full\n\033[0m\n"
 
-printf "\033[34m\n* Running tests with Redis cache not available\n\033[0m\n"
+nyc --reporter=none dredd
 
-unset REDISCLOUD_URL
+mv .nyc_output{,-full}
 
-yarn dredd
+pkill -f index.js
+
+printf "\033[34m\n* Running tests with mongodb cache not available\n\033[0m\n"
+
+unset MONGO_URL
+
+nyc --reporter=none dredd
+
+cp .nyc_output-empty/* .nyc_output/
+cp .nyc_output-full/* .nyc_output/
+rm -rf .nyc_output-empty
+rm -rf .nyc_output-full
+
+nyc report --reporter=clover

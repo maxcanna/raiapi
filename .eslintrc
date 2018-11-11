@@ -2,6 +2,9 @@
   "env": {
     "es6": true
   },
+  "parserOptions": {
+    "ecmaVersion": 9
+  },
   "rules": {
     "comma-style": ["error", "first", {"exceptions": {"ObjectExpression": true}}],
     "comma-dangle": ["error", "always-multiline"],

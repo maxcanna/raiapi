@@ -1,0 +1,10 @@
+{
+  "name": "raiapi",
+  "alias": "rai.massi.ws",
+  "version": 1,
+  "type": "docker",
+  "env": {
+    "MONGO_URL": "@raiapi-mongourl"
+  },
+  "regions": ["all"]
+}
