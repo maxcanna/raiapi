@@ -12,8 +12,8 @@ app.set('port', port);
 app.use(require('compression')());
 app.use(require('morgan')('combined'));
 app.use(express.static('public'));
+app.use('/api', api);
 
-app.use(api);
 
 // error handlers
 app.use((err, req, res, next) => {
@@ -24,6 +24,4 @@ app.use((err, req, res, next) => {
     });
 });
 
-app.listen(port, () => {
-    console.log('Server started');
-});
+app.listen(port, () => console.log(`raiapi listening on port ${port}`));
