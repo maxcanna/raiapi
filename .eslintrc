@@ -3,14 +3,23 @@
     "es6": true
   },
   "parserOptions": {
-    "ecmaVersion": 9
+    "ecmaFeatures": {
+      "experimentalObjectRestSpread": true,
+      "jsx": true
+    },
+    "ecmaVersion": 9,
+    "sourceType": "module"
   },
+  "plugins": [
+    "react"
+  ],
   "rules": {
     "comma-style": ["error", "first", {"exceptions": {"ObjectExpression": true}}],
     "comma-dangle": ["error", "always-multiline"],
     "dot-notation": "error",
     "no-unused-vars": "error",
     "no-undef": "error",
+    "react/jsx-uses-vars": 2,
     "one-var-declaration-per-line": ["error", "initializations"]
   }
 }

@@ -16,6 +16,7 @@ app.use(express.static('public'));
 app.use('/api', api);
 app.use('/rss', rss);
 
+app.get('*', (req, res) => res.sendFile(__dirname + '/public/index.html'));
 
 // error handlers
 app.use((err, req, res, next) => {
