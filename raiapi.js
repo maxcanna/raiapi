@@ -195,6 +195,32 @@ class RaiApi {
         });
     }
 
+    getProgrammaInfo(idCanale, data, idProgramma, callback) {
+        this.getData(idCanale, data, (error, programmi) => {
+            if (error) {
+                return callback(error);
+            }
+
+            if (_.isEmpty(programmi)) {
+                return callback(eNF);
+            }
+
+            const programma = programmi[idProgramma];
+
+            if (programma === undefined) {
+                return callback(eNF);
+            }
+
+            const { t: titolo, d: descrizione, 'image-big': image } = programma;
+
+            callback(null, {
+                titolo,
+                descrizione,
+                image,
+            });
+        })
+    }
+
     getFileUrl(idCanale, data, idProgramma, qualita, callback) {
         this.getData(idCanale, data, (error, programmi) => {
             if (error) {
@@ -259,9 +285,11 @@ class RaiApi {
             if (_.isEmpty(programmi)) {
                 return callback(eNF);
             }
-            callback(null, programmi.map((programma, i) => ({
+            callback(null, programmi.map(({ t: name, d: description, 'image-big': image }, i) => ({
                 id: i,
-                name: programma.t.trim(),
+                name: name.trim(),
+                image,
+                description,
             })));
         });
     }
