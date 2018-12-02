@@ -7,6 +7,7 @@ const raiapi = new (require('./raiapi'))()
     , router = require('express').Router()
     , { env: { HTTP_PROXY_RAI: proxyUrl } } = process
     , dateValidator = require('./validator-date')
+    , cacheHeaders = require('./middleware-headers-cache')
     , request = require('request')
     , createError = require('http-errors');
 
@@ -15,6 +16,7 @@ let canali = {};
 raiapi.listCanali((err, data) => canali = err ? {} : data);
 
 router.use(dateValidator);
+router.use(cacheHeaders);
 
 //Canali
 router.get('/canali', (req, res, next) => raiapi.listCanali((error, canali) => error ? next(error) : res.send(canali)));

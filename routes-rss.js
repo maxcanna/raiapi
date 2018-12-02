@@ -5,6 +5,7 @@
 const raiapi = new (require('./raiapi'))()
     , router = require('express').Router()
     , dateValidator = require('./validator-date')
+    , cacheHeaders = require('./middleware-headers-cache')
     , moment = require('moment-timezone');
 
 let canali = {};
@@ -12,6 +13,7 @@ let canali = {};
 raiapi.listCanali((err, data) => canali = err ? {} : data);
 
 router.use(dateValidator);
+router.use(cacheHeaders);
 
 //RSS
 router.get(/^\/canali\/(\d+)\.xml/, (req, res, next) => {
