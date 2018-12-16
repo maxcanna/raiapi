@@ -6,7 +6,8 @@
 const raiapi = new (require('./raiapi'))()
     , router = require('express').Router()
     , { env: { HTTP_PROXY_RAI: proxyUrl } } = process
-    , moment = require('moment-timezone')
+    , dateValidator = require('./validator-date')
+    , cacheHeaders = require('./middleware-headers-cache')
     , request = require('request')
     , createError = require('http-errors');
 
@@ -14,29 +15,8 @@ let canali = {};
 
 raiapi.listCanali((err, data) => canali = err ? {} : data);
 
-router.use((req, res, next) => {
-    const tz = 'Europe/rome';
-    let m;
-
-    if (req.query.data === undefined) {
-        m = moment().startOf('day').subtract(1, 'day').tz(tz);
-    } else {
-        m = moment(req.query.data, 'YYYY-MM-DD').tz(tz);
-        if (!m.isValid()) {
-            return next(createError.BadRequest('Data non valida'));
-        }
-    }
-
-    const diff = moment.tz(tz).diff(m, 'days');
-
-    if (diff > 7 || diff < 1) {
-        return next(createError.BadRequest('Data non valida'));
-    }
-
-    req.query.data = m.toDate();
-    req.fromItaly = (req.headers.cf_ipcountry || 'IT') === 'IT';
-    next();
-});
+router.use(dateValidator);
+router.use(cacheHeaders);
 
 //Canali
 router.get('/canali', (req, res, next) => raiapi.listCanali((error, canali) => error ? next(error) : res.send(canali)));
@@ -83,29 +63,11 @@ router.all('/canali/:canale/programmi/:programma/qualita/:qualita/:action', (req
                 }
             } else if (req.params.action === 'url') {
                 res.json({
-                    url: `${req.protocol}://${req.headers.host}${req.url.replace('/url', '/file')}`,
+                    url: `${req.protocol}://${req.headers.host}${req.originalUrl.replace('/url', '/file')}`,
                 });
             }
         });
     }
-});
-
-//RSS
-router.get('/canali/:canale/rss.xml', (req, res, next) => {
-    const { params: { canale }, hostname, url, query: { data } } = req;
-    raiapi.getAll(canale, data, (error, programmi) => {
-        error ? next(error) : res.set({
-            'Content-Type': 'text/xml',
-            'Cache-Control': 'public, max-age=86400',
-            'Last-Modified': moment.utc().startOf('day').format('ddd, DD MMM YYYY HH:mm:ss [GMT]'),
-            'Expires': moment.utc().endOf('day').format('ddd, DD MMM YYYY HH:mm:ss [GMT]'),
-        }).render('rss.ejs', {
-            programmi,
-            hostname,
-            url,
-            canale: canali[canale].name,
-        });
-    });
 });
 
 module.exports = router;

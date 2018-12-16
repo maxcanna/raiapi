@@ -5,15 +5,18 @@ const express = require('express')
     , environment = app.get('env') || 'production'
     , development = environment === 'development'
     , port = process.env.PORT || 3000
-    , api = require('./routes.js');
+    , api = require('./routes')
+    , rss = require('./routes-rss');
 
 app.disable('x-powered-by');
 app.set('port', port);
 app.use(require('compression')());
 app.use(require('morgan')('combined'));
 app.use(express.static('public'));
+app.use('/api', api);
+app.use('/rss', rss);
 
-app.use(api);
+app.get('*', (req, res) => res.sendFile(__dirname + '/public/index.html'));
 
 // error handlers
 app.use((err, req, res, next) => {
@@ -24,6 +27,4 @@ app.use((err, req, res, next) => {
     });
 });
 
-app.listen(port, () => {
-    console.log('Server started');
-});
+app.listen(port, () => console.log(`raiapi listening on port ${port}`));

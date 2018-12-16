@@ -3,7 +3,8 @@ node_modules/
 app.json
 .dockerignore
 docker-compose.yml
-.codeclimate.yml
+now.json
+coverage/
 .gitignore
 .eslintignore
 .eslintrc
@@ -11,7 +12,6 @@ Dockerfile
 LICENSE
 README.md
 apiary.apib
-clear_redis.js
 dredd.yml
 test.sh
 test/

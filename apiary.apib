@@ -4,7 +4,7 @@ FORMAT: 1A
 
 RaiPlay API to retrieve tv program information and files for the past seven days
 
-## Canali Collection [/canali]
+## Canali Collection [/api/canali]
 
 ### List All Canali [GET]
 
@@ -19,7 +19,7 @@ Lists all the available channels
             }
         ]
 
-## Programmi Collection [/canali/{canaleId}/programmi]
+## Programmi Collection [/api/canali/{canaleId}/programmi]
 
 ### List All Programmi [GET]
 
@@ -37,7 +37,7 @@ Lists available programs given a channel
             }
         ]
 
-## Qualità Collection [/canali/{canaleId}/programmi/{programmaId}/qualita]
+## Qualità Collection [/api/canali/{canaleId}/programmi/{programmaId}/qualita]
 
 ### List All Qualità [GET]
 
@@ -64,7 +64,7 @@ Lists available quality for a given program
             }
         ]
         
-## File URL [/canali/{canaleId}/programmi/{programmaId}/qualita/{qualitaId}/url]
+## File URL [/api/canali/{canaleId}/programmi/{programmaId}/qualita/{qualitaId}/url]
 
 ### Get URL [GET]
 
@@ -81,7 +81,7 @@ Gets video file URL
             "url": "http://distribution.bbb3d.renderfarming.net/video/mp4/bbb_sunflower_1080p_30fps_normal.mp4"
         }
         
-## File [/canali/{canaleId}/programmi/{programmaId}/qualita/{qualitaId}/file]
+## File [/api/canali/{canaleId}/programmi/{programmaId}/qualita/{qualitaId}/file]
 
 ### Get File [GET]
 
@@ -101,7 +101,7 @@ Redirects to te file URL
 
             Found Redirecting to http://distribution.bbb3d.renderfarming.net/video/mp4/bbb_sunflower_1080p_30fps_normal.mp4
 
-## RSS [/canali/{canaleId}/rss.xml]
+## RSS [/rss/canali/{canaleId}.xml]
 
 ### Get RSS [GET]
 
