@@ -42,6 +42,7 @@
     "preact-material-components": "^1.5.5",
     "preact-router": "^2.6.1",
     "react-calendar": "^2.17.5",
+    "react-copy-to-clipboard": "^5.0.1",
     "react-player": "^1.7.0",
     "react-refetch": "^2.0.1",
     "request": "^2.88.0"
