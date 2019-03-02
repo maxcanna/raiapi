@@ -1,6 +1,6 @@
 {
   "name": "raiapi",
-  "alias": "rai.massi.ws",
+  "alias": "rai.massi.dev",
   "version": 1,
   "type": "docker",
   "env": {
