@@ -30,7 +30,7 @@ class HomeContainer extends Component {
             minDate,
             maxDate,
         })
-    }
+    };
 
     render({ canali, programmi, qualita, videoUrl }, { dateSelected, canaleSelected, programmaSelected, qualitaSelected }) {
         const playerUrl = qualitaSelected !== NOT_SELECTED && videoUrl && videoUrl.fulfilled ? videoUrl.value.url : undefined;
@@ -100,9 +100,9 @@ class HomeContainer extends Component {
                 <div>&nbsp;</div>
             </div>
         );
-    }
+    };
 
-    changeCanale = (canaleSelected) => {
+    changeCanale(canaleSelected) {
         this.setState({
             ...this.state,
             canaleSelected,
@@ -112,7 +112,7 @@ class HomeContainer extends Component {
         this.props.fetchProgrammi(canaleSelected, this.state.dateSelected);
     };
 
-    changeProgramma = (programmaSelected) => {
+    changeProgramma(programmaSelected) {
         this.setState({
             ...this.state,
             programmaSelected,
@@ -124,7 +124,7 @@ class HomeContainer extends Component {
         this.props.fetchQualita(canaleSelected, programmaSelected, dateSelected);
     };
 
-    changeQualita = (qualitaSelected) => {
+    changeQualita(qualitaSelected) {
         this.setState({
             ...this.state,
             qualitaSelected,
@@ -135,7 +135,7 @@ class HomeContainer extends Component {
         this.props.fetchUrl(canaleSelected, programmaSelected, qualitaSelected, dateSelected);
     };
 
-    changeDate = (date) => {
+    changeDate(date) {
         const dateSelected = `${date.getFullYear()}-${(('0'+(date.getMonth()+1)).slice(-2))}-${('0'+date.getDate()).slice(-2)}`;
 
         this.setState({
