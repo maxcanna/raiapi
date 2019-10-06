@@ -1,0 +1,27 @@
+name: CI
+
+on: [push]
+
+jobs:
+  ci:
+    runs-on: ubuntu-18.04
+    services:
+      mongo:
+        image: mongo:4.2.0
+        ports:
+          - 27017/tcp
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v1
+    - name: Setup node
+      uses: actions/setup-node@v1
+      with:
+        node-version: 10.16.3
+    - name: Install yarn and run tests
+      env:
+        MONGO_URL: mongodb://localhost:${{ job.services.mongo.ports['27017'] }}/raiapi-test
+        APIARY_API_KEY: ${{ secrets.APIARY_API_KEY }}
+      run: |
+        npm install --global yarn@1.19.0
+        yarn
+        yarn test

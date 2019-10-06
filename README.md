@@ -1,5 +1,6 @@
 # RaiPlay API
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/maxcanna/raiapi/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/maxcanna/raiapi/?branch=master) [![Code Coverage](https://scrutinizer-ci.com/g/maxcanna/raiapi/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/maxcanna/raiapi/?branch=master) [![Docker Pulls](https://img.shields.io/docker/pulls/maxcanna/raiapi.svg)](https://hub.docker.com/r/maxcanna/raiapi/) [![](https://img.shields.io/github/license/maxcanna/raiapi.svg?maxAge=2592000)](https://github.com/maxcanna/raiapi/blob/master/LICENSE)
+
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/maxcanna/raiapi/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/maxcanna/raiapi/?branch=master) [![CI Status](https://github.com/maxcanna/raiapi/workflows/CI/badge.svg)](https://github.com/maxcanna/raiapi/actions) [![Docker Pulls](https://img.shields.io/docker/pulls/maxcanna/raiapi.svg)](https://hub.docker.com/r/maxcanna/raiapi/) [![](https://img.shields.io/github/license/maxcanna/raiapi.svg?maxAge=2592000)](https://github.com/maxcanna/raiapi/blob/master/LICENSE)
 
 This project provides a [RaiPlay](http://www.raiplay.it/) API to retrieve tv program information and files for the past seven days.
 

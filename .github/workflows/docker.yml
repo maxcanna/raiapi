@@ -1,0 +1,12 @@
+name: Docker
+
+on: [push]
+
+jobs:
+  docker:
+    runs-on: ubuntu-18.04
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v1
+    - name: Docker build
+      run: docker build -t maxcanna/raiapi:latest .
