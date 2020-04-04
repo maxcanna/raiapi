@@ -32,7 +32,7 @@ class HomeContainer extends Component {
         })
     };
 
-    render({ canali, programmi, qualita, videoUrl }, { dateSelected, canaleSelected, programmaSelected, qualitaSelected }) {
+    render({ canali, programmi, qualita, videoUrl }, { dateSelected, canaleSelected, programmaSelected, qualitaSelected, minDate, maxDate }) {
         const playerUrl = qualitaSelected !== NOT_SELECTED && videoUrl && videoUrl.fulfilled ? videoUrl.value.url : undefined;
         return (
             <div className={`${style.home} page`}>
@@ -42,8 +42,8 @@ class HomeContainer extends Component {
                     </div>
                     <Calendar
                         onChange={this.changeDate}
-                        minDate={this.state.minDate}
-                        maxDate={this.state.maxDate}
+                        minDate={minDate}
+                        maxDate={maxDate}
                         navigationLabel={() => ''}
                         minDetail="month"
                         className={style["react-calendar"]}
