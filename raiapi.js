@@ -83,6 +83,9 @@ const getEffectiveUrl = (url, qualita, useProxy, callback) => {
             if (fileUrl) {
                 fileUrl = fileUrl.replace(/_\d*?\.mp4$/, `_${qualita}.mp4`);
             }
+            if (fileUrl === 'http://download.rai.it/video_no_available.mp4') {
+                fileUrl = url
+            }
 
             callback(null, fileUrl);
         }
