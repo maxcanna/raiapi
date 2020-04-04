@@ -12,7 +12,7 @@ const getMaxAgeHTTP = () => getEndOfDay().diff(moment.utc(), 'seconds');
 
 module.exports = (req, res, next) => {
     res.set({
-        'Cache-Control': `private, max-age=${getMaxAgeHTTP()}`,
+        'Cache-Control': `public, max-age=${getMaxAgeHTTP()}`,
         'Last-Modified': getStartOfDayHTTP(),
         Expires: getEndOfDayHTTP(),
     });
