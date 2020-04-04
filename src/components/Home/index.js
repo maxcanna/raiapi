@@ -102,7 +102,7 @@ class HomeContainer extends Component {
         );
     };
 
-    changeCanale(canaleSelected) {
+    changeCanale = canaleSelected => {
         this.setState({
             ...this.state,
             canaleSelected,
@@ -112,7 +112,7 @@ class HomeContainer extends Component {
         this.props.fetchProgrammi(canaleSelected, this.state.dateSelected);
     };
 
-    changeProgramma(programmaSelected) {
+    changeProgramma = programmaSelected => {
         this.setState({
             ...this.state,
             programmaSelected,
@@ -124,7 +124,7 @@ class HomeContainer extends Component {
         this.props.fetchQualita(canaleSelected, programmaSelected, dateSelected);
     };
 
-    changeQualita(qualitaSelected) {
+    changeQualita = qualitaSelected => {
         this.setState({
             ...this.state,
             qualitaSelected,
@@ -135,7 +135,7 @@ class HomeContainer extends Component {
         this.props.fetchUrl(canaleSelected, programmaSelected, qualitaSelected, dateSelected);
     };
 
-    changeDate(date) {
+    changeDate = date => {
         const dateSelected = `${date.getFullYear()}-${(('0'+(date.getMonth()+1)).slice(-2))}-${('0'+date.getDate()).slice(-2)}`;
 
         this.setState({
@@ -153,7 +153,7 @@ class HomeContainer extends Component {
     };
 }
 
-export default  connect(() => ({
+export default connect(() => ({
     canali: `/api/canali`,
     fetchProgrammi: (canale, data) => ({ programmi: `/api/canali/${canale.id}/programmi?data=${data}` }),
     fetchQualita: (canale, programma, data) => ({ qualita: `/api/canali/${canale.id}/programmi/${programma.id}/qualita?data=${data}` }),
