@@ -62,8 +62,11 @@ router.all('/canali/:canale/programmi/:programma/qualita/:qualita/:action', (req
                     res.redirect(url);
                 }
             } else if (req.params.action === 'url') {
+                const responseUrl = (geofenced && !fromItaly && proxyUrl)
+                    ? `${req.protocol}://${req.headers.host}${req.originalUrl.replace('/url', '/file')}`
+                    : url;
                 res.json({
-                    url: `${req.protocol}://${req.headers.host}${req.originalUrl.replace('/url', '/file')}`,
+                    url: responseUrl,
                 });
             }
         });

@@ -11,8 +11,6 @@ export default class Home extends Component {
     constructor() {
         super();
 
-        this.onChange = this.onChange.bind(this);
-
         this.setState({
             selectedIndex: NOT_SELECTED,
         })
@@ -57,7 +55,7 @@ export default class Home extends Component {
         )
     }
 
-    onChange({ target: { selectedIndex } }) {
+    onChange = ({ target: { selectedIndex } }) => {
         const selectedItem = this.props.promise.value[selectedIndex - 1]; // -1 takes into account the hint item
         this.setState({
             ...this.state,

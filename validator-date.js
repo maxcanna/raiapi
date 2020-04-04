@@ -2,11 +2,11 @@
  * Created by massimilianocannarozzo on 25/11/18.
  */
 /* eslint-env node */
-const moment = require('moment')
-    , createError = require('http-errors');
+const moment = require('moment-timezone')
+    , createError = require('http-errors')
+    , tz = 'Europe/rome';
 
 module.exports = (req, res, next) => {
-        const tz = 'Europe/rome';
         let m;
 
         if (req.query.data === undefined) {
@@ -25,6 +25,6 @@ module.exports = (req, res, next) => {
         }
 
         req.query.data = m.toDate();
-        req.fromItaly = (req.headers.cf_ipcountry || 'IT') === 'IT';
+        req.fromItaly = (req.headers['CF-IPCountry'] || 'IT') === 'IT';
         next();
     };

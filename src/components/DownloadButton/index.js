@@ -5,7 +5,7 @@ import style from './style.css';
 
 export default ({ url }) => (
     <Card.ActionIcons>
-        <a href={url} target="_blank" onClick={() => console.log(url)} >
+        <a href={url} target="_blank" download native>
             <Card.ActionIcon>save_alt</Card.ActionIcon>
         </a>
     </Card.ActionIcons>
