@@ -14,7 +14,7 @@ ENV NODE_ENV=production
 RUN yarn build
 
 FROM node:alpine
-LABEL maintainer Massimiliano Cannarozzo <maxcanna@gmail.com>
+LABEL maintainer Massimiliano Cannarozzo <massi@massi.dev>
 WORKDIR /var/www/raiapi
 COPY --from=be /var/www/raiapi .
 COPY --from=fe /var/www/raiapi/public public/
