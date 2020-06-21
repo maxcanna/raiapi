@@ -11,11 +11,18 @@
   "plugins": [
   ],
   "rules": {
-    "comma-style": ["error", "first", {"exceptions": {"ObjectExpression": true}}],
-    "comma-dangle": ["error", "always-multiline"],
-    "dot-notation": "error",
-    "no-unused-vars": "error",
-    "no-undef": "error",
-    "one-var-declaration-per-line": ["error", "initializations"]
+    "indent": [ 2, 4, { "SwitchCase": 1, "VariableDeclarator": 1 } ],
+    "linebreak-style": 2,
+    "no-mixed-requires": [ 2, { "grouping": true, "allowCall": false } ],
+    "one-var": [ 2, "never" ],
+    "global-require": 2,
+    "comma-style": [ 2, "last" ],
+    "dot-notation": 0,
+    "no-unused-vars": 2,
+    "no-undef": 2,
+    "quote-props": [ 2, "as-needed", { "unnecessary": true, "numbers": false } ],
+    "no-underscore-dangle": 2,
+    "object-curly-spacing": [ 2, "always" ],
+    "no-multiple-empty-lines": [ 2, { "max": 1, "maxEOF": 1 } ]
   }
 }
