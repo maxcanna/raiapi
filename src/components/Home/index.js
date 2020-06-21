@@ -81,14 +81,14 @@ class HomeContainer extends Component {
                     />
                     <Card.Media className="card-media">
                         { playerUrl ?
-                        <ReactPlayer
-                            url={playerUrl}
-                            width="100%"
-                            height=""
-                            pip
-                            controls
-                        /> :
-                        <img src={programmaSelected.image} />
+                            <ReactPlayer
+                                url={playerUrl}
+                                width="100%"
+                                height=""
+                                pip
+                                controls
+                            /> :
+                            <img src={programmaSelected.image} />
                         }
                     </Card.Media>
                     { playerUrl &&

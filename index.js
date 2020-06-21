@@ -1,12 +1,12 @@
 /* eslint no-unused-vars: "off" */
 /* eslint-env node */
-const express = require('express')
-    , app = express()
-    , environment = app.get('env') || 'production'
-    , development = environment === 'development'
-    , port = process.env.PORT || 3000
-    , api = require('./routes')
-    , rss = require('./routes-rss');
+const express = require('express');
+const app = express();
+const environment = app.get('env') || 'production';
+const development = environment === 'development';
+const port = process.env.PORT || 3000;
+const api = require('./routes');
+const rss = require('./routes-rss');
 
 app.disable('x-powered-by');
 app.set('port', port);
