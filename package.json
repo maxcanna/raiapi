@@ -33,7 +33,7 @@
     "ejs": "^2.6.1",
     "express": "^4.17.1",
     "http-errors": "^1.7.3",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "moment": "^2.24.0",
     "moment-timezone": "^0.5.28",
     "mongodb": "^3.5.5",
