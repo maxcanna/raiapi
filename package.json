@@ -36,7 +36,7 @@
     "lodash": "^4.17.20",
     "moment": "^2.29.1",
     "moment-timezone": "^0.5.31",
-    "mongodb": "^3.5.5",
+    "mongodb": "^3.6.2",
     "morgan": "^1.10.0",
     "preact": "^8.5.3",
     "preact-material-components": "^1.6.1",
