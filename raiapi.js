@@ -27,7 +27,7 @@ const _ = require('lodash');
 let mongoDb;
 
 if (MONGO_URL) {
-    mongodb.MongoClient.connect(MONGO_URL, { useNewUrlParser: true })
+    mongodb.MongoClient.connect(MONGO_URL, { useUnifiedTopology: true })
         .then(c => {
             console.log('Connected to mongodb');
             return c.db();
