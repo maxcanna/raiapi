@@ -15,6 +15,7 @@ app.use(require('morgan')('combined'));
 app.use(express.static('public'));
 app.use('/api', api);
 app.use('/rss', rss);
+app.use('/robots.txt', (req, res) => res.type('text/plain').send('User-agent: *\nDisallow: /'));
 
 app.get('*', (req, res) => res.sendFile(__dirname + '/public/index.html'));
 
