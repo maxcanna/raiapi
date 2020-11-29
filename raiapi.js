@@ -60,10 +60,10 @@ const getSizesOfProgramma = programma => isAvailable(programma)
     ? Object.keys(programma).filter(key => key.indexOf('h264_') === 0 && programma[key] !== '')
     : [];
 
-const getEffectiveUrl = (url, qualita, useProxy, callback) => {
+const getEffectiveUrl = (url, qualita, useProxy) => {
     // TOOD Recuperare proxy se useProxy e passare a request
     // Se !useProxy passare undefined come proxyUrl
-    Promise.resolve()
+    return Promise.resolve()
         .then(proxyUrl => request.get({
             headers: {
                 'User-Agent': 'raiweb',
@@ -76,7 +76,7 @@ const getEffectiveUrl = (url, qualita, useProxy, callback) => {
             const { response: { headers }, statusCode } = error;
 
             if (statusCode !== 302) {
-                return callback(eNF);
+                throw eNF;
             }
 
             let { location: fileUrl } = headers;
@@ -87,42 +87,40 @@ const getEffectiveUrl = (url, qualita, useProxy, callback) => {
                 fileUrl = url
             }
 
-            callback(null, fileUrl);
+            return fileUrl;
         });
 };
 
-const fetchPage = (idCanale, data, callback) => {
+const fetchPage = (idCanale, data) => {
     const canale = getCanali()[idCanale];
     const m = moment(data);
     const documentId = `${canale}:${m.format('YYYY:MM:DD')}`;
     const url = `http://www.rai.it/dl/portale/html/palinsesti/replaytv/static/${canale}_${m.format('YYYY_MM_DD')}.html`;
 
     if (idCanale > getCanali().length) {
-        return callback(createError.BadRequest('Canale non valido'));
+        throw  createError.BadRequest('Canale non valido');
     }
 
-    request.get(url)
+    return request.get(url)
         .then(body => {
             const programmi = _.values(body[channelMap[canale]][`${m.format('YYYY-MM-DD')}`]);
 
-            if (programmi.length > 0 && mongoDb) {
-                mongoDb.collection('programmi')
+            return (!mongoDb
+                ? Promise.resolve()
+                : mongoDb.collection('programmi')
                     .updateOne(
                         { _id: documentId },
                         { $set: { ...programmi, createdAt: new Date() } },
                         { upsert: true }
-                    );
-            }
-
-            callback(null, programmi);
-        })
-        .catch(callback);
+                    ))
+                .then(() => programmi)
+        });
 };
 
-const fetchCanali = (callback) => {
+const fetchCanali = () => {
     const url = 'http://www.rai.it/dl/RaiTV/iphone/android/smartphone/advertising_config.html';
 
-    request.get(url)
+    return request.get(url)
         .then(body => {
             channelMap = {};
 
@@ -130,21 +128,19 @@ const fetchCanali = (callback) => {
                 .filter(({ hasReplay = 'NO' }) => hasReplay === 'YES')
                 .forEach(({ tag, id }) => channelMap[tag] = id);
 
-            if (getCanali().length > 0 && mongoDb) {
-                mongoDb.collection('canali')
+            return (!mongoDb
+                ? Promise.resolve()
+                : mongoDb.collection('canali')
                     .updateOne(
                         { _id: 'canali' },
                         { $set: { ...channelMap, createdAt: new Date() } },
                         { upsert: true }
-                    );
-            }
-
-            callback(null, getCanali().map((name, id) => ({
-                id: id,
-                name: name,
-            })));
-        })
-        .catch(e => callback(null, getCanali()));
+                    ))
+                .then(() => getCanali().map((name, id) => ({
+                    id: id,
+                    name: name,
+                })))
+        });
 };
 
 class RaiApi {
@@ -180,156 +176,82 @@ class RaiApi {
             })
     }
 
-    getProgrammaInfo(idCanale, data, idProgramma, callback) {
-        this.getData(idCanale, data, (error, programmi) => {
-            if (error) {
-                return callback(error);
-            }
-
-            if (_.isEmpty(programmi)) {
-                return callback(eNF);
-            }
-
-            const programma = programmi[idProgramma];
-
-            if (programma === undefined) {
-                return callback(eNF);
-            }
-
-            const { t: titolo, d: descrizione, 'image-big': image } = programma;
-
-            callback(null, {
-                titolo,
-                descrizione,
-                image,
-            });
-        })
-    }
-
-    getFileUrl(idCanale, data, idProgramma, qualita, callback) {
-        this.getData(idCanale, data, (error, programmi) => {
-            if (error) {
-                return callback(error);
-            }
-
-            if (_.isEmpty(programmi)) {
-                return callback(eNF);
-            }
-
-            const programma = programmi[idProgramma];
-
-            if (programma === undefined) {
-                return callback(eNF);
-            }
-
-            const h264sizes = getSizesOfProgramma(programma);
-            const url = programma[h264sizes[qualita]];
-
-            if (_.isEmpty(url)) {
-                return callback(eNF);
-            }
-
-            const geofenced = isGeofenced(programma);
-
-            getEffectiveUrl(url, h264sizes[qualita].split('_')[1], geofenced, (error, url) => callback(error, {
-                url,
-                geofenced,
-            }));
-        });
-    }
-
-    listQualita(idCanale, data, idProgramma, callback) {
-        this.getData(idCanale, data, (error, programmi) => {
-            if (error) {
-                return callback(error);
-            }
-
-            if (_.isEmpty(programmi)) {
-                return callback(eNF);
-            }
-            const programma = programmi[idProgramma];
-
-            if (programma === undefined) {
-                return callback(eNF);
-            }
-
-            callback(null, getSizesOfProgramma(programma).map((size, i) => ({
-                id: i,
-                name: size.replace(/_/g, ' '),
-            })));
-        });
-    }
-
-    listProgrammi(idCanale, data, callback) {
-        this.getData(idCanale, data, (error, programmi) => {
-            if (error) {
-                return callback(error);
-            }
-
-            if (_.isEmpty(programmi)) {
-                return callback(eNF);
-            }
-            callback(null, programmi.map(({ t: name, d: description, 'image-big': image }, i) => ({
-                id: i,
-                name: name.trim(),
-                image,
-                description,
-            })));
-        });
-    }
-
-    listCanali(callback) {
-        callback = callback.bind(this);
-
-        if (mongoDb) {
-            mongoDb.collection('canali').findOne({ _id: 'canali' }, { projection: { _id: false } }, (err, reply) => {
-                if (!err) {
-                    let channelMap = null;
-                    try {
-                        channelMap = JSON.parse(reply);
-                        if (Object.keys(channelMap).length > 0) {
-                            return callback(null, getCanali().map((name, id) => ({
-                                id: id,
-                                name: name,
-                            })));
-                        }
-                    } catch (e) {
-                        fetchCanali(callback);
-                    }
-                } else {
-                    fetchCanali(callback);
+    getFileUrl(idCanale, data, idProgramma, qualita) {
+        return RaiApi.getData(idCanale, data)
+            .then(programmi => {
+                if (_.isEmpty(programmi)) {
+                    throw eNF;
                 }
+
+                const programma = programmi[idProgramma];
+
+                if (!programma) {
+                    throw eNF;
+                }
+
+                const h264sizes = getSizesOfProgramma(programma);
+                const url = programma[h264sizes[qualita]];
+
+                if (_.isEmpty(url)) {
+                    throw eNF;
+                }
+
+                return getEffectiveUrl(url, h264sizes[qualita].split('_')[1], isGeofenced(programma));
             });
-        } else {
-            fetchCanali(callback);
-        }
     }
 
-    getData(idCanale, data, callback) {
-        callback = callback.bind(this);
+    listQualita(idCanale, data, idProgramma) {
+        return RaiApi.getData(idCanale, data)
+            .then(programmi => {
+                if (_.isEmpty(programmi)) {
+                    throw eNF;
+                }
 
+                const programma = programmi[idProgramma];
+
+                if (!programma) {
+                    throw eNF;
+                }
+
+                return getSizesOfProgramma(programma)
+                    .map((size, i) => ({
+                        id: i,
+                        name: size.replace(/_/g, ' '),
+                    }));
+            });
+    }
+
+    listProgrammi(idCanale, data) {
+        return RaiApi.getData(idCanale, data)
+            .then (programmi => {
+                if (_.isEmpty(programmi)) {
+                    throw eNF;
+                }
+
+                return programmi.map(({ t: name, d: description, 'image-big': image }, i) => ({
+                    id: i,
+                    name: name.trim(),
+                    image,
+                    description,
+                }));
+            });
+    }
+
+    static listCanali() {
+        return Promise.resolve(getCanali().map((name, id) => ({
+            id: id,
+            name: name,
+        })));
+    }
+
+    static getData(idCanale, data) {
         const documentIndex = `${getCanali()[idCanale]}:${moment(data).format('YYYY:MM:DD')}`;
 
-        if (mongoDb) {
-            mongoDb.collection('canali').findOne({ _id: documentIndex }, { projection: { _id: false } }, (err, reply) => {
-                if (!err) {
-                    let programmi = null;
-                    try {
-                        programmi = JSON.parse(reply);
-                    } catch (e) {
-                        programmi = null;
-                    }
-                    if (programmi && programmi.length > 0) {
-                        return callback(null, programmi);
-                    }
-                    fetchPage(idCanale, data, callback);
-                } else {
-                    fetchPage(idCanale, data, callback);
-                }
-            });
-        } else {
-            fetchPage(idCanale, data, callback);
-        }
+        return !mongoDb
+            ? fetchPage(idCanale, data)
+            : mongoDb.collection('programmi')
+                .findOne({ _id: documentIndex }, { projection: { _id: false, createdAt: false } })
+                .then(programmi => programmi ? Object.values(programmi) : fetchPage(idCanale, data));
     }
 }
 

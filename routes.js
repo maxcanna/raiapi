@@ -18,20 +18,23 @@ router.use(dateValidator);
 router.use(cacheHeaders);
 
 //Canali
-router.get('/canali', (req, res, next) => api.listCanali((error, canali) => error ? next(error) : res.send(canali)));
+router.get('/canali', (req, res, next) => RaiApi.listCanali()
+    .then(canali => res.send(canali))
+    .catch(error => next(error))
+);
 
 //Programmi
 router.get('/canali/:canale/programmi', (req, res, next) =>
-    api.listProgrammi(req.params.canale, req.query.data, (error, programmi) =>
-        error ? next(error) : res.send(programmi)
-    )
+    api.listProgrammi(req.params.canale, req.query.data)
+        .then(programmi => res.send(programmi))
+        .catch(error => next(error))
 );
 
 //Qualita
 router.get('/canali/:canale/programmi/:programma/qualita', (req, res, next) =>
-    api.listQualita(req.params.canale, req.query.data, req.params.programma, (error, qualita) =>
-        error ? next(error) : res.send(qualita)
-    )
+    api.listQualita(req.params.canale, req.query.data, req.params.programma)
+        .then(qualita => res.send(qualita))
+        .catch(error => next(error))
 );
 
 //Risorsa
@@ -45,7 +48,8 @@ router.all('/canali/:canale/programmi/:programma/qualita/:qualita/:action', (req
                 return next(error);
             }
 
-            const { url, geofenced } = data;
+    api.getFileUrl(canale, date, programma, qualita)
+        .then(url => {
             if (action === 'file') {
                 if(geofenced && !fromItaly && proxyUrl) {
                     request({
@@ -68,8 +72,8 @@ router.all('/canali/:canale/programmi/:programma/qualita/:qualita/:action', (req
                     url: responseUrl,
                 });
             }
-        });
-    }
+        })
+        .catch(error => next(error))
 });
 
 module.exports = router;
