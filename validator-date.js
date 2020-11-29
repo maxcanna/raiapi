@@ -25,6 +25,5 @@ module.exports = (req, res, next) => {
     }
 
     req.query.data = m.toDate();
-    req.fromItaly = (req.headers['CF-IPCountry'] || 'IT') === 'IT';
     next();
 };

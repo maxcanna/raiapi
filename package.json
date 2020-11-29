@@ -1,6 +1,6 @@
 {
   "name": "raiapi",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "description": "RaiPlay API",
   "private": true,
   "main": "index.js",
@@ -28,15 +28,14 @@
   },
   "homepage": "https://github.com/maxcanna/raiapi#readme",
   "dependencies": {
-    "async": "^3.2.0",
     "compression": "^1.7.4",
     "ejs": "^3.1.5",
     "express": "^4.17.1",
     "http-errors": "^1.8.0",
     "lodash": "^4.17.20",
     "moment": "^2.29.1",
-    "moment-timezone": "^0.5.31",
-    "mongodb": "^3.6.2",
+    "moment-timezone": "^0.5.32",
+    "mongodb": "^3.6.3",
     "morgan": "^1.10.0",
     "preact": "^8.5.3",
     "preact-material-components": "^1.6.1",
@@ -45,18 +44,18 @@
     "react-copy-to-clipboard": "^5.0.2",
     "react-player": "^1.15.3",
     "react-refetch": "^3.0.1",
-    "request": "^2.88.2"
+    "request-promise-native": "^1.0.9"
   },
   "devDependencies": {
     "babel-core": "^6.26.3",
     "babel-eslint": "^10.1.0",
-    "babel-loader": "^8.1.0",
+    "babel-loader": "^8.2.2",
     "dredd": "^13.1.2",
-    "eslint": "^7.11.0",
-    "eslint-plugin-react": "^7.21.4",
+    "eslint": "^7.14.0",
+    "eslint-plugin-react": "^7.21.5",
     "jsonlint": "^1.6.3",
-    "nodemon": "^2.0.4",
+    "nodemon": "^2.0.6",
     "preact-cli": "^2.2.1",
-    "webpack": "^5.0.0"
+    "webpack": "^5.8.0"
   }
 }
