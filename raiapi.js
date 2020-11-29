@@ -127,7 +127,8 @@ const fetchCanali = () => {
 
             body.Channels
                 .filter(({ hasReplay = 'NO' }) => hasReplay === 'YES')
-                .forEach(({ tag, id }) => channelMap[tag] = id);
+                .forEach(({ tag, id }) => channelMap[tag] = Number.parseInt(id));
+
 
             return (!mongoDb
                 ? Promise.resolve()
