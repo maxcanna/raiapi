@@ -40,13 +40,10 @@ router.get('/canali/:canale/programmi/:programma/qualita', (req, res, next) =>
 //Risorsa
 router.all('/canali/:canale/programmi/:programma/qualita/:qualita/:action', (req, res, next) => {
     if (['file', 'url'].indexOf(req.params.action) < 0) {
-        next(createError.BadRequest('Azione non valida'));
-    } else {
-        const { params: { canale, programma, qualita, action }, query: { data: date }, fromItaly, method, headers } = req;
-        api.getFileUrl(canale, date, programma, qualita, (error, data) => {
-            if (error) {
-                return next(error);
-            }
+        return next(createError.BadRequest('Azione non valida'));
+    }
+
+    const { params: { canale, programma, qualita, action }, query: { data: date } } = req;
 
     api.getFileUrl(canale, date, programma, qualita)
         .then(url => {
