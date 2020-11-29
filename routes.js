@@ -6,7 +6,6 @@
 const RaiApi = require('./raiapi');
 const api = new RaiApi();
 const router = require('express').Router();
-const { env: { HTTP_PROXY_RAI: proxyUrl } } = process;
 const dateValidator = require('./validator-date');
 const cacheHeaders = require('./middleware-headers-cache');
 const request = require('request');

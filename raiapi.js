@@ -18,7 +18,6 @@ const createError = require('http-errors');
 const eNF = createError.NotFound('Dati non disponibili');
 const {
     env: {
-        HTTP_PROXY_RAI: proxyUrl,
         MONGO_URL,
     },
 } = process;
@@ -55,14 +54,8 @@ const getValueOfDirKeys = programma => Object.keys(programma)
 const isGeofenced = programma => getValueOfDirKeys(programma)
     .indexOf('geoprotezione') >= 0;
 
-const isAvailable = programma => {
-    const hasRaiPlay = getValueOfDirKeys(programma)
-        .indexOf('visibilita:n') < 0;
-
-    const geofenced = isGeofenced(programma) && !proxyUrl;
-
-    return hasRaiPlay && !geofenced;
-};
+const isAvailable = programma => getValueOfDirKeys(programma)
+    .indexOf('visibilita:n') < 0;
 
 const getSizesOfProgramma = programma => !isAvailable(programma) ?
     [] :
@@ -74,7 +67,7 @@ const getEffectiveUrl = (url, qualita, useProxy, callback) => {
         headers: {
             'User-Agent': 'raiweb',
         },
-        proxy: useProxy ? proxyUrl : undefined,
+        proxy: proxyUrl,
         url: url,
     }, (error, response) => {
         if (error || response.error || response.statusCode !== 302) {
@@ -188,13 +181,10 @@ class RaiApi {
                     concatCallback(null, _.reverse(_.uniqBy(_.reverse(sizes), 'url')))
                 });
             }, (err, items) => {
-                async.filter(items, (item, urlCallback) => {
-                    const useProxy = proxyUrl && item.geofenced;
-                    getEffectiveUrl(item.url, item.qualita.split(' ')[1], useProxy, (err, url) => {
-                        item.url = url;
-                        urlCallback(null, !err);
-                    });
-                }, callback);
+                async.filter(items, (item, urlCallback) => getEffectiveUrl(item.url, item.qualita.split(' ')[1], item.geofenced, (err, url) => {
+                    item.url = url;
+                    urlCallback(null, !err);
+                }), callback);
             });
         });
     }
