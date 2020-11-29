@@ -135,7 +135,12 @@ const fetchCanali = () => {
                 : mongoDb.collection('canali')
                     .updateOne(
                         { _id: 'canali' },
-                        { $set: { ...channelMap, createdAt: new Date() } },
+                        {
+                            $set: {
+                                canali: getCanali().map(key => ({ [key]: channelMap[key] })),
+                                createdAt: new Date()
+                            }
+                        },
                         { upsert: true }
                     ))
                 .then(() => getCanali().map((name, id) => ({
