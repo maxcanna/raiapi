@@ -11,7 +11,7 @@ const moment = require('moment-timezone');
 
 let canali = {};
 
-api.listCanali((err, data) => canali = err ? {} : data);
+RaiApi.listCanali().then(data => canali = data);
 
 router.use(dateValidator);
 router.use(cacheHeaders);

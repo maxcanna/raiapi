@@ -12,7 +12,7 @@ const createError = require('http-errors');
 
 let canali = {};
 
-api.listCanali((err, data) => canali = err ? {} : data);
+RaiApi.listCanali((err, data) => canali = err ? {} : data);
 
 router.use(dateValidator);
 router.use(cacheHeaders);
