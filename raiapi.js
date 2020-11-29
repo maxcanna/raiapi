@@ -57,10 +57,9 @@ const isGeofenced = programma => getValueOfDirKeys(programma)
 const isAvailable = programma => getValueOfDirKeys(programma)
     .indexOf('visibilita:n') < 0;
 
-const getSizesOfProgramma = programma => !isAvailable(programma) ?
-    [] :
-    Object.keys(programma)
-        .filter(key => key.indexOf('h264_') === 0 && programma[key] !== '');
+const getSizesOfProgramma = programma => isAvailable(programma)
+    ? Object.keys(programma).filter(key => key.indexOf('h264_') === 0 && programma[key] !== '')
+    : [];
 
 const getEffectiveUrl = (url, qualita, useProxy, callback) => {
     request.get({
@@ -232,18 +231,18 @@ class RaiApi {
             }
 
             const h264sizes = getSizesOfProgramma(programma);
-            const geofenced = isGeofenced(programma);
             const url = programma[h264sizes[qualita]];
 
             if (_.isEmpty(url)) {
                 return callback(eNF);
             }
-            getEffectiveUrl(url, h264sizes[qualita].split('_')[1], geofenced, (error, url) => {
-                callback(error, {
-                    url,
-                    geofenced,
-                });
-            });
+
+            const geofenced = isGeofenced(programma);
+
+            getEffectiveUrl(url, h264sizes[qualita].split('_')[1], geofenced, (error, url) => callback(error, {
+                url,
+                geofenced,
+            }));
         });
     }
 
