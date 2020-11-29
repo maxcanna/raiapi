@@ -148,14 +148,6 @@ const fetchCanali = (callback) => {
 };
 
 class RaiApi {
-    constructor() {
-        this.getData = this.getData.bind(this);
-        this.getFileUrl = this.getFileUrl.bind(this);
-        this.listQualita = this.listQualita.bind(this);
-        this.listProgrammi = this.listProgrammi.bind(this);
-        this.listCanali = this.listCanali.bind(this);
-    }
-
     getAll(idCanale, data) {
         return RaiApi.getData(idCanale, data)
             .then(programmi => {
