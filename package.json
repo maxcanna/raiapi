@@ -28,7 +28,6 @@
   },
   "homepage": "https://github.com/maxcanna/raiapi#readme",
   "dependencies": {
-    "async": "^3.2.0",
     "compression": "^1.7.4",
     "ejs": "^3.1.5",
     "express": "^4.17.1",

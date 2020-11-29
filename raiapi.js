@@ -12,7 +12,6 @@ const request = require('request-promise-native').defaults({
     followRedirect: false,
 });
 const moment = require('moment');
-const async = require('async');
 const mongodb = require('mongodb');
 const createError = require('http-errors');
 const eNF = createError.NotFound('Dati non disponibili');
@@ -157,35 +156,36 @@ class RaiApi {
         this.listCanali = this.listCanali.bind(this);
     }
 
-    getAll(idCanale, data, callback) {
-        this.getData(idCanale, data, (error, programmi) => {
-            if (error) {
-                return callback(error);
-            }
-
-            if (_.isEmpty(programmi)) {
-                return callback(eNF);
-            }
-
-            async.concat(programmi, (programma, concatCallback) => {
-                async.map(getSizesOfProgramma(programma), (size, sizesCallback) => {
-                    sizesCallback(null, {
-                        name: programma.t.trim(),
-                        qualita: size.replace('_', ' '),
-                        url: programma[size],
-                        geofenced: isGeofenced(programma),
-                    });
-                }, (err, sizes) => {
-                    // Ugly way to remove duplicate URLs keeping the best available one
-                    concatCallback(null, _.reverse(_.uniqBy(_.reverse(sizes), 'url')))
-                });
-            }, (err, items) => {
-                async.filter(items, (item, urlCallback) => getEffectiveUrl(item.url, item.qualita.split(' ')[1], item.geofenced, (err, url) => {
-                    item.url = url;
-                    urlCallback(null, !err);
-                }), callback);
-            });
-        });
+    getAll(idCanale, data) {
+        return RaiApi.getData(idCanale, data)
+            .then(programmi => {
+                if (_.isEmpty(programmi)) {
+                    throw eNF;
+                }
+                return Promise.all(programmi
+                    .map(programma => {
+                        const sizes = getSizesOfProgramma(programma);
+                        if (sizes.length === 0) {
+                            return {}
+                        }
+                        // Ugly way to remove duplicate URLs keeping the best available one
+                        const [size] = _.reverse(_.uniqBy(_.reverse(sizes), 'url'));
+                        return {
+                            name: programma.t.trim(),
+                            qualita: size.replace('_', ' '),
+                            url: programma[size],
+                            geofenced: isGeofenced(programma),
+                        }
+                    })
+                    .filter(programma => programma.url)
+                    .map(({ name, qualita, geofenced, url }) => getEffectiveUrl(url, qualita.split(' ')[1], geofenced)
+                        .then(effectiveUrl => ({
+                            name,
+                            qualita,
+                            url: effectiveUrl,
+                        }))
+                    ))
+            })
     }
 
     getProgrammaInfo(idCanale, data, idProgramma, callback) {
