@@ -118,38 +118,6 @@ const fetchPage = (idCanale, data) => {
         });
 };
 
-const fetchCanali = () => {
-    const url = 'http://www.rai.it/dl/RaiTV/iphone/android/smartphone/advertising_config.html';
-
-    return request.get(url)
-        .then(body => {
-            channelMap = {};
-
-            body.Channels
-                .filter(({ hasReplay = 'NO' }) => hasReplay === 'YES')
-                .forEach(({ tag, id }) => channelMap[tag] = Number.parseInt(id));
-
-
-            return (!mongoDb
-                ? Promise.resolve()
-                : mongoDb.collection('canali')
-                    .updateOne(
-                        { _id: 'canali' },
-                        {
-                            $set: {
-                                canali: getCanali().map(key => ({ [key]: channelMap[key] })),
-                                createdAt: new Date()
-                            }
-                        },
-                        { upsert: true }
-                    ))
-                .then(() => getCanali().map((name, id) => ({
-                    id: id,
-                    name: name,
-                })))
-        });
-};
-
 class RaiApi {
     getAll(idCanale, data) {
         return RaiApi.getData(idCanale, data)
