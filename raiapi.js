@@ -37,6 +37,7 @@ let channelMap = {
     RaiUno: 1,
     RaiDue: 2,
     RaiTre: 3,
+    RaiGulp: 23,
     RaiCinque: 31,
     RaiPremium: 32,
     RaiYoyo: 38,
