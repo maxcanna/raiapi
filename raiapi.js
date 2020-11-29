@@ -2,7 +2,7 @@
  * Created by massimilianocannarozzo on 13/04/14.
  */
 /* eslint-env node */
-const request = require('request').defaults({
+const request = require('request-promise-native').defaults({
     headers: {
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_4) AppleWebKit/537.36 (KHTML, like Gecko)' +
         ' Chrome/50.0.2661.94 Safari/537.36',
@@ -62,17 +62,25 @@ const getSizesOfProgramma = programma => isAvailable(programma)
     : [];
 
 const getEffectiveUrl = (url, qualita, useProxy, callback) => {
-    request.get({
-        headers: {
-            'User-Agent': 'raiweb',
-        },
-        proxy: proxyUrl,
-        url: url,
-    }, (error, response) => {
-        if (error || response.error || response.statusCode !== 302) {
-            callback(eNF);
-        } else {
-            let { headers: { location: fileUrl } } = response;
+    // TOOD Recuperare proxy se useProxy e passare a request
+    // Se !useProxy passare undefined come proxyUrl
+    Promise.resolve()
+        .then(proxyUrl => request.get({
+            headers: {
+                'User-Agent': 'raiweb',
+            },
+            proxy: proxyUrl,
+            url: url,
+            followRedirect: false,
+        }))
+        .catch(error => {
+            const { response: { headers }, statusCode } = error;
+
+            if (statusCode !== 302) {
+                return callback(eNF);
+            }
+
+            let { location: fileUrl } = headers;
             if (fileUrl) {
                 fileUrl = fileUrl.replace(/_\d*?\.mp4$/, `_${qualita}.mp4`);
             }
@@ -81,8 +89,7 @@ const getEffectiveUrl = (url, qualita, useProxy, callback) => {
             }
 
             callback(null, fileUrl);
-        }
-    });
+        });
 };
 
 const fetchPage = (idCanale, data, callback) => {
@@ -95,10 +102,8 @@ const fetchPage = (idCanale, data, callback) => {
         return callback(createError.BadRequest('Canale non valido'));
     }
 
-    request.get(url, (error, response, body) => {
-        if (error || response.statusCode === 404 || response.statusCode !== 200) {
-            callback(error || new Error(response.statusCode));
-        } else {
+    request.get(url)
+        .then(body => {
             const programmi = _.values(body[channelMap[canale]][`${m.format('YYYY-MM-DD')}`]);
 
             if (programmi.length > 0 && mongoDb) {
@@ -111,19 +116,15 @@ const fetchPage = (idCanale, data, callback) => {
             }
 
             callback(null, programmi);
-        }
-    }
-    );
+        })
+        .catch(callback);
 };
 
 const fetchCanali = (callback) => {
     const url = 'http://www.rai.it/dl/RaiTV/iphone/android/smartphone/advertising_config.html';
 
-    request.get(url, (error, { statusCode }, body) => {
-        if (error || statusCode === 404 || statusCode !== 200) {
-            // Use static channel map
-            callback(null, getCanali());
-        } else {
+    request.get(url)
+        .then(body => {
             channelMap = {};
 
             body.Channels
@@ -143,9 +144,8 @@ const fetchCanali = (callback) => {
                 id: id,
                 name: name,
             })));
-        }
-    }
-    );
+        })
+        .catch(e => callback(null, getCanali()));
 };
 
 class RaiApi {

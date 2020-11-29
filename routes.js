@@ -8,7 +8,6 @@ const api = new RaiApi();
 const router = require('express').Router();
 const dateValidator = require('./validator-date');
 const cacheHeaders = require('./middleware-headers-cache');
-const request = require('request');
 const createError = require('http-errors');
 
 let canali = {};
