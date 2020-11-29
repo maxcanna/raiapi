@@ -48,25 +48,10 @@ router.all('/canali/:canale/programmi/:programma/qualita/:qualita/:action', (req
     api.getFileUrl(canale, date, programma, qualita)
         .then(url => {
             if (action === 'file') {
-                if(geofenced && !fromItaly && proxyUrl) {
-                    request({
-                        method,
-                        followRedirect: false,
-                        headers,
-                        proxy: proxyUrl,
-                        url,
-                    })
-                        .on('error', next)
-                        .pipe(res);
-                } else {
-                    res.redirect(url);
-                }
+                res.redirect(url);
             } else if (req.params.action === 'url') {
-                const responseUrl = (geofenced && !fromItaly && proxyUrl)
-                    ? `${req.protocol}://${req.headers.host}${req.originalUrl.replace('/url', '/file')}`
-                    : url;
                 res.json({
-                    url: responseUrl,
+                    url,
                 });
             }
         })
