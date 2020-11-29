@@ -61,7 +61,7 @@ const getSizesOfProgramma = programma => isAvailable(programma)
     ? Object.keys(programma).filter(key => key.indexOf('h264_') === 0 && programma[key] !== '')
     : [];
 
-const getEffectiveUrl = (url, qualita, useProxy) => {
+const getEffectiveUrl = (url, qualita) => {
     // TOOD Recuperare proxy se useProxy e passare a request
     // Se !useProxy passare undefined come proxyUrl
     return Promise.resolve()
