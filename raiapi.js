@@ -104,7 +104,7 @@ const fetchPage = (idCanale, data) => {
 
     return request.get(url)
         .then(body => {
-            const programmi = _.values(body[channelMap[canale]][`${m.format('YYYY-MM-DD')}`]);
+            const programmi = Object.values(body[channelMap[canale]][`${m.format('YYYY-MM-DD')}`]);
 
             return (!mongoDb
                 ? Promise.resolve()
