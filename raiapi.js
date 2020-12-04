@@ -44,6 +44,7 @@ let channelMap = {
 };
 
 const getCanali = () => Object.keys(channelMap);
+const getDocumentIndex = (idCanale, data) => `${getCanali()[idCanale]}:${moment(data).format('YYYY:MM:DD')}`;
 
 const getValueOfDirKeys = programma => Object.keys(programma)
     .filter(key => key.indexOf('dir') === 0)
@@ -95,7 +96,6 @@ const getEffectiveUrl = (url, qualita) => {
 const fetchPage = (idCanale, data) => {
     const canale = getCanali()[idCanale];
     const m = moment(data);
-    const documentId = `${canale}:${m.format('YYYY:MM:DD')}`;
     const url = `http://www.rai.it/dl/portale/html/palinsesti/replaytv/static/${canale}_${m.format('YYYY_MM_DD')}.html`;
 
     if (idCanale > getCanali().length) {
@@ -110,7 +110,7 @@ const fetchPage = (idCanale, data) => {
                 ? Promise.resolve()
                 : mongoDb.collection('programmi')
                     .updateOne(
-                        { _id: documentId },
+                        { _id: getDocumentIndex(idCanale, data) },
                         { $set: { ...programmi, createdAt: new Date() } },
                         { upsert: true }
                     ))
@@ -220,12 +220,10 @@ class RaiApi {
     }
 
     static getData(idCanale, data) {
-        const documentIndex = `${getCanali()[idCanale]}:${moment(data).format('YYYY:MM:DD')}`;
-
         return !mongoDb
             ? fetchPage(idCanale, data)
             : mongoDb.collection('programmi')
-                .findOne({ _id: documentIndex }, { projection: { _id: false, createdAt: false } })
+                .findOne({ _id: getDocumentIndex(idCanale, data) }, { projection: { _id: false, createdAt: false } })
                 .then(programmi => programmi ? Object.values(programmi) : fetchPage(idCanale, data));
     }
 }
