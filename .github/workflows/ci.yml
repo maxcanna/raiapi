@@ -3,6 +3,13 @@ name: CI
 on: [push]
 
 jobs:
+  fixups:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v1
+    - name: Check if there are fixup commits
+      run: git log --pretty=format:%s origin/master.. | xargs | grep -v fixup
   test:
     runs-on: ubuntu-latest
     services:
