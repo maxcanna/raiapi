@@ -16,7 +16,7 @@ jobs:
     - name: Setup node
       uses: actions/setup-node@v1
       with:
-        node-version: 10.16.3
+        node-version: 12.18.1
     - name: Install yarn and run tests
       env:
         MONGO_URL: mongodb://localhost:${{ job.services.mongo.ports['27017'] }}/raiapi-test
