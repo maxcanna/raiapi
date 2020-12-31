@@ -6,8 +6,8 @@ jobs:
   ci:
     runs-on: ubuntu-latest
     services:
-      mongo:
-        image: mongo:4.2.0
+      mongodb:
+        image: mongo:4.2.8
         ports:
           - 27017/tcp
     steps:
