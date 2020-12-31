@@ -3,11 +3,25 @@ name: CI
 on: [push]
 
 jobs:
-  ci:
-    runs-on: ubuntu-18.04
+  fixups:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v1
+    - name: Check if there are fixup commits
+      run: git log --pretty=format:%s origin/master.. | xargs | grep -v fixup
+  version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v1
+      - name: Check version bump
+        run: F=$(git diff --diff-filter=M origin/master -- "package.json"); if [ "${F}" != "" ]; then echo $F | grep "version"; fi
+  test:
+    runs-on: ubuntu-latest
     services:
-      mongo:
-        image: mongo:4.2.0
+      mongodb:
+        image: mongo:4.2.8
         ports:
           - 27017/tcp
     steps:
@@ -16,12 +30,12 @@ jobs:
     - name: Setup node
       uses: actions/setup-node@v1
       with:
-        node-version: 10.16.3
+        node-version: 12.18.1
     - name: Install yarn and run tests
       env:
         MONGO_URL: mongodb://localhost:${{ job.services.mongo.ports['27017'] }}/raiapi-test
         APIARY_API_KEY: ${{ secrets.APIARY_API_KEY }}
       run: |
-        npm install --global yarn@1.19.0
+        npm install --global yarn@1.22.4
         yarn
         yarn test
