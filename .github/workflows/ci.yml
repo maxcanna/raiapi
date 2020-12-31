@@ -10,6 +10,13 @@ jobs:
       uses: actions/checkout@v1
     - name: Check if there are fixup commits
       run: git log --pretty=format:%s origin/master.. | xargs | grep -v fixup
+  version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v1
+      - name: Check version bump
+        run: F=$(git diff --diff-filter=M origin/master -- "package.json"); if [ "${F}" != "" ]; then echo $F | grep "version"; fi
   test:
     runs-on: ubuntu-latest
     services:
