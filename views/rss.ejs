@@ -11,6 +11,9 @@
         <% programmi.forEach(programma => { %><item>
             <%
                 var date = programma.name.toUpperCase().match(/S\d+E\d+/g) ? '' : dateTag;
+                const [orarioH, orarioM] = programma.orario.split(':');
+                today.setHours(orarioH);
+                today.setMinutes(orarioM);
             %>
             <title><![CDATA[<%- `${programma.name} ${date}` %>]]></title>
             <description>
