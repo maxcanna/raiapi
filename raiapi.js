@@ -85,7 +85,7 @@ const getEffectiveUrl = (url, qualita) => {
             if (fileUrl) {
                 fileUrl = fileUrl.replace(/_\d*?\.mp4$/, `_${qualita}.mp4`);
             }
-            if (fileUrl === 'http://download.rai.it/video_no_available.mp4') {
+            if (fileUrl.endsWith('video_no_available.mp4')) {
                 fileUrl = url
             }
 
