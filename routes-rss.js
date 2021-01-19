@@ -33,6 +33,7 @@ router.get(/^\/canali\/(\d+)\.xml/, (req, res, next) => {
             url,
             canale: canali[canale].name,
             dateTag: m.format('YYYY.MM.DD'),
+            today: m.toDate(),
         }))
         .catch(error => next(error))
 });
