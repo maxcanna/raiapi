@@ -104,7 +104,8 @@ const fetchPage = (idCanale, data) => {
 
     return request.get(url)
         .then(body => {
-            const programmi = Object.values(body[channelMap[canale]][`${m.format('YYYY-MM-DD')}`]);
+            const programmi = Object.entries(body[channelMap[canale]][`${m.format('YYYY-MM-DD')}`])
+                .map(([orario, programma]) => ({ orario, ...programma }));
 
             return (!mongoDb
                 ? Promise.resolve()
@@ -135,15 +136,17 @@ class RaiApi {
                         const [size] = _.reverse(_.uniqBy(_.reverse(sizes), 'url'));
                         return {
                             name: programma.t.trim(),
+                            orario: programma.orario,
                             qualita: size.replace('_', ' '),
                             url: programma[size],
                             geofenced: isGeofenced(programma),
                         }
                     })
                     .filter(programma => programma.url)
-                    .map(({ name, qualita, geofenced, url }) => getEffectiveUrl(url, qualita.split(' ')[1], geofenced)
+                    .map(({ name, orario, qualita, geofenced, url }) => getEffectiveUrl(url, qualita.split(' ')[1], geofenced)
                         .then(effectiveUrl => ({
                             name,
+                            orario,
                             qualita,
                             url: effectiveUrl,
                         }))
