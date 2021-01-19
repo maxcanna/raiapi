@@ -55,12 +55,7 @@ const getValueOfDirKeys = programma => Object.keys(programma)
 const isGeofenced = programma => getValueOfDirKeys(programma)
     .indexOf('geoprotezione') >= 0;
 
-const isAvailable = programma => getValueOfDirKeys(programma)
-    .indexOf('visibilita:n') < 0;
-
-const getSizesOfProgramma = programma => isAvailable(programma)
-    ? Object.keys(programma).filter(key => key.indexOf('h264_') === 0 && programma[key] !== '')
-    : [];
+const getSizesOfProgramma = programma => Object.keys(programma).filter(key => key.indexOf('h264_') === 0 && programma[key] !== '');
 
 const getEffectiveUrl = (url, qualita) => {
     // TOOD Recuperare proxy se useProxy e passare a request
