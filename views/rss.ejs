@@ -1,6 +1,4 @@
-<%
-var nameTag = 'WEBRip.AAC.x264.mp4';
-%><rss version="2.0" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:atom="http://www.w3.org/2005/Atom">
+<rss version="2.0" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:atom="http://www.w3.org/2005/Atom">
     <channel>
         <title>Rai API - <%- canale %></title>
         <description>Rai API RSS feed for <%- canale %></description>
@@ -16,7 +14,7 @@ var nameTag = 'WEBRip.AAC.x264.mp4';
             %>
             <title><![CDATA[<%- `${programma.name} ${date}` %>]]></title>
             <description>
-                <![CDATA[<%- `${programma.name}.${date}.${nameTag}`.replace(/( - | )/g, '.').replace(/\.+/g, '.') %>]]>
+                <![CDATA[<%- `${programma.name}.${date}.WEBRip.AAC.x264.mp4`.replace(/( - | )/g, '.').replace(/\.+/g, '.') %>]]>
             </description>
             <link><%- programma.url %></link>
             <guid><%- programma.url %></guid>
