@@ -70,13 +70,13 @@ const getEffectiveUrl = (url, qualita) => {
             followRedirect: false,
         }))
         .catch(error => {
-            const { response: { headers }, statusCode } = error;
+            const { statusCode } = error;
 
             if (statusCode !== 302) {
-                throw eNF;
+                return url;
             }
 
-            let { location: fileUrl } = headers;
+            let { response: { headers: { location: fileUrl } } } = error;
             if (fileUrl) {
                 fileUrl = fileUrl.replace(/_\d*?\.mp4$/, `_${qualita}.mp4`);
             }
@@ -116,7 +116,8 @@ const fetchPage = (idCanale, data) => {
                         { upsert: true }
                     ))
                 .then(() => programmi)
-        });
+        })
+        .catch(() => []);
 };
 
 class RaiApi {
