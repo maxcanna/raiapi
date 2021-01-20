@@ -57,15 +57,15 @@ const isGeofenced = programma => getValueOfDirKeys(programma)
 
 const getSizesOfProgramma = programma => Object.keys(programma).filter(key => key.indexOf('h264_') === 0 && programma[key] !== '');
 
-const getEffectiveUrl = (url, qualita) => {
-    // TOOD Recuperare proxy se useProxy e passare a request
-    // Se !useProxy passare undefined come proxyUrl
+const getEffectiveUrl = (url, qualita/*, useProxy */) => {
+    // TODO Recuperare proxy se useProxy e passare a request
+    // Se !useProxy passare undefined come proxy
     return Promise.resolve()
-        .then(proxyUrl => request.get({
+        .then(proxy => request.get({
             headers: {
                 'User-Agent': 'raiweb',
             },
-            proxy: proxyUrl,
+            proxy,
             url: url.replace('http://', 'https://'),
             followRedirect: false,
         }))
