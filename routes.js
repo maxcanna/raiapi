@@ -6,16 +6,11 @@
 const RaiApi = require('./raiapi');
 const api = new RaiApi();
 const router = require('express').Router();
-const dateValidator = require('./validator-date');
-const cacheHeaders = require('./middleware-headers-cache');
 const createError = require('http-errors');
 
 let canali = {};
 
 RaiApi.listCanali((err, data) => canali = err ? {} : data);
-
-router.use(dateValidator);
-router.use(cacheHeaders);
 
 //Canali
 router.get('/canali', (req, res, next) => RaiApi.listCanali()

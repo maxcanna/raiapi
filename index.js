@@ -7,12 +7,16 @@ const development = environment === 'development';
 const port = process.env.PORT || 3000;
 const api = require('./routes');
 const rss = require('./routes-rss');
+const dateValidator = require('./validator-date');
+const cacheHeaders = require('./middleware-headers-cache');
 
 app.disable('x-powered-by');
 app.set('port', port);
 app.use(require('compression')());
 app.use(require('morgan')('combined'));
 app.use(express.static('public'));
+app.use(dateValidator);
+app.use(cacheHeaders);
 app.use('/api', api);
 app.use('/rss', rss);
 app.use('/robots.txt', (req, res) => res.type('text/plain').send('User-agent: *\nDisallow: /'));
