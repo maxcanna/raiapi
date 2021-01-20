@@ -11,7 +11,7 @@ const request = require('request-promise-native').defaults({
     json: true,
     followRedirect: false,
 });
-const moment = require('moment');
+const moment = require('moment-timezone').tz.setDefault('Europe/Rome');
 const mongodb = require('mongodb');
 const createError = require('http-errors');
 const eNF = createError.NotFound('Dati non disponibili');
