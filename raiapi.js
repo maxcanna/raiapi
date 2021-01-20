@@ -66,17 +66,18 @@ const getEffectiveUrl = (url, qualita) => {
                 'User-Agent': 'raiweb',
             },
             proxy: proxyUrl,
-            url: url,
+            url: url.replace('http://', 'https://'),
             followRedirect: false,
         }))
         .catch(error => {
             const { statusCode } = error;
 
             if (statusCode !== 302) {
-                return url;
+                return url.replace('http://', 'https://');
             }
 
             let { response: { headers: { location: fileUrl } } } = error;
+
             if (fileUrl) {
                 fileUrl = fileUrl.replace(/_\d*?\.mp4$/, `_${qualita}.mp4`);
             }
@@ -84,7 +85,7 @@ const getEffectiveUrl = (url, qualita) => {
                 fileUrl = url
             }
 
-            return fileUrl;
+            return fileUrl.replace('http://', 'https://');
         });
 };
 
@@ -210,7 +211,7 @@ class RaiApi {
                 return programmi.map(({ t: name, d: description, 'image-big': image }, i) => ({
                     id: i,
                     name: name.trim(),
-                    image,
+                    image: image.replace('http://', 'https://'),
                     description,
                 }));
             });
