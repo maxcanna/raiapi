@@ -8,8 +8,7 @@
         <lastBuildDate><%- today.toGMTString(); %></lastBuildDate>
         <copyright>(c) <%- today.getFullYear() %> <%- hostname %></copyright>
         <atom:link href="https://<%- hostname+url %>" rel="self" type="application/rss+xml" />
-        <% programmi.forEach(programma => { %><item>
-            <%
+        <% programmi.forEach(programma => { %>    <item><%
                 var date = programma.name.toUpperCase().match(/S\d+E\d+/g) ? '' : dateTag;
                 const [orarioH, orarioM] = programma.orario.split(':');
                 today.setHours(orarioH);
@@ -24,6 +23,5 @@
             <enclosure url="<%- programma.url %>" type="video/mp4" length="1024" />
             <pubDate><%- today.toGMTString(); %></pubDate>
         </item>
-        <% }); %>
-    </channel>
+    <% }); %></channel>
 </rss>
