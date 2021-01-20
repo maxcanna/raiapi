@@ -103,7 +103,7 @@ const fetchPage = (idCanale, data) => {
                 .map(([orario, programma]) => ({ orario, ...programma }));
 
             return (!mongoDb
-                ? Promise.resolve()
+                ? Promise.resolve(programmi)
                 : mongoDb.collection('programmi')
                     .updateOne(
                         { _id: getDocumentIndex(idCanale, data) },
