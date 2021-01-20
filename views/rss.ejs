@@ -8,19 +8,19 @@
         <lastBuildDate><%- today.toGMTString(); %></lastBuildDate>
         <copyright>(c) <%- today.getFullYear() %> <%- hostname %></copyright>
         <atom:link href="https://<%- hostname+url %>" rel="self" type="application/rss+xml" />
-        <% programmi.forEach(programma => { %>    <item><%
-                var date = programma.name.toUpperCase().match(/S\d+E\d+/g) ? '' : dateTag;
-                const [orarioH, orarioM] = programma.orario.split(':');
+        <% programmi.forEach(({ name, orario, url }) => { %>    <item><%
+                const date = name.match(/S\d+E\d+/gi) ? '' : dateTag;
+                const [orarioH, orarioM] = orario.split(':');
                 today.setHours(orarioH);
                 today.setMinutes(orarioM);
             %>
-            <title><![CDATA[<%- `${programma.name} ${date}` %>]]></title>
+            <title><![CDATA[<%- `${name} ${date}` %>]]></title>
             <description>
-                <![CDATA[<%- `${programma.name}.${date}.WEBRip.AAC.x264.mp4`.replace(/( - | )/g, '.').replace(/\.+/g, '.') %>]]>
+                <![CDATA[<%- `${name}.${date}.WEBRip.AAC.x264.mp4`.replace(/( - | )/g, '.').replace(/\.+/g, '.') %>]]>
             </description>
-            <link><%- programma.url %></link>
-            <guid><%- programma.url %></guid>
-            <enclosure url="<%- programma.url %>" type="video/mp4" length="1024" />
+            <link><%- url %></link>
+            <guid><%- url %></guid>
+            <enclosure url="<%- url %>" type="video/mp4" length="1024" />
             <pubDate><%- today.toGMTString(); %></pubDate>
         </item>
     <% }); %></channel>
