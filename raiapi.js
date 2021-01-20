@@ -107,7 +107,12 @@ const fetchPage = (idCanale, data) => {
                 : mongoDb.collection('programmi')
                     .updateOne(
                         { _id: getDocumentIndex(idCanale, data) },
-                        { $set: { ...programmi, createdAt: new Date() } },
+                        {
+                            $set: {
+                                programmi,
+                                createdAt: new Date(),
+                            }
+                        },
                         { upsert: true }
                     ))
                 .then(() => programmi)
@@ -222,7 +227,7 @@ class RaiApi {
             ? fetchPage(idCanale, data)
             : mongoDb.collection('programmi')
                 .findOne({ _id: getDocumentIndex(idCanale, data) }, { projection: { _id: false, createdAt: false } })
-                .then(programmi => programmi ? Object.values(programmi) : fetchPage(idCanale, data));
+                .then(d => d ? Object.values(d.programmi) : fetchPage(idCanale, data));
     }
 }
 
