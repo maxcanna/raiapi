@@ -13,7 +13,7 @@ RaiApi.listCanali().then(data => canali = data);
 
 //RSS
 router.get(/^\/canali\/(\d+)\.xml/, (req, res, next) => {
-    const { params: { 0: canale }, hostname, url, query: { data } } = req;
+    const { params: { 0: canale }, hostname, url, query: { data } } = req;
     const m = moment(data);
 
     api.getAll(canale, data)
