@@ -54,10 +54,6 @@ html, body {
     height: 100%;
 }
 
-#app .page {
-    margin-top: 16px;
-}
-
 .mdc-top-app-bar__icon {
     color: white;
     text-decoration: none;

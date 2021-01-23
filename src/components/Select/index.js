@@ -1,19 +1,17 @@
 import { Component } from 'preact';
-import Select from 'preact-material-components/Select';
-import LinearProgress from 'preact-material-components/LinearProgress';
-import 'preact-material-components/Select/style.css';
-import 'preact-material-components/LinearProgress/style.css';
+import { Select } from 'rmwc';
+import { LinearProgress } from 'rmwc';
 import style from './style.css';
 
 const NOT_SELECTED = -1;
 
-export default class Home extends Component {
+export default class RSelect extends Component {
     constructor() {
         super();
 
-        this.setState({
+        this.state = {
             selectedIndex: NOT_SELECTED,
-        })
+        }
     }
 
     componentDidUpdate({ promise }) {
@@ -37,6 +35,7 @@ export default class Home extends Component {
     render({ promise, hintText }, { selectedIndex }) {
         return (
             <div>
+                { console.log('sborra',promise) }
                 { promise && promise.fulfilled && promise.value.length > 0 &&
                 <Select
                     className={style.margin}
@@ -44,9 +43,8 @@ export default class Home extends Component {
                     hintText={hintText}
                     disabled={promise.value.length === 0}
                     selectedIndex={selectedIndex}
-                >
-                    { promise.value.map(({ name }) => (<Select.Item>{ name }</Select.Item>)) }
-                </Select>
+                    options={ promise.value.map(({ name }) => (<Select.Item>{ name }</Select.Item>)) }
+                />
                 }
                 { promise && promise.pending &&
                 <LinearProgress indeterminate />

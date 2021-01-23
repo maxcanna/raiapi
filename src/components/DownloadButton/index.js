@@ -1,5 +1,4 @@
-import Card from 'preact-material-components/Card';
-import 'preact-material-components/Card/style.css';
+import { Card } from 'rmwc';
 /* eslint-disable-next-line no-unused-vars */
 import style from './style.css';
 

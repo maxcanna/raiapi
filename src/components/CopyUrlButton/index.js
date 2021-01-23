@@ -1,6 +1,5 @@
-import Card from 'preact-material-components/Card';
+import { Card } from 'rmwc';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
-import 'preact-material-components/Card/style.css';
 
 export default ({ url }) => (
     <CopyToClipboard text={url} >

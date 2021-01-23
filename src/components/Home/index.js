@@ -1,14 +1,12 @@
 import { Component } from 'preact';
 import { connect } from 'react-refetch'
 import Select from '../../components/Select';
-import Card from 'preact-material-components/Card';
+import { Card } from 'rmwc';
 import Calendar from 'react-calendar';
+import 'react-calendar/dist/Calendar.css';
 import DownloadButton from '../DownloadButton';
 import CopyUrlButton from '../CopyUrlButton';
 import ReactPlayer from 'react-player'
-import 'preact-material-components/Select/style.css';
-import 'preact-material-components/Card/style.css';
-import 'preact-material-components/Button/style.css';
 import style from './style.css';
 
 const NOT_SELECTED = undefined;
@@ -22,18 +20,19 @@ class HomeContainer extends Component {
         const maxDate = new Date();
         maxDate.setDate(maxDate.getDate() - 1);
 
-        this.setState({
+        this.state = {
             dateSelected: NOT_SELECTED,
             canaleSelected: NOT_SELECTED,
             programmaSelected: NOT_SELECTED,
             qualitaSelected: NOT_SELECTED,
             minDate,
             maxDate,
-        })
+        }
     };
 
     render({ canali, programmi, qualita, videoUrl }, { dateSelected, canaleSelected, programmaSelected, qualitaSelected, minDate, maxDate }) {
         const playerUrl = qualitaSelected !== NOT_SELECTED && videoUrl && videoUrl.fulfilled ? videoUrl.value.url : undefined;
+        console.log('canali',canali)
         return (
             <div className={`${style.home} page`}>
                 <Card className={`${style.card}`}>
@@ -82,11 +81,13 @@ class HomeContainer extends Component {
                     <Card.Media className="card-media">
                         { playerUrl ?
                             <ReactPlayer
-                                url={playerUrl}
+                                config={{
+                                    url: playerUrl,
+                                    pip: true,
+                                    controls: true,
+                                }}
                                 width="100%"
                                 height=""
-                                pip
-                                controls
                             /> :
                             <img src={programmaSelected.image} />
                         }
@@ -153,7 +154,9 @@ class HomeContainer extends Component {
     };
 }
 
-export default connect(() => ({
+const sgaz = connect.options({ withRef: true })
+
+export default sgaz(() => ({
     canali: `/api/canali`,
     fetchProgrammi: (canale, data) => ({ programmi: `/api/canali/${canale.id}/programmi?data=${data}` }),
     fetchQualita: (canale, programma, data) => ({ qualita: `/api/canali/${canale.id}/programmi/${programma.id}/qualita?data=${data}` }),

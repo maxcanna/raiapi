@@ -1,24 +1,23 @@
 import { route } from 'preact-router';
-import TopAppBar from 'preact-material-components/TopAppBar';
-import 'preact-material-components/TopAppBar/style.css';
+import { SimpleTopAppBar } from 'rmwc';
 import style from './style';
 
 export default () => (
-    <TopAppBar className={`topappbar ${style.sticky}`} onNav={() => route('/')}>
-        <TopAppBar.Row>
-            <TopAppBar.Section align-start>
-                <TopAppBar.Icon navigation>live_tv</TopAppBar.Icon>
-                <TopAppBar.Title>Rai API</TopAppBar.Title>
-            </TopAppBar.Section>
-            <TopAppBar.Section align-end>
-                <TopAppBar.Icon
-                    href="https://github.com/maxcanna/raiapi"
-                    title="GitHub"
-                    target="_new"
-                >
-                    merge_type
-                </TopAppBar.Icon>
-            </TopAppBar.Section>
-        </TopAppBar.Row>
-    </TopAppBar>
+    <SimpleTopAppBar
+        title="Rai API"
+        className={style.sticky}
+        navigationIcon
+        onNav={() => route('/')}
+        actionItems={[
+            {
+                icon: 'merge_type',
+                title: 'GitHub',
+                onClick: () => console.log('Do Something'),
+                /*
+                 href="https://github.com/maxcanna/raiapi"
+                 target="_new"
+                 */
+            },
+        ]}
+    />
 );
