@@ -133,7 +133,7 @@ class RaiApi {
         return RaiApi.getData(idCanale, data)
             .then(programmi => {
                 if (_.isEmpty(programmi)) {
-                    throw eNF;
+                    return [];
                 }
                 return Promise.all(programmi
                     .map(programma => {
