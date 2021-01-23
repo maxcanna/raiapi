@@ -100,7 +100,14 @@ const fetchPage = (idCanale, data) => {
 
     return request.get(url)
         .then(body => {
-            const programmi = Object.entries(body[channelMap[canale]][`${m.format('YYYY-MM-DD')}`])
+            const channelData = body[channelMap[canale]];
+            const dateKey = `${m.format('YYYY-MM-DD')}`;
+
+            if (!channelData || !channelData[dateKey]) {
+                return Promise.resolve([]);
+            }
+
+            const programmi = Object.entries(channelData[dateKey])
                 .map(([orario, programma]) => ({ orario, ...programma }));
 
             return (!mongoDb
