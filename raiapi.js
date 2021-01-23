@@ -20,7 +20,6 @@ const {
         MONGO_URL,
     },
 } = process;
-const _ = require('lodash');
 
 let mongoDb;
 
@@ -132,7 +131,7 @@ class RaiApi {
     getAll(idCanale, data) {
         return RaiApi.getData(idCanale, data)
             .then(programmi => {
-                if (_.isEmpty(programmi)) {
+                if (programmi.length === 0) {
                     return [];
                 }
                 return Promise.all(programmi
@@ -141,8 +140,8 @@ class RaiApi {
                         if (sizes.length === 0) {
                             return {}
                         }
-                        // Ugly way to remove duplicate URLs keeping the best available one
-                        const [size] = _.reverse(_.uniqBy(_.reverse(sizes), 'url'));
+                        // Ugly way to remove duplicate URL keys keeping the best available one
+                        const [size] = sizes.reverse().filter((value, index, self) => self.indexOf(value) === index).reverse();
                         return {
                             name: programma.t.trim(),
                             orario: programma.orario,
@@ -166,7 +165,7 @@ class RaiApi {
     getFileUrl(idCanale, data, idProgramma, qualita) {
         return RaiApi.getData(idCanale, data)
             .then(programmi => {
-                if (_.isEmpty(programmi)) {
+                if (programmi.length === 0) {
                     throw eNF;
                 }
 
@@ -179,7 +178,7 @@ class RaiApi {
                 const h264sizes = getSizesOfProgramma(programma);
                 const url = programma[h264sizes[qualita]];
 
-                if (_.isEmpty(url)) {
+                if (!url) {
                     throw eNF;
                 }
 
@@ -190,7 +189,7 @@ class RaiApi {
     listQualita(idCanale, data, idProgramma) {
         return RaiApi.getData(idCanale, data)
             .then(programmi => {
-                if (_.isEmpty(programmi)) {
+                if (programmi.length === 0) {
                     throw eNF;
                 }
 
@@ -211,7 +210,7 @@ class RaiApi {
     listProgrammi(idCanale, data) {
         return RaiApi.getData(idCanale, data)
             .then (programmi => {
-                if (_.isEmpty(programmi)) {
+                if (programmi.length === 0) {
                     throw eNF;
                 }
 
