@@ -11,7 +11,7 @@ const request = require('request-promise-native').defaults({
     json: true,
     followRedirect: false,
 });
-const moment = require('moment');
+const moment = require('moment-timezone').tz.setDefault('Europe/Rome');
 const mongodb = require('mongodb');
 const createError = require('http-errors');
 const eNF = createError.NotFound('Dati non disponibili');
@@ -20,7 +20,6 @@ const {
         MONGO_URL,
     },
 } = process;
-const _ = require('lodash');
 
 let mongoDb;
 
@@ -55,41 +54,37 @@ const getValueOfDirKeys = programma => Object.keys(programma)
 const isGeofenced = programma => getValueOfDirKeys(programma)
     .indexOf('geoprotezione') >= 0;
 
-const isAvailable = programma => getValueOfDirKeys(programma)
-    .indexOf('visibilita:n') < 0;
+const getSizesOfProgramma = programma => Object.keys(programma).filter(key => key.indexOf('h264_') === 0 && programma[key] !== '');
 
-const getSizesOfProgramma = programma => isAvailable(programma)
-    ? Object.keys(programma).filter(key => key.indexOf('h264_') === 0 && programma[key] !== '')
-    : [];
-
-const getEffectiveUrl = (url, qualita) => {
-    // TOOD Recuperare proxy se useProxy e passare a request
-    // Se !useProxy passare undefined come proxyUrl
+const getEffectiveUrl = (url, qualita/*, useProxy */) => {
+    // TODO Recuperare proxy se useProxy e passare a request
+    // Se !useProxy passare undefined come proxy
     return Promise.resolve()
-        .then(proxyUrl => request.get({
+        .then(proxy => request.get({
             headers: {
                 'User-Agent': 'raiweb',
             },
-            proxy: proxyUrl,
-            url: url,
+            proxy,
+            url: url.replace('http://', 'https://'),
             followRedirect: false,
         }))
         .catch(error => {
-            const { response: { headers }, statusCode } = error;
+            const { statusCode } = error;
 
             if (statusCode !== 302) {
-                throw eNF;
+                return url.replace('http://', 'https://');
             }
 
-            let { location: fileUrl } = headers;
+            let { response: { headers: { location: fileUrl } } } = error;
+
             if (fileUrl) {
                 fileUrl = fileUrl.replace(/_\d*?\.mp4$/, `_${qualita}.mp4`);
             }
-            if (fileUrl === 'http://download.rai.it/video_no_available.mp4') {
+            if (fileUrl.endsWith('video_no_available.mp4')) {
                 fileUrl = url
             }
 
-            return fileUrl;
+            return fileUrl.replace('http://', 'https://');
         });
 };
 
@@ -104,26 +99,40 @@ const fetchPage = (idCanale, data) => {
 
     return request.get(url)
         .then(body => {
-            const programmi = Object.values(body[channelMap[canale]][`${m.format('YYYY-MM-DD')}`]);
+            const channelData = body[channelMap[canale]];
+            const dateKey = `${m.format('YYYY-MM-DD')}`;
+
+            if (!channelData || !channelData[dateKey]) {
+                return Promise.resolve([]);
+            }
+
+            const programmi = Object.entries(channelData[dateKey])
+                .map(([orario, programma]) => ({ orario, ...programma }));
 
             return (!mongoDb
-                ? Promise.resolve()
+                ? Promise.resolve(programmi)
                 : mongoDb.collection('programmi')
                     .updateOne(
                         { _id: getDocumentIndex(idCanale, data) },
-                        { $set: { ...programmi, createdAt: new Date() } },
+                        {
+                            $set: {
+                                programmi,
+                                createdAt: new Date(),
+                            }
+                        },
                         { upsert: true }
                     ))
                 .then(() => programmi)
-        });
+        })
+        .catch(() => []);
 };
 
 class RaiApi {
     getAll(idCanale, data) {
         return RaiApi.getData(idCanale, data)
             .then(programmi => {
-                if (_.isEmpty(programmi)) {
-                    throw eNF;
+                if (programmi.length === 0) {
+                    return [];
                 }
                 return Promise.all(programmi
                     .map(programma => {
@@ -131,19 +140,21 @@ class RaiApi {
                         if (sizes.length === 0) {
                             return {}
                         }
-                        // Ugly way to remove duplicate URLs keeping the best available one
-                        const [size] = _.reverse(_.uniqBy(_.reverse(sizes), 'url'));
+                        // Ugly way to remove duplicate URL keys keeping the best available one
+                        const [size] = sizes.reverse().filter((value, index, self) => self.indexOf(value) === index).reverse();
                         return {
                             name: programma.t.trim(),
+                            orario: programma.orario,
                             qualita: size.replace('_', ' '),
                             url: programma[size],
                             geofenced: isGeofenced(programma),
                         }
                     })
                     .filter(programma => programma.url)
-                    .map(({ name, qualita, geofenced, url }) => getEffectiveUrl(url, qualita.split(' ')[1], geofenced)
+                    .map(({ name, orario, qualita, geofenced, url }) => getEffectiveUrl(url, qualita.split(' ')[1], geofenced)
                         .then(effectiveUrl => ({
                             name,
+                            orario,
                             qualita,
                             url: effectiveUrl,
                         }))
@@ -154,7 +165,7 @@ class RaiApi {
     getFileUrl(idCanale, data, idProgramma, qualita) {
         return RaiApi.getData(idCanale, data)
             .then(programmi => {
-                if (_.isEmpty(programmi)) {
+                if (programmi.length === 0) {
                     throw eNF;
                 }
 
@@ -167,7 +178,7 @@ class RaiApi {
                 const h264sizes = getSizesOfProgramma(programma);
                 const url = programma[h264sizes[qualita]];
 
-                if (_.isEmpty(url)) {
+                if (!url) {
                     throw eNF;
                 }
 
@@ -178,7 +189,7 @@ class RaiApi {
     listQualita(idCanale, data, idProgramma) {
         return RaiApi.getData(idCanale, data)
             .then(programmi => {
-                if (_.isEmpty(programmi)) {
+                if (programmi.length === 0) {
                     throw eNF;
                 }
 
@@ -199,14 +210,14 @@ class RaiApi {
     listProgrammi(idCanale, data) {
         return RaiApi.getData(idCanale, data)
             .then (programmi => {
-                if (_.isEmpty(programmi)) {
+                if (programmi.length === 0) {
                     throw eNF;
                 }
 
                 return programmi.map(({ t: name, d: description, 'image-big': image }, i) => ({
                     id: i,
                     name: name.trim(),
-                    image,
+                    image: image.replace('http://', 'https://'),
                     description,
                 }));
             });
@@ -224,7 +235,7 @@ class RaiApi {
             ? fetchPage(idCanale, data)
             : mongoDb.collection('programmi')
                 .findOne({ _id: getDocumentIndex(idCanale, data) }, { projection: { _id: false, createdAt: false } })
-                .then(programmi => programmi ? Object.values(programmi) : fetchPage(idCanale, data));
+                .then(d => d ? Object.values(d.programmi) : fetchPage(idCanale, data));
     }
 }
 

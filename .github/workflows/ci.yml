@@ -16,7 +16,7 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v1
       - name: Check version bump
-        run: F=$(git diff --diff-filter=M origin/master -- "package.json"); if [ "${F}" != "" ]; then echo $F | grep "version"; fi
+        run: F=$(git diff --diff-filter=M origin/master -- "package.json"); echo $F | grep "version"
   test:
     runs-on: ubuntu-latest
     services:
