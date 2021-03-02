@@ -18,10 +18,10 @@ jobs:
         git log --no-merges --format='- %s' $(git log --merges --format='%H' -n 2)..HEAD -- >> $GITHUB_ENV
         echo 'EOF' >> $GITHUB_ENV
     - name: Create release
-      uses: svenstaro/upload-release-action@v2
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        tag_name: ${{ env.VERSION_NUMBER }}
         release_name: ${{ env.VERSION_NUMBER }}
-        tag: ${{ env.VERSION_NUMBER }}
-        overwrite: true
         body: ${{ env.RELEASE_NOTES }}
