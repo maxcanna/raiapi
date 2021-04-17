@@ -39,7 +39,7 @@
     "preact": "^10.5.13",
     "preact-router": "^3.2.1",
     "react-calendar": "^3.4.0",
-    "react-copy-to-clipboard": "^5.0.2",
+    "react-copy-to-clipboard": "^5.0.3",
     "react-player": "^1.15.3",
     "request": "^2.88.2",
     "request-promise-native": "^1.0.9"
