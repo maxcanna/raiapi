@@ -1,66 +1,39 @@
-import { Component } from 'preact';
-import Select from 'preact-material-components/Select';
-import LinearProgress from 'preact-material-components/LinearProgress';
-import 'preact-material-components/Select/style.css';
-import 'preact-material-components/LinearProgress/style.css';
+import { useState, useEffect } from 'preact/hooks';
+import { Select, LinearProgress, Snackbar } from 'rmwc';
 import style from './style.css';
+import '@rmwc/select/styles';
+import '@rmwc/linear-progress/styles';
+import '@rmwc/snackbar/styles';
 
-const NOT_SELECTED = -1;
+export default ({ hintText, values, value: { id } = {}, onChange }) => {
+    const [value, setValue] = useState();
 
-export default class Home extends Component {
-    constructor() {
-        super();
+    useEffect(() => setValue(id !== undefined ? id.toString() : undefined), [id]);
 
-        this.setState({
-            selectedIndex: NOT_SELECTED,
-        })
-    }
+    useEffect(() => values && onChange(values[parseInt(value)]), [value]);
 
-    componentDidUpdate({ promise }) {
-        if (promise && this.props.promise
-            && (promise.fulfilled !== this.props.promise.fulfilled)) {
+    useEffect(() => values && values.length === 1 && setValue("0"), [values]);
 
-            let selectedIndex = NOT_SELECTED;
-
-            if (this.props.promise.fulfilled && this.props.promise.value.length === 1) {
-                selectedIndex = 1;
-                this.onChange({ target: { selectedIndex } });
+    return (
+        <>
+            { values && values.length > 0 &&
+            <Select
+                className={style.margin}
+                onChange={e => setValue(e.detail.value)}
+                hintText={hintText}
+                label={hintText}
+                disabled={values.length === 0}
+                value={value}
+                enhanced
+                options={ values.map(({ id, name }) => ({ value: id, label: name })) }
+            />
             }
-
-            this.setState({
-                ...this.state,
-                selectedIndex,
-            });
-        }
-    }
-
-    render({ promise, hintText }, { selectedIndex }) {
-        return (
-            <div>
-                { promise && promise.fulfilled && promise.value.length > 0 &&
-                <Select
-                    className={style.margin}
-                    onChange={this.onChange}
-                    hintText={hintText}
-                    disabled={promise.value.length === 0}
-                    selectedIndex={selectedIndex}
-                >
-                    { promise.value.map(({ name }) => (<Select.Item>{ name }</Select.Item>)) }
-                </Select>
-                }
-                { promise && promise.pending &&
-                <LinearProgress indeterminate />
-                }
-            </div>
-        )
-    }
-
-    onChange = ({ target: { selectedIndex } }) => {
-        const selectedItem = this.props.promise.value[selectedIndex - 1]; // -1 takes into account the hint item
-        this.setState({
-            ...this.state,
-            selectedIndex,
-        });
-        this.props.onChange(selectedItem);
-    }
+            { values && values.length === 0 &&
+            <Snackbar open message={`Non disponibile`} />
+            }
+            { !values &&
+            <LinearProgress indeterminate/>
+            }
+        </>
+    )
 }
