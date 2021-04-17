@@ -37,7 +37,7 @@
     "mongodb": "^3.6.3",
     "morgan": "^1.10.0",
     "preact": "^10.5.13",
-    "preact-router": "^2.6.1",
+    "preact-router": "^3.2.1",
     "react-calendar": "^2.17.5",
     "react-copy-to-clipboard": "^5.0.2",
     "react-player": "^1.15.3",
