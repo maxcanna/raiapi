@@ -37,13 +37,13 @@
     "mongodb": "^3.6.3",
     "morgan": "^1.10.0",
     "preact": "^8.5.3",
-    "preact-material-components": "^1.6.1",
     "preact-router": "^2.6.1",
     "react-calendar": "^2.17.5",
     "react-copy-to-clipboard": "^5.0.2",
     "react-player": "^1.15.3",
     "request": "^2.88.2",
     "request-promise-native": "^1.0.9"
+    "rmwc": "^6.1.4"
   },
   "devDependencies": {
     "babel-core": "^6.26.3",
