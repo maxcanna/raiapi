@@ -33,7 +33,7 @@
     "express": "^4.17.1",
     "http-errors": "^1.8.0",
     "moment": "^2.29.1",
-    "moment-timezone": "^0.5.32",
+    "moment-timezone": "^0.5.33",
     "mongodb": "^3.6.3",
     "morgan": "^1.10.0",
     "preact": "^10.5.13",
