@@ -42,7 +42,6 @@
     "react-calendar": "^2.17.5",
     "react-copy-to-clipboard": "^5.0.2",
     "react-player": "^1.15.3",
-    "react-refetch": "^3.0.1",
     "request": "^2.88.2",
     "request-promise-native": "^1.0.9"
   },
