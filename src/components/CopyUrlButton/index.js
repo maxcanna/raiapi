@@ -1,11 +1,9 @@
-import Card from 'preact-material-components/Card';
+import { CardActionIcon } from 'rmwc';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
-import 'preact-material-components/Card/style.css';
+import '@rmwc/card/styles';
 
 export default ({ url }) => (
     <CopyToClipboard text={url} >
-        <Card.ActionIcons>
-            <Card.ActionIcon>file_copy</Card.ActionIcon>
-        </Card.ActionIcons>
+        <CardActionIcon icon="file_copy" title="Copia URL file" />
     </CopyToClipboard>
 );
