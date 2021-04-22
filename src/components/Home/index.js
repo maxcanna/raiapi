@@ -70,7 +70,6 @@ export default () => {
 
     return (
         <div>
-            <br />
             <Card>
                 <Typography use="headline5" tag="h2">Seleziona un programma</Typography>
                 <Calendar
@@ -81,7 +80,6 @@ export default () => {
                     navigationLabel={() => ''}
                     minDetail="month"
                 />
-                <br />
                 { date &&
                 <Select
                     onChange={setChannel}
@@ -90,7 +88,6 @@ export default () => {
                     value={channel}
                 />
                 }
-                <br />
                 { channel &&
                 <Select
                     onChange={setProgram}
@@ -99,7 +96,6 @@ export default () => {
                     value={program}
                 />
                 }
-                <br/>
                 { program &&
                 <Select
                     onChange={setQuality}
@@ -109,14 +105,12 @@ export default () => {
                 />
                 }
             </Card>
-            <br />
             { program &&
             <Card>
                 <div>
                     <Typography use="headline6" tag="h2">{program.name}</Typography>
                     <Typography use="body1" tag="div">{program.description}</Typography>
                 </div>
-                <br />
                 { videoUrl
                     ? <ReactPlayer
                         url={videoUrl}
@@ -142,7 +136,6 @@ export default () => {
                 }
             </Card>
             }
-            <br />
         </div>
     );
 }
