@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'preact/hooks';
 import { Select, LinearProgress, Snackbar } from 'rmwc';
-import style from './style.css';
 import '@rmwc/select/styles';
 import '@rmwc/linear-progress/styles';
 import '@rmwc/snackbar/styles';
@@ -18,7 +17,6 @@ export default ({ hintText, values, value: { id } = {}, onChange }) => {
         <>
             { values && values.length > 0 &&
             <Select
-                className={style.margin}
                 onChange={e => setValue(e.detail.value)}
                 hintText={hintText}
                 label={hintText}

@@ -7,7 +7,6 @@ import DownloadButton from '../DownloadButton';
 import CopyUrlButton from '../CopyUrlButton';
 import 'react-calendar/dist/Calendar.css';
 import '@rmwc/card/styles';
-import style from './style.css';
 
 export default () => {
     const minDateInitial = new Date();
@@ -70,9 +69,9 @@ export default () => {
     }, [channel, program, quality, date]);
 
     return (
-        <div className={`${style.home} page`}>
+        <div>
             <br />
-            <Card className={`${style.card}`}>
+            <Card>
                 <Typography use="headline5" tag="h2">Seleziona un programma</Typography>
                 <Calendar
                     onChange={setDate}
@@ -81,7 +80,6 @@ export default () => {
                     defaultValue={date}
                     navigationLabel={() => ''}
                     minDetail="month"
-                    className={style["react-calendar"]}
                 />
                 <br />
                 { date &&
@@ -113,7 +111,7 @@ export default () => {
             </Card>
             <br />
             { program &&
-            <Card className={`${style.card}`}>
+            <Card>
                 <div>
                     <Typography use="headline6" tag="h2">{program.name}</Typography>
                     <Typography use="body1" tag="div">{program.description}</Typography>
