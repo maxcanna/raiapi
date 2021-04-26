@@ -16,7 +16,7 @@ export default () => (
             <TopAppBarRow>
                 <TopAppBarSection alignStart>
                     <TopAppBarNavigationIcon icon="live_tv" />
-                    <TopAppBarTitle>Rai API</TopAppBarTitle>
+                    <TopAppBarTitle>Rai</TopAppBarTitle>
                 </TopAppBarSection>
                 <TopAppBarSection alignEnd>
                     <TopAppBarActionItem
