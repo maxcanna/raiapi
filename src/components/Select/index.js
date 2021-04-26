@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'preact/hooks';
-import { Select, LinearProgress, Snackbar } from 'rmwc';
+import { Select, LinearProgress } from 'rmwc';
+import MessagesQueue from '../MessagesQueue';
 import '@rmwc/select/styles';
 import '@rmwc/linear-progress/styles';
 import '@rmwc/snackbar/styles';
@@ -11,7 +12,16 @@ export default ({ hintText, values, value: { id } = {}, onChange }) => {
 
     useEffect(() => values && onChange(values[parseInt(value)]), [value]);
 
-    useEffect(() => values && values.length === 1 && setValue("0"), [values]);
+    useEffect(() => {
+        if (values) {
+            if (values.length === 1) {
+                setValue("0")
+            }
+            if (values.length === 0) {
+                MessagesQueue.notify({ title: "Non disponibile" })
+            }
+        }
+    }, [values]);
 
     return (
         <>
@@ -25,9 +35,6 @@ export default ({ hintText, values, value: { id } = {}, onChange }) => {
                 enhanced
                 options={ values.map(({ id, name }) => ({ value: id, label: name })) }
             />
-            }
-            { values && values.length === 0 &&
-            <Snackbar open message={`Non disponibile`} />
             }
             { !values &&
             <LinearProgress indeterminate/>
