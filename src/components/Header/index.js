@@ -15,7 +15,7 @@ export default () => (
         <TopAppBar fixed onNav={() => route('/')} >
             <TopAppBarRow>
                 <TopAppBarSection alignStart>
-                    <TopAppBarNavigationIcon icon="live_tv" />
+                    <TopAppBarNavigationIcon icon="connected_tv" />
                     <TopAppBarTitle>Rai</TopAppBarTitle>
                 </TopAppBarSection>
                 <TopAppBarSection alignEnd>

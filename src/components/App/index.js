@@ -5,6 +5,7 @@ import NotFound from '../NotFound';
 import MessagesQueue from '../MessagesQueue';
 import { SnackbarQueue } from 'rmwc';
 import '@rmwc/theme/styles';
+import '@rmwc/icon/styles';
 
 export default () => (
     <>
