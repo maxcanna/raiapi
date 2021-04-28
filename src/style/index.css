@@ -10,6 +10,69 @@ html, body {
     -moz-osx-font-smoothing: grayscale;
 }
 
+@media (prefers-color-scheme: dark) {
+    html, body {
+        --mdc-theme-background: rgba(0, 0, 0, 1);
+        --mdc-theme-surface: rgba(255, 255, 255, 0.1);
+        --mdc-theme-text-primary-on-background: white;
+
+        background-color: var(--mdc-theme-background);
+        color: var(--mdc-theme-text-primary-on-background)
+    }
+
+    body > div {
+        background-color: var(--mdc-theme-background);
+    }
+
+    .mdc-list-item {
+        color: var(--mdc-theme-text-primary-on-background) !important;
+    }
+
+    .mdc-menu-surface {
+        background-color: var(--mdc-theme-background) !important;
+    }
+
+    .mdc-select:not(.mdc-select--disabled) .mdc-select__anchor {
+        background-color: var(--mdc-theme-background) !important;
+    }
+
+    .mdc-select:not(.mdc-select--disabled) .mdc-select__selected-text {
+        color: var(--mdc-theme-text-primary-on-background) !important;
+    }
+
+    .mdc-floating-label {
+        color: var(--mdc-theme-text-primary-on-background) !important;
+    }
+
+    .mdc-card__action--icon:not(:disabled) {
+        color: var(--mdc-theme-text-primary-on-background) !important;
+    }
+
+    .react-calendar {
+        background-color: var(--mdc-theme-surface) !important;
+    }
+
+    .react-calendar * {
+        color: var(--mdc-theme-text-primary-on-background) !important;
+    }
+
+    .react-calendar__tile:disabled {
+        background-color: var(--mdc-theme-background) !important;
+    }
+
+    .react-calendar__month-view__weekdays {
+        background-color: var(--mdc-theme-background);
+    }
+
+    .react-calendar__navigation button[disabled] {
+        background-color: var(--mdc-theme-background) !important;
+    }
+
+    .react-calendar__navigation button {
+        background-color: var(--mdc-theme-surface) !important;
+    }
+}
+
 @font-face {
     font-family: 'Material Icons';
     font-style: normal;
