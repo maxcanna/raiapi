@@ -1,7 +1,5 @@
-import style from './style.css';
-
 export default () => (
-    <div className={`${style.home} page`}>
+    <div>
         <h1>Pagina non trovata</h1>
     </div>
 );

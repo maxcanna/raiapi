@@ -1,8 +1,5 @@
 html, body {
     --mdc-theme-primary: #2199E8;
-    --mdc-theme-secondary: #3C4856;
-    --mdc-theme-background: #A0ACBD;
-    --mdc-theme-surface: white;
     height: 100%;
     width: 100%;
     padding: 0;
@@ -13,16 +10,78 @@ html, body {
     -moz-osx-font-smoothing: grayscale;
 }
 
-/* fallback */
+@media (prefers-color-scheme: dark) {
+    html, body {
+        --mdc-theme-background: rgba(0, 0, 0, 1);
+        --mdc-theme-surface: rgba(255, 255, 255, 0.1);
+        --mdc-theme-text-primary-on-background: white;
+
+        background-color: var(--mdc-theme-background);
+        color: var(--mdc-theme-text-primary-on-background)
+    }
+
+    body > div {
+        background-color: var(--mdc-theme-background);
+    }
+
+    .mdc-list-item {
+        color: var(--mdc-theme-text-primary-on-background) !important;
+    }
+
+    .mdc-menu-surface {
+        background-color: var(--mdc-theme-background) !important;
+    }
+
+    .mdc-select:not(.mdc-select--disabled) .mdc-select__anchor {
+        background-color: var(--mdc-theme-background) !important;
+    }
+
+    .mdc-select:not(.mdc-select--disabled) .mdc-select__selected-text {
+        color: var(--mdc-theme-text-primary-on-background) !important;
+    }
+
+    .mdc-floating-label {
+        color: var(--mdc-theme-text-primary-on-background) !important;
+    }
+
+    .mdc-card__action--icon:not(:disabled) {
+        color: var(--mdc-theme-text-primary-on-background) !important;
+    }
+
+    .react-calendar {
+        background-color: var(--mdc-theme-surface) !important;
+    }
+
+    .react-calendar * {
+        color: var(--mdc-theme-text-primary-on-background) !important;
+    }
+
+    .react-calendar__tile:disabled {
+        background-color: var(--mdc-theme-background) !important;
+    }
+
+    .react-calendar__month-view__weekdays {
+        background-color: var(--mdc-theme-background);
+    }
+
+    .react-calendar__navigation button[disabled] {
+        background-color: var(--mdc-theme-background) !important;
+    }
+
+    .react-calendar__navigation button {
+        background-color: var(--mdc-theme-surface) !important;
+    }
+}
+
 @font-face {
     font-family: 'Material Icons';
     font-style: normal;
     font-weight: 400;
-    src: url(https://fonts.gstatic.com/s/materialicons/v29/2fcrYFNaTjcS6g4U3t-Y5UEw0lE80llgEseQY3FEmqw.woff2) format('woff2');
+    src: url(https://fonts.gstatic.com/s/materialicons/v85/flUhRq6tzZclQEJ-Vdg-IuiaDsNcIhQ8tQ.woff2) format('woff2');
 }
 
 .material-icons {
-    font-family: 'Material Icons', sans-serif;
+    font-family: 'Material Icons';
     font-weight: normal;
     font-style: normal;
     font-size: 24px;
@@ -37,28 +96,57 @@ html, body {
     -webkit-font-smoothing: antialiased;
 }
 
-.mdc-select:not(.mdc-select--disabled) .mdc-select__native-control:focus ~ .mdc-floating-label {
-    color: var(--mdc-theme-primary) !important;
+body > div {
+    display: flex;
+    flex-flow: column;
+    align-self: center;
 }
 
-.mdc-typography--caption {
-    margin-bottom: 10px;
-    font-style: italic;
+h1 {
+    align-self: center;
 }
 
-* {
-    box-sizing: border-box;
+.mdc-top-app-bar--fixed-adjust {
+    margin-bottom: 1rem;
 }
 
-#app {
-    height: 100%;
+.mdc-select * {
+    width: 100%;
 }
 
-#app .page {
-    margin-top: 16px;
+.mdc-select__anchor {
+    margin-top: 1rem;
 }
 
-.mdc-top-app-bar__icon {
-    color: white;
-    text-decoration: none;
+.mdc-select .mdc-select__dropdown-icon {
+    filter: grayscale(1);
+}
+
+.mdc-linear-progress {
+    margin-top: 2rem !important;
+    margin-bottom: 1rem;
+}
+
+.mdc-card {
+    align-self: center;
+    padding: 10px;
+    width: 90%;
+    margin: 0 10px 1rem 10px;
+}
+
+.react-calendar__tile--active {
+    background: var(--mdc-theme-primary) !important;
+}
+
+.mdc-card__media, div > video {
+    margin-top: 1rem;
+}
+
+.card-media > img {
+    width: 100%
+}
+
+.react-calendar {
+    border: none !important;
+    width: 100% !important;
 }

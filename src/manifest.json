@@ -1,6 +1,6 @@
 {
-  "name": "Rai API",
-  "short_name": "Rai API",
+  "name": "Rai",
+  "short_name": "Rai",
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait",

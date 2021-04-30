@@ -1,12 +1,10 @@
-import Card from 'preact-material-components/Card';
-import 'preact-material-components/Card/style.css';
-/* eslint-disable-next-line no-unused-vars */
-import style from './style.css';
+import { CardActionIcon } from 'rmwc';
+import '@rmwc/card/styles';
 
 export default ({ url }) => (
-    <Card.ActionIcons>
-        <a href={url} target="_blank" download native>
-            <Card.ActionIcon>save_alt</Card.ActionIcon>
-        </a>
-    </Card.ActionIcons>
+    <a href={url} target="_blank" download native style={{
+        textDecoration: "none",
+    }}>
+        <CardActionIcon icon="save_alt" title="Salva file con tasto dx, salva"/>
+    </a>
 );

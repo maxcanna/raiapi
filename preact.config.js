@@ -8,5 +8,8 @@ export default function (config, { production }) {
             },
         ];
     }
+    if (production) {
+        config.devtool = false;
+    }
     return config;
 }

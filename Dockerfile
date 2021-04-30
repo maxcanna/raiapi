@@ -1,7 +1,6 @@
 FROM node:alpine as be
 ADD ./ /var/www/raiapi/
 WORKDIR /var/www/raiapi
-RUN apk add python make g++
 RUN rm -rf src
 ENV NODE_ENV=production
 RUN yarn

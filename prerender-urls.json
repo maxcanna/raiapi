@@ -1,0 +1,15 @@
+[
+  {
+    "url": "/",
+    "channels": [
+      {
+        "id": 1,
+        "name": "RaiUno"
+      },
+      {
+        "id": 2,
+        "name": "RaiDue"
+      }
+    ]
+  }
+]
