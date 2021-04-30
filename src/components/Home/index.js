@@ -28,7 +28,7 @@ export default (props) => {
     const [videoUrl, setVideoUrl] = useState();
     const getDate = () => `${date.getFullYear()}-${(('0' + (date.getMonth() + 1)).slice(-2))}-${('0' + date.getDate()).slice(-2)}`;
 
-    if (!channels) {
+    if (channels.length === 2 && typeof window !== 'undefined') {
         fetch('/api/canali')
             .then(response => response.json())
             .then(setChannels);
