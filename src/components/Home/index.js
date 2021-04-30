@@ -61,6 +61,12 @@ export default (props) => {
     }, [channel, program, date]);
 
     useEffect(() => {
+        if (qualities && qualities.length === 1) {
+            setQuality(qualities[0])
+        }
+    }, [qualities]);
+
+    useEffect(() => {
         setVideoUrl();
 
         if (channel && program && quality) {
@@ -81,6 +87,7 @@ export default (props) => {
                     defaultValue={date}
                     navigationLabel={() => ''}
                     minDetail="month"
+                    locale="it-IT"
                 />
                 { date &&
                 <Select
@@ -98,7 +105,7 @@ export default (props) => {
                     value={program}
                 />
                 }
-                { program &&
+                { program && qualities > 1 &&
                 <Select
                     onChange={setQuality}
                     hintText="Qualità"
