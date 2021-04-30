@@ -105,7 +105,7 @@ export default (props) => {
                     value={program}
                 />
                 }
-                { program &&
+                { program && qualities > 1 &&
                 <Select
                     onChange={setQuality}
                     hintText="Qualità"
