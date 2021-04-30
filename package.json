@@ -11,9 +11,6 @@
   "scripts": {
     "build": "preact build --dest public",
     "start": "node index.js",
-    "test": "yarn lint && yarn build && yarn test-ci",
-    "test-ci": "./test.sh",
-    "lint": "eslint .",
     "dev": "nodemon --ignore src/ | preact watch"
   },
   "repository": {
