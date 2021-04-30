@@ -38,6 +38,7 @@
     "mongodb": "^3.6.6",
     "morgan": "^1.10.0",
     "preact": "^10.5.13",
+    "preact-render-to-string": "^5.1.19",
     "preact-router": "^3.2.1",
     "react-calendar": "^3.4.0",
     "react-copy-to-clipboard": "^5.0.3",
