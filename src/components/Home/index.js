@@ -61,6 +61,12 @@ export default (props) => {
     }, [channel, program, date]);
 
     useEffect(() => {
+        if (qualities && qualities.length === 1) {
+            setQuality(qualities[0])
+        }
+    }, [qualities]);
+
+    useEffect(() => {
         setVideoUrl();
 
         if (channel && program && quality) {
