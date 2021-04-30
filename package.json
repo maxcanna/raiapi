@@ -5,7 +5,7 @@
   "private": true,
   "main": "index.js",
   "scripts": {
-    "build": "preact build --no-prerender --dest public",
+    "build": "preact build --dest public",
     "start": "node index.js",
     "test": "yarn lint && yarn build && yarn test-ci",
     "test-ci": "./test.sh",

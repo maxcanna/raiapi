@@ -1,23 +1,25 @@
-import ReactPlayer from 'react-player/lazy'
+import ReactPlayer from 'react-player/file'
 import { useState, useEffect } from 'preact/hooks';
 import { Card, CardMedia, CardActionIcons, CardActions, Typography } from 'rmwc';
 import Calendar from 'react-calendar';
 import Select from '../../components/Select';
 import DownloadButton from '../DownloadButton';
 import CopyUrlButton from '../CopyUrlButton';
+import { usePrerenderData } from '@preact/prerender-data-provider';
 import 'react-calendar/dist/Calendar.css';
 import '@rmwc/card/styles';
 
-export default () => {
+export default (props) => {
     const minDateInitial = new Date();
     minDateInitial.setDate(minDateInitial.getDate() - 7);
     const maxDateInitial = new Date();
     maxDateInitial.setDate(maxDateInitial.getDate() - 1);
 
+    const [prerenderData] = usePrerenderData(props);
     const [minDate] = useState(minDateInitial);
     const [maxDate] = useState(maxDateInitial);
     const [date, setDate] = useState(maxDateInitial);
-    const [channels, setChannels] = useState();
+    const [channels, setChannels] = useState(prerenderData.channels);
     const [channel, setChannel] = useState();
     const [programs, setPrograms] = useState();
     const [program, setProgram] = useState();
