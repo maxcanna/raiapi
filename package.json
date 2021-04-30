@@ -1,6 +1,6 @@
 {
   "name": "raiapi",
-  "version": "2.6.2",
+  "version": "2.6.3",
   "description": "RaiPlay API",
   "private": true,
   "main": "index.js",
