@@ -87,6 +87,7 @@ export default (props) => {
                     defaultValue={date}
                     navigationLabel={() => ''}
                     minDetail="month"
+                    locale="it-IT"
                 />
                 { date &&
                 <Select
