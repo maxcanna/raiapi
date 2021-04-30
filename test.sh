@@ -10,14 +10,14 @@ fi
 
 printf "\033[34m\n* Running tests with mongodb cache empty\n\033[0m\n"
 
-dredd
+npx -q dredd@^13.1.2
 
 printf "\033[34m\n* Running tests with mongodb cache full\n\033[0m\n"
 
-dredd
+npx -q dredd@^13.1.2
 
 printf "\033[34m\n* Running tests with mongodb cache not available\n\033[0m\n"
 
 unset MONGO_URL
 
-dredd
+npx -q dredd@^13.1.2
