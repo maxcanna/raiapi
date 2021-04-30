@@ -1,4 +1,8 @@
 {
+  "engines": {
+    "node": "^14.16.1",
+    "yarn": "^1.22.5"
+  },
   "name": "raiapi",
   "version": "2.9.1",
   "description": "RaiPlay API",
