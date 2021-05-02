@@ -4,17 +4,43 @@
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#fff",
+  "background_color": "#2199e8",
   "theme_color": "#2199e8",
   "icons": [
     {
+      "src": "/assets/icons/android-chrome-48x48.png",
+      "type": "image/png",
+      "purpose": "maskable",
+      "sizes": "48x48"
+    },
+    {
+      "src": "/assets/icons/android-chrome-72x72.png",
+      "type": "image/png",
+      "purpose": "maskable",
+      "sizes": "72x72"
+    },
+    {
+      "src": "/assets/icons/android-chrome-96x96.png",
+      "type": "image/png",
+      "purpose": "maskable",
+      "sizes": "96x96"
+    },
+    {
+      "src": "/assets/icons/android-chrome-128x128.png",
+      "type": "image/png",
+      "purpose": "maskable",
+      "sizes": "128x128"
+    },
+    {
       "src": "/assets/icons/android-chrome-192x192.png",
       "type": "image/png",
+      "purpose": "maskable",
       "sizes": "192x192"
     },
     {
       "src": "/assets/icons/android-chrome-512x512.png",
       "type": "image/png",
+      "purpose": "any maskable",
       "sizes": "512x512"
     }
   ]
