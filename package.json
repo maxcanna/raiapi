@@ -4,7 +4,7 @@
     "yarn": "^1.22.5"
   },
   "name": "raiapi",
-  "version": "2.10.0",
+  "version": "2.10.1",
   "description": "RaiPlay API",
   "private": true,
   "main": "index.js",
