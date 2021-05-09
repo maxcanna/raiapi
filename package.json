@@ -1,15 +1,16 @@
 {
+  "engines": {
+    "node": "^14.16.1",
+    "yarn": "^1.22.5"
+  },
   "name": "raiapi",
-  "version": "2.9.1",
+  "version": "2.9.2",
   "description": "RaiPlay API",
   "private": true,
   "main": "index.js",
   "scripts": {
     "build": "preact build --dest public",
     "start": "node index.js",
-    "test": "yarn lint && yarn build && yarn test-ci",
-    "test-ci": "./test.sh",
-    "lint": "eslint .",
     "dev": "nodemon --ignore src/ | preact watch"
   },
   "repository": {
