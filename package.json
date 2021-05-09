@@ -4,7 +4,7 @@
     "yarn": "^1.22.5"
   },
   "name": "raiapi",
-  "version": "2.10.2",
+  "version": "2.11.0",
   "description": "RaiPlay API",
   "private": true,
   "main": "index.js",
@@ -30,6 +30,7 @@
   "homepage": "https://github.com/maxcanna/raiapi#readme",
   "dependencies": {
     "@preact/prerender-data-provider": "^3.0.1",
+    "axios": "^0.21.1",
     "compression": "^1.7.4",
     "ejs": "^3.1.6",
     "express": "^4.17.1",
@@ -44,8 +45,6 @@
     "react-calendar": "^3.4.0",
     "react-copy-to-clipboard": "^5.0.3",
     "react-player": "^2.9.0",
-    "request": "^2.88.2",
-    "request-promise-native": "^1.0.9",
     "rmwc": "^6.1.4"
   },
   "devDependencies": {

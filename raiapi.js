@@ -2,15 +2,7 @@
  * Created by massimilianocannarozzo on 13/04/14.
  */
 /* eslint-env node */
-const request = require('request-promise-native').defaults({
-    headers: {
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_4) AppleWebKit/537.36 (KHTML, like Gecko)' +
-        ' Chrome/50.0.2661.94 Safari/537.36',
-    },
-    timeout: 25000,
-    json: true,
-    followRedirect: false,
-});
+const axios = require('axios');
 const moment = require('moment-timezone').tz.setDefault('Europe/Rome');
 const mongodb = require('mongodb');
 const createError = require('http-errors');
@@ -57,19 +49,19 @@ const isGeofenced = programma => getValueOfDirKeys(programma)
 const getSizesOfProgramma = programma => Object.keys(programma).filter(key => key.indexOf('h264_') === 0 && programma[key] !== '');
 
 const getEffectiveUrl = (url, qualita/*, useProxy */) => {
-    // TODO Recuperare proxy se useProxy e passare a request
+    // TODO Recuperare proxy se useProxy e passare ad axios
     // Se !useProxy passare undefined come proxy
     return Promise.resolve()
-        .then(proxy => request.get({
+        .then(proxy => axios({
             headers: {
                 'User-Agent': 'raiweb',
             },
             proxy,
             url: url.replace('http://', 'https://'),
-            followRedirect: false,
+            maxRedirects: 0,
         }))
         .catch(error => {
-            const { statusCode } = error;
+            const { response: { status: statusCode } } = error;
 
             if (statusCode !== 302) {
                 return url.replace('http://', 'https://');
@@ -97,8 +89,14 @@ const fetchPage = (idCanale, data) => {
         throw  createError.BadRequest('Canale non valido');
     }
 
-    return request.get(url)
-        .then(body => {
+    return axios({
+        url,
+        headers: {
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_4) AppleWebKit/537.36 (KHTML, like Gecko)' +
+            ' Chrome/50.0.2661.94 Safari/537.36',
+        },
+    })
+        .then(({ data: body }) => {
             const channelData = body[channelMap[canale]];
             const dateKey = `${m.format('YYYY-MM-DD')}`;
 
