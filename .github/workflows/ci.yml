@@ -39,7 +39,7 @@ jobs:
     - name: Install dependencies
       run: yarn
     - name: Lint
-      run: yarn eslint .
+      run: npx -q eslint@^7.24.0 .
     - name: Build
       run: yarn build
     - name: Run tests

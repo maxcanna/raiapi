@@ -4,7 +4,7 @@
     "yarn": "^1.22.5"
   },
   "name": "raiapi",
-  "version": "2.10.1",
+  "version": "2.10.2",
   "description": "RaiPlay API",
   "private": true,
   "main": "index.js",
@@ -50,11 +50,8 @@
   },
   "devDependencies": {
     "babel-core": "^6.26.3",
-    "babel-eslint": "^10.1.0",
     "babel-loader": "^8.2.2",
-    "eslint": "^7.24.0",
     "eslint-plugin-react": "^7.23.2",
-    "jsonlint": "^1.6.3",
     "nodemon": "^2.0.7",
     "preact-cli": "^3.0.5",
     "webpack": "^5.33.2"
