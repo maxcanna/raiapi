@@ -19,7 +19,7 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v1
       - name: Check version bump
-        run: F=$(git diff --diff-filter=M origin/master -- "package.json"); echo $F | grep "version"
+        run: git diff --diff-filter=M origin/master -- "package.json" | grep "version"
   test:
     runs-on: ubuntu-latest
     services:
