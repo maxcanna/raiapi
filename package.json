@@ -44,7 +44,6 @@
     "react-calendar": "^3.4.0",
     "react-copy-to-clipboard": "^5.0.3",
     "react-player": "^2.9.0",
-    "request-promise-native": "^1.0.9",
     "rmwc": "^6.1.4"
   },
   "devDependencies": {
