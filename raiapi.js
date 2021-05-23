@@ -62,7 +62,7 @@ const getEffectiveUrl = url => {
             maxRedirects: 0,
         }))
         .catch(error => {
-            const { response: { status: statusCode } } = error;
+            const { response: { status: statusCode } = {} } = error;
 
             if (statusCode !== 302) {
                 return url.replace('http://', 'https://');
