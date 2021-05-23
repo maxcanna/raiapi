@@ -131,8 +131,8 @@ class RaiApi {
                     return [];
                 }
                 return Promise.all(programmi
-                    .filter(programma => programma.url)
-                    .map(({ name, orario, geofenced, url }) => getEffectiveUrl(url, geofenced)
+                    .filter(({ video: { content_url: url } = {} }) => url)
+                    .map(({ name, time_published: orario, video: { content_url: url } }) => getEffectiveUrl(url)
                         .then(effectiveUrl => ({
                             name,
                             orario,
@@ -206,10 +206,10 @@ class RaiApi {
                     throw eNF;
                 }
 
-                return programmi.map(({ t: name, d: description, 'image-big': image }, i) => ({
+                return programmi.map(({ name = '-', description, images }, i) => ({
                     id: i,
                     name: name.trim(),
-                    image: image.replace('http://', 'https://'),
+                    image: images.landscape ? `https://www.raiplay.it${images.landscape}` : undefined,
                     description,
                 }));
             });
