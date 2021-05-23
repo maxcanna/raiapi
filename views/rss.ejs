@@ -9,7 +9,7 @@
         <copyright>(c) <%- today.getFullYear() %> <%- hostname %></copyright>
         <atom:link href="https://<%- hostname+url %>" rel="self" type="application/rss+xml" />
         <% programmi.forEach(({ name, orario, url }) => { %>    <item><%
-                const date = name.match(/S\d+E\d+/gi) ? '' : dateTag;
+                const date = name.match(/S\d+E\d+|\d{4}/gi) ? '' : dateTag;
                 const [orarioH, orarioM] = orario.split(':');
                 today.setHours(orarioH);
                 today.setMinutes(orarioM);
