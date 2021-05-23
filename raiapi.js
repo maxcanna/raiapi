@@ -51,18 +51,7 @@ const getCanali = () => Object.keys(channelMap);
 const getChannelIdentifier = (idCanale) => Object.values(channelMap)[idCanale];
 const getDocumentIndex = (idCanale, data) => `${getChannelIdentifier(idCanale)}:${moment(data).format('YYYY:MM:DD')}`;
 
-const getValueOfDirKeys = programma => Object.keys(programma)
-    .filter(key => key.indexOf('dir') === 0)
-    .map(key => programma[key])
-    .join()
-    .toLowerCase();
-
-const isGeofenced = programma => getValueOfDirKeys(programma)
-    .indexOf('geoprotezione') >= 0;
-
-const getEffectiveUrl = (url/*, useProxy */) => {
-    // TODO Recuperare proxy se useProxy e passare ad axios
-    // Se !useProxy passare undefined come proxy
+const getEffectiveUrl = url => {
     return Promise.resolve()
         .then(proxy => axios({
             headers: {
@@ -176,7 +165,7 @@ class RaiApi {
                     throw eNF;
                 }
 
-                return getEffectiveUrl(url, isGeofenced(programma));
+                return getEffectiveUrl(url);
             });
     }
 
