@@ -81,9 +81,6 @@ const getEffectiveUrl = (url/*, useProxy */) => {
 
             let { response: { headers: { location: fileUrl } } } = error;
 
-            if (fileUrl) {
-                fileUrl = fileUrl.replace(/_\d*?\.mp4$/, `_${qualita}.mp4`);
-            }
             if (fileUrl.endsWith('video_no_available.mp4')) {
                 fileUrl = url
             }
