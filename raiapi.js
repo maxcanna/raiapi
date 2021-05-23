@@ -60,9 +60,7 @@ const getValueOfDirKeys = programma => Object.keys(programma)
 const isGeofenced = programma => getValueOfDirKeys(programma)
     .indexOf('geoprotezione') >= 0;
 
-const getSizesOfProgramma = programma => Object.keys(programma).filter(key => key.indexOf('h264_') === 0 && programma[key] !== '');
-
-const getEffectiveUrl = (url, qualita/*, useProxy */) => {
+const getEffectiveUrl = (url/*, useProxy */) => {
     // TODO Recuperare proxy se useProxy e passare ad axios
     // Se !useProxy passare undefined come proxy
     return Promise.resolve()
@@ -147,34 +145,18 @@ class RaiApi {
                     return [];
                 }
                 return Promise.all(programmi
-                    .map(programma => {
-                        const sizes = getSizesOfProgramma(programma);
-                        if (sizes.length === 0) {
-                            return {}
-                        }
-                        // Ugly way to remove duplicate URL keys keeping the best available one
-                        const [size] = sizes.reverse().filter((value, index, self) => self.indexOf(value) === index).reverse();
-                        return {
-                            name: programma.t.trim(),
-                            orario: programma.orario,
-                            qualita: size.replace('_', ' '),
-                            url: programma[size],
-                            geofenced: isGeofenced(programma),
-                        }
-                    })
                     .filter(programma => programma.url)
-                    .map(({ name, orario, qualita, geofenced, url }) => getEffectiveUrl(url, qualita.split(' ')[1], geofenced)
+                    .map(({ name, orario, geofenced, url }) => getEffectiveUrl(url, geofenced)
                         .then(effectiveUrl => ({
                             name,
                             orario,
-                            qualita,
                             url: effectiveUrl,
                         }))
                     ))
             })
     }
 
-    getFileUrl(idCanale, data, idProgramma, qualita) {
+    getFileUrl(idCanale, data, idProgramma) {
         return RaiApi.getData(idCanale, data)
             .then(programmi => {
                 if (programmi.length === 0) {
@@ -187,14 +169,17 @@ class RaiApi {
                     throw eNF;
                 }
 
-                const h264sizes = getSizesOfProgramma(programma);
-                const url = programma[h264sizes[qualita]];
+                if (!programma.video) {
+                    throw eNF;
+                }
+
+                const url = programma.video['content_url'];
 
                 if (!url) {
                     throw eNF;
                 }
 
-                return getEffectiveUrl(url, h264sizes[qualita].split('_')[1], isGeofenced(programma));
+                return getEffectiveUrl(url, isGeofenced(programma));
             });
     }
 
@@ -211,11 +196,20 @@ class RaiApi {
                     throw eNF;
                 }
 
-                return getSizesOfProgramma(programma)
-                    .map((size, i) => ({
-                        id: i,
-                        name: size.replace(/_/g, ' '),
-                    }));
+                if (!programma.video) {
+                    throw eNF;
+                }
+
+                const url = programma.video['content_url'];
+
+                if (!url) {
+                    throw eNF;
+                }
+
+                return [{
+                    id: 0,
+                    name: 'h264 1800'
+                }];
             });
     }
 
