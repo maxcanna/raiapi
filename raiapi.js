@@ -2,7 +2,12 @@
  * Created by massimilianocannarozzo on 13/04/14.
  */
 /* eslint-env node */
-const axios = require('axios');
+const ua = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.94 Safari/537.36';
+const axios = require('axios').create({
+    headers: {
+        'User-Agent': ua,
+    },
+});
 const moment = require('moment-timezone').tz.setDefault('Europe/Rome');
 const mongodb = require('mongodb');
 const createError = require('http-errors');
@@ -98,10 +103,6 @@ const fetchPage = (idCanale, data) => {
 
     return axios({
         url,
-        headers: {
-            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_4) AppleWebKit/537.36 (KHTML, like Gecko)' +
-            ' Chrome/50.0.2661.94 Safari/537.36',
-        },
     })
         .then(({ data: body }) => {
             const channelData = body[channelMap[canale]];
