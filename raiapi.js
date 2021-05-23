@@ -25,13 +25,20 @@ if (MONGO_URL) {
 }
 
 let channelMap = {
-    RaiUno: 1,
-    RaiDue: 2,
-    RaiTre: 3,
-    RaiGulp: 23,
-    RaiCinque: 31,
-    RaiPremium: 32,
-    RaiYoyo: 38,
+    Rai1: 'rai-1',
+    Rai2: 'rai-2',
+    Rai3: 'rai-3',
+    Rai4: 'rai-4',
+    'Rai Gulp': 'rai-gulp',
+    Rai5: 'rai-5',
+    'Rai Premium': 'rai-premium',
+    'Rai Yoyo': 'rai-yoyo',
+    'Rai Movie': 'rai-movie',
+    'Rai Storia': 'rai-storia',
+    'Rai Scuola': 'rai-scuola',
+    'Rai News 24': 'rai-news-24',
+    'Rai Sport Piu': 'rai-sport-piu-hd',
+    'Rai Sport': 'rai-sport',
 };
 
 const getCanali = () => Object.keys(channelMap);
