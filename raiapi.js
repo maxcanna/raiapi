@@ -104,22 +104,21 @@ const fetchPage = (idCanale, data) => {
                 })))
         })
         .then(programmi => programmi.filter(({ status }) => status === 'fulfilled').map(({ value: { data } }) => data))
-        .then(programmi => {
-            return (!mongoDb
-                ? Promise.resolve(programmi)
-                : mongoDb.collection('programmi')
-                    .updateOne(
-                        { _id: getDocumentIndex(idCanale, data) },
-                        {
-                            $set: {
-                                programmi,
-                                createdAt: new Date(),
-                            }
-                        },
-                        { upsert: true }
-                    ))
+        .then(programmi => !mongoDb
+            ? Promise.resolve(programmi)
+            : mongoDb.collection('programmi')
+                .updateOne(
+                    { _id: getDocumentIndex(idCanale, data) },
+                    {
+                        $set: {
+                            programmi,
+                            createdAt: new Date(),
+                        }
+                    },
+                    { upsert: true }
+                )
                 .then(() => programmi)
-        })
+        )
         .catch(() => []);
 };
 
