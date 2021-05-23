@@ -16,7 +16,7 @@
             %>
             <title><![CDATA[<%- `${name} ${date}` %>]]></title>
             <description>
-                <![CDATA[<%- `${name}.${date}.WEBRip.AAC.x264.mp4`.replace(/( - | )/g, '.').replace(/\.+/g, '.') %>]]>
+                <![CDATA[<%- `${name.replace(/( - | |\/|'|,)/g, '.')}.${date}.WEBRip.AAC.x264.mp4`.replace(/\.+/g, '.') %>]]>
             </description>
             <link><%- url %></link>
             <guid><%- url %></guid>
