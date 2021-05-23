@@ -47,7 +47,8 @@ let channelMap = {
 };
 
 const getCanali = () => Object.keys(channelMap);
-const getDocumentIndex = (idCanale, data) => `${getCanali()[idCanale]}:${moment(data).format('YYYY:MM:DD')}`;
+const getChannelIdentifier = (idCanale) => Object.values(channelMap)[idCanale];
+const getDocumentIndex = (idCanale, data) => `${getChannelIdentifier(idCanale)}:${moment(data).format('YYYY:MM:DD')}`;
 
 const getValueOfDirKeys = programma => Object.keys(programma)
     .filter(key => key.indexOf('dir') === 0)
@@ -93,9 +94,9 @@ const getEffectiveUrl = (url, qualita/*, useProxy */) => {
 };
 
 const fetchPage = (idCanale, data) => {
-    const canale = getCanali()[idCanale];
+    const canale = getChannelIdentifier([idCanale]);
     const m = moment(data);
-    const url = `http://www.rai.it/dl/portale/html/palinsesti/replaytv/static/${canale}_${m.format('YYYY_MM_DD')}.html`;
+    const url = `/palinsesto/app/${canale}/${m.format('DD-MM-YYYY')}.json`;
 
     if (idCanale > getCanali().length) {
         throw  createError.BadRequest('Canale non valido');
