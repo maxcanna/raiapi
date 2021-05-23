@@ -107,16 +107,20 @@ const fetchPage = (idCanale, data) => {
         url,
     })
         .then(({ data: body }) => {
-            const channelData = body[channelMap[canale]];
-            const dateKey = `${m.format('YYYY-MM-DD')}`;
+            const channelData = body['events'];
 
-            if (!channelData || !channelData[dateKey]) {
+            if (!channelData) {
                 return Promise.resolve([]);
             }
 
-            const programmi = Object.entries(channelData[dateKey])
-                .map(([orario, programma]) => ({ orario, ...programma }));
-
+            return Promise.allSettled(channelData
+                .filter(({ has_video }) => has_video === true)
+                .map(programma => axios({
+                    url: programma['path_id'],
+                })))
+        })
+        .then(programmi => programmi.filter(({ status }) => status === 'fulfilled').map(({ value: { data } }) => data))
+        .then(programmi => {
             return (!mongoDb
                 ? Promise.resolve(programmi)
                 : mongoDb.collection('programmi')
