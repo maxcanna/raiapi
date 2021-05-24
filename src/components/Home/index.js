@@ -9,12 +9,12 @@ import { usePrerenderData } from '@preact/prerender-data-provider';
 import 'react-calendar/dist/Calendar.css';
 import '@rmwc/card/styles';
 
-const minDateInitial = new Date();
-minDateInitial.setDate(minDateInitial.getDate() - 7);
-const maxDateInitial = new Date();
-maxDateInitial.setDate(maxDateInitial.getDate() - 1);
-
 export default (props) => {
+    const minDateInitial = new Date();
+    minDateInitial.setDate(minDateInitial.getDate() - 7);
+    const maxDateInitial = new Date();
+    maxDateInitial.setDate(maxDateInitial.getDate() - 1);
+
     const [prerenderData] = usePrerenderData(props);
     const [minDate] = useState(minDateInitial);
     const [maxDate] = useState(maxDateInitial);
