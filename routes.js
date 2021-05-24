@@ -33,14 +33,14 @@ router.get('/canali/:canale/programmi/:programma/qualita', (req, res, next) =>
 );
 
 //Risorsa
-router.all('/canali/:canale/programmi/:programma/qualita/:qualita/:action', (req, res, next) => {
+router.get('/canali/:canale/programmi/:programma/qualita/:qualita/:action', (req, res, next) => {
     if (['file', 'url'].indexOf(req.params.action) < 0) {
         return next(createError.BadRequest('Azione non valida'));
     }
 
-    const { params: { canale, programma, qualita, action }, query: { data: date } } = req;
+    const { params: { canale, programma, action }, query: { data: date } } = req;
 
-    api.getFileUrl(canale, date, programma, qualita)
+    api.getFileUrl(canale, date, programma)
         .then(url => {
             if (action === 'file') {
                 res.redirect(url);
