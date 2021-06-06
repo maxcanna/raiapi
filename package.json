@@ -4,12 +4,12 @@
     "yarn": "^1.22.5"
   },
   "name": "raiapi",
-  "version": "3.0.3",
+  "version": "3.0.4",
   "description": "RaiPlay API",
   "private": true,
   "main": "index.js",
   "scripts": {
-    "build": "preact build --dest public",
+    "build": "preact build --no-prerender --dest public",
     "start": "node index.js",
     "dev": "nodemon --ignore src/ | preact watch"
   },
@@ -29,7 +29,6 @@
   },
   "homepage": "https://github.com/maxcanna/raiapi#readme",
   "dependencies": {
-    "@preact/prerender-data-provider": "^3.0.1",
     "axios": "^0.21.1",
     "compression": "^1.7.4",
     "ejs": "^3.1.6",
