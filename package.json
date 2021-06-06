@@ -9,7 +9,7 @@
   "private": true,
   "main": "index.js",
   "scripts": {
-    "build": "preact build --dest public",
+    "build": "preact build --no-prerender --dest public",
     "start": "node index.js",
     "dev": "nodemon --ignore src/ | preact watch"
   },

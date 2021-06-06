@@ -1,25 +1,23 @@
-import ReactPlayer from 'react-player/file'
+import ReactPlayer from 'react-player/lazy'
 import { useState, useEffect } from 'preact/hooks';
 import { Card, CardMedia, CardActionIcons, CardActions, Typography } from 'rmwc';
 import Calendar from 'react-calendar';
 import Select from '../../components/Select';
 import DownloadButton from '../DownloadButton';
 import CopyUrlButton from '../CopyUrlButton';
-import { usePrerenderData } from '@preact/prerender-data-provider';
 import 'react-calendar/dist/Calendar.css';
 import '@rmwc/card/styles';
 
-export default (props) => {
+export default () => {
     const minDateInitial = new Date();
     minDateInitial.setDate(minDateInitial.getDate() - 7);
     const maxDateInitial = new Date();
     maxDateInitial.setDate(maxDateInitial.getDate() - 1);
 
-    const [prerenderData] = usePrerenderData(props);
     const [minDate] = useState(minDateInitial);
     const [maxDate] = useState(maxDateInitial);
     const [date, setDate] = useState(maxDateInitial);
-    const [channels, setChannels] = useState(prerenderData.channels);
+    const [channels, setChannels] = useState();
     const [channel, setChannel] = useState();
     const [programs, setPrograms] = useState();
     const [program, setProgram] = useState();
@@ -28,7 +26,7 @@ export default (props) => {
     const [videoUrl, setVideoUrl] = useState();
     const getDate = () => `${date.getFullYear()}-${(('0' + (date.getMonth() + 1)).slice(-2))}-${('0' + date.getDate()).slice(-2)}`;
 
-    if (channels.length === 2 && typeof window !== 'undefined') {
+    if (!channels) {
         fetch('/api/canali')
             .then(response => response.json())
             .then(setChannels);
