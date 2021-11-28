@@ -72,6 +72,15 @@ const getEffectiveUrl = (url, requestedQuality = Number.MAX_SAFE_INTEGER) => {
                 return url.replace('http://', 'https://');
             }
 
+            const matches = fileUrl.match(urlRegex);
+
+            if (matches) {
+                const qualities = matches[3].split(',').filter(Boolean);
+                const quality = Math.min(requestedQuality, qualities.length - 1);
+
+                return `https://creativemedia${matches[1]}-rai-it.akamaized.net${matches[2]}_${qualities[quality]}.mp4`;
+            }
+
             return fileUrl.replace('http://', 'https://');
         });
 };
