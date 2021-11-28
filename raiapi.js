@@ -54,9 +54,6 @@ const getDocumentIndex = (idCanale, data) => `${getChannelIdentifier(idCanale)}:
 const getEffectiveUrl = url => {
     return Promise.resolve()
         .then(proxy => axios({
-            headers: {
-                'User-Agent': 'raiweb',
-            },
             proxy,
             url: url.replace('http://', 'https://'),
             maxRedirects: 0,
