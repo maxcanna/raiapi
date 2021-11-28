@@ -9,6 +9,7 @@ const axios = require('axios').create({
         'User-Agent': ua,
     },
 });
+const urlRegex = /.*(\d).*(\/podcast.*)_(.*)(.mp4)/;
 const moment = require('moment-timezone').tz.setDefault('Europe/Rome');
 const mongodb = require('mongodb');
 const createError = require('http-errors');
@@ -51,12 +52,9 @@ const getCanali = () => Object.keys(channelMap);
 const getChannelIdentifier = (idCanale) => Object.values(channelMap)[idCanale];
 const getDocumentIndex = (idCanale, data) => `${getChannelIdentifier(idCanale)}:${moment(data).format('YYYY:MM:DD')}`;
 
-const getEffectiveUrl = url => {
+const getEffectiveUrl = (url, requestedQuality = Number.MAX_SAFE_INTEGER) => {
     return Promise.resolve()
         .then(proxy => axios({
-            headers: {
-                'User-Agent': 'raiweb',
-            },
             proxy,
             url: url.replace('http://', 'https://'),
             maxRedirects: 0,
@@ -68,10 +66,19 @@ const getEffectiveUrl = url => {
                 return url.replace('http://', 'https://');
             }
 
-            let { response: { headers: { location: fileUrl } } } = error;
+            const { response: { headers: { location: fileUrl } } } = error;
 
             if (fileUrl.endsWith('video_no_available.mp4')) {
-                fileUrl = url
+                return url.replace('http://', 'https://');
+            }
+
+            const matches = fileUrl.match(urlRegex);
+
+            if (matches) {
+                const qualities = matches[3].split(',').filter(Boolean);
+                const quality = Math.min(requestedQuality, qualities.length - 1);
+
+                return `https://creativemedia${matches[1]}-rai-it.akamaized.net${matches[2]}_${qualities[quality]}.mp4`;
             }
 
             return fileUrl.replace('http://', 'https://');
@@ -141,7 +148,7 @@ class RaiApi {
             })
     }
 
-    getFileUrl(idCanale, data, idProgramma) {
+    getFileUrl(idCanale, data, idProgramma, quality) {
         return RaiApi.getData(idCanale, data)
             .then(programmi => {
                 if (programmi.length === 0) {
@@ -164,7 +171,7 @@ class RaiApi {
                     throw eNF;
                 }
 
-                return getEffectiveUrl(url);
+                return getEffectiveUrl(url, quality);
             });
     }
 

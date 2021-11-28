@@ -38,9 +38,9 @@ router.get('/canali/:canale/programmi/:programma/qualita/:qualita/:action', (req
         return next(createError.BadRequest('Azione non valida'));
     }
 
-    const { params: { canale, programma, action }, query: { data: date } } = req;
+    const { params: { canale, programma, qualita, action }, query: { data: date } } = req;
 
-    api.getFileUrl(canale, date, programma)
+    api.getFileUrl(canale, date, programma, qualita)
         .then(url => {
             if (action === 'file') {
                 res.redirect(url);
