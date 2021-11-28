@@ -9,6 +9,7 @@ const axios = require('axios').create({
         'User-Agent': ua,
     },
 });
+const urlRegex = /.*(\d).*(\/podcast.*)_(.*)(.mp4)/;
 const moment = require('moment-timezone').tz.setDefault('Europe/Rome');
 const mongodb = require('mongodb');
 const createError = require('http-errors');
