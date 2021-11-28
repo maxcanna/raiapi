@@ -51,7 +51,7 @@ const getCanali = () => Object.keys(channelMap);
 const getChannelIdentifier = (idCanale) => Object.values(channelMap)[idCanale];
 const getDocumentIndex = (idCanale, data) => `${getChannelIdentifier(idCanale)}:${moment(data).format('YYYY:MM:DD')}`;
 
-const getEffectiveUrl = url => {
+const getEffectiveUrl = (url, requestedQuality = Number.MAX_SAFE_INTEGER) => {
     return Promise.resolve()
         .then(proxy => axios({
             proxy,
@@ -138,7 +138,7 @@ class RaiApi {
             })
     }
 
-    getFileUrl(idCanale, data, idProgramma) {
+    getFileUrl(idCanale, data, idProgramma, quality) {
         return RaiApi.getData(idCanale, data)
             .then(programmi => {
                 if (programmi.length === 0) {
@@ -161,7 +161,7 @@ class RaiApi {
                     throw eNF;
                 }
 
-                return getEffectiveUrl(url);
+                return getEffectiveUrl(url, quality);
             });
     }
 
