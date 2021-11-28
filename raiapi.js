@@ -66,10 +66,10 @@ const getEffectiveUrl = (url, requestedQuality = Number.MAX_SAFE_INTEGER) => {
                 return url.replace('http://', 'https://');
             }
 
-            let { response: { headers: { location: fileUrl } } } = error;
+            const { response: { headers: { location: fileUrl } } } = error;
 
             if (fileUrl.endsWith('video_no_available.mp4')) {
-                fileUrl = url
+                return url.replace('http://', 'https://');
             }
 
             return fileUrl.replace('http://', 'https://');
