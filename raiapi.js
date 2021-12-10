@@ -9,7 +9,7 @@ const axios = require('axios').create({
         'User-Agent': ua,
     },
 });
-const urlRegex = /.*(\d).*(\/podcast.*)_(.*)(.mp4)/;
+const urlRegex = /.*(\d).*(\/podcast.*)_(.*)(.mp4|\/playlist\.m3u8)/;
 const moment = require('moment-timezone').tz.setDefault('Europe/Rome');
 const mongodb = require('mongodb');
 const createError = require('http-errors');
@@ -82,7 +82,7 @@ const getEffectiveUrl = (url, requestedQuality = Number.MAX_SAFE_INTEGER) => {
             const matches = fileUrl.match(urlRegex);
 
             if (matches) {
-                const qualities = matches[3].split(',').filter(Boolean);
+                const qualities = matches[3].split(',').filter(Number);
                 const quality = Math.min(requestedQuality, qualities.length - 1);
 
                 return `https://creativemedia${matches[1]}-rai-it.akamaized.net${matches[2]}_${qualities[quality]}.mp4`;
