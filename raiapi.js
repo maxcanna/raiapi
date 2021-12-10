@@ -228,7 +228,7 @@ class RaiApi {
                 return programmi.map(({ name = '-', description, images }, i) => ({
                     id: i,
                     name: name.trim(),
-                    image: images.landscape ? `https://www.raiplay.it${images.landscape}` : undefined,
+                    image: images['landscape'] ? `https://www.raiplay.it${images.landscape}` : undefined,
                     description,
                 }));
             });
