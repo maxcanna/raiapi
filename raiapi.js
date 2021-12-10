@@ -52,7 +52,7 @@ const getCanali = () => Object.keys(channelMap);
 const getChannelIdentifier = (idCanale) => Object.values(channelMap)[idCanale];
 const getDocumentIndex = (idCanale, data) => `${getChannelIdentifier(idCanale)}:${moment(data).format('YYYY:MM:DD')}`;
 
-const getEffectiveUrl = (url, requestedQuality = Number.MAX_SAFE_INTEGER) => {
+const getVideoUrl = url => {
     return Promise.resolve()
         .then(proxy => axios({
             proxy,
@@ -72,6 +72,13 @@ const getEffectiveUrl = (url, requestedQuality = Number.MAX_SAFE_INTEGER) => {
                 return url.replace('http://', 'https://');
             }
 
+            return fileUrl.replace('http://', 'https://');
+        })
+};
+
+const getEffectiveUrl = (url, requestedQuality = Number.MAX_SAFE_INTEGER) => {
+    return getVideoUrl(url)
+        .then(fileUrl => {
             const matches = fileUrl.match(urlRegex);
 
             if (matches) {
@@ -198,10 +205,16 @@ class RaiApi {
                     throw eNF;
                 }
 
-                return [{
-                    id: 0,
-                    name: 'h264 1800'
-                }];
+                return getVideoUrl(url)
+                    .then(fileUrl => {
+                        const matches = fileUrl.match(urlRegex);
+                        const qualities = matches ? matches[3].split(',').filter(Boolean) : ['1800'];
+
+                        return qualities.map((quality, id) => ({
+                            id,
+                            name: `h264 ${quality}`
+                        }));
+                    });
             });
     }
 
