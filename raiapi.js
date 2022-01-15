@@ -57,23 +57,10 @@ const getVideoUrl = url => {
         .then(proxy => axios({
             proxy,
             url: url.replace('http://', 'https://'),
-            maxRedirects: 0,
+            method: 'HEAD',
         }))
-        .catch(error => {
-            const { response: { status: statusCode } = {} } = error;
-
-            if (statusCode !== 302) {
-                return url.replace('http://', 'https://');
-            }
-
-            const { response: { headers: { location: fileUrl } } } = error;
-
-            if (fileUrl.endsWith('video_no_available.mp4')) {
-                return url.replace('http://', 'https://');
-            }
-
-            return fileUrl.replace('http://', 'https://');
-        })
+        .then(({ request: { res: { responseUrl: fileUrl } } }) => fileUrl.endsWith('video_no_available.mp4') ? url : fileUrl)
+        .catch(() => url);
 };
 
 const getEffectiveUrl = (url, requestedQuality = Number.MAX_SAFE_INTEGER) => {
