@@ -9,7 +9,7 @@ const axios = require('axios').create({
         'User-Agent': ua,
     },
 });
-const urlRegex = /.*(\d).*(\/podcast.*)_(.*)(.mp4|\/playlist\.m3u8)/;
+const urlRegex = /.*(\/podcast.*)_((,\d+)+).*/;
 const moment = require('moment-timezone').tz.setDefault('Europe/Rome');
 const mongodb = require('mongodb');
 const createError = require('http-errors');
@@ -82,7 +82,7 @@ const getEffectiveUrl = (url, requestedQuality = Number.MAX_SAFE_INTEGER) => {
             const matches = fileUrl.match(urlRegex);
 
             if (matches) {
-                const qualities = matches[3].split(',').filter(Number);
+                const qualities = matches[2].split(',').filter(Boolean);
                 const quality = Math.min(requestedQuality, qualities.length - 1);
 
                 return `https://creativemedia${matches[1]}-rai-it.akamaized.net${matches[2]}_${qualities[quality]}.mp4`;
@@ -208,7 +208,7 @@ class RaiApi {
                 return getVideoUrl(url)
                     .then(fileUrl => {
                         const matches = fileUrl.match(urlRegex);
-                        const qualities = matches ? matches[3].split(',').filter(Boolean) : ['1800'];
+                        const qualities = matches ? matches[2].split(',').filter(Boolean) : ['1800'];
 
                         return qualities.map((quality, id) => ({
                             id,
