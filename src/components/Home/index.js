@@ -103,7 +103,7 @@ export default () => {
                     value={program}
                 />
                 }
-                { program && qualities > 1 &&
+                { program && qualities && qualities.length > 1 &&
                 <Select
                     onChange={setQuality}
                     hintText="Qualità"
