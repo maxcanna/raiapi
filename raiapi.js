@@ -14,6 +14,15 @@ const moment = require('moment-timezone').tz.setDefault('Europe/Rome');
 const mongodb = require('mongodb');
 const createError = require('http-errors');
 const eNF = createError.NotFound('Dati non disponibili');
+const hosts = [
+    'creativemedia?.rai.it',
+    'creativemedia?-rai-it.akamaized.net',
+    'download?.rai.it',
+    'download?-geo.rai.it',
+    'creativemediax?.rai.it',
+]
+const servers = hosts.map(host => [...Array(10).keys()].map(i => host.replace('?', i))).flat();
+
 const {
     env: {
         MONGO_URL,
@@ -72,7 +81,14 @@ const getEffectiveUrl = (url, requestedQuality = Number.MAX_SAFE_INTEGER) => {
                 const qualities = matches[2].split(',').filter(Boolean);
                 const quality = Math.min(requestedQuality, qualities.length - 1);
 
-                return `https://creativemedia${matches[1]}-rai-it.akamaized.net${matches[2]}_${qualities[quality]}.mp4`;
+                return Promise.any(
+                    servers.map(server => axios({
+                        method: 'HEAD',
+                        url: `https://${server}${matches[1]}_${qualities[quality]}.mp4`,
+                    }))
+                )
+                    .then(({ config: { url } }) => url)
+                    .catch(() => fileUrl.replace('http://', 'https://'));
             }
 
             return fileUrl.replace('http://', 'https://');
