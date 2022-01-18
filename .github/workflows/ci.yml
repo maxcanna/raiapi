@@ -23,7 +23,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     services:
-      mongodb:
+      mongo:
         image: mongo:4-bionic
         ports:
           - 27017/tcp
