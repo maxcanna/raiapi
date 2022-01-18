@@ -7,7 +7,7 @@ on:
 
 jobs:
   notify:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
     - name: Report deploy on GitHub
       run: |
