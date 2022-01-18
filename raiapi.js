@@ -9,11 +9,20 @@ const axios = require('axios').create({
         'User-Agent': ua,
     },
 });
-const urlRegex = /.*(\d).*(\/podcast.*)_(.*)(.mp4|\/playlist\.m3u8)/;
+const urlRegex = /.*(\/podcast.*)_((,\d+)+).*/;
 const moment = require('moment-timezone').tz.setDefault('Europe/Rome');
 const mongodb = require('mongodb');
 const createError = require('http-errors');
 const eNF = createError.NotFound('Dati non disponibili');
+const hosts = [
+    'creativemedia?.rai.it',
+    'creativemedia?-rai-it.akamaized.net',
+    'download?.rai.it',
+    'download?-geo.rai.it',
+    'creativemediax?.rai.it',
+]
+const servers = hosts.map(host => [...Array(10).keys()].map(i => host.replace('?', i))).flat();
+
 const {
     env: {
         MONGO_URL,
@@ -56,24 +65,14 @@ const getVideoUrl = url => {
     return Promise.resolve()
         .then(proxy => axios({
             proxy,
-            url: url.replace('http://', 'https://'),
-            maxRedirects: 0,
+            url,
+            method: 'HEAD',
+            headers: {
+                'User-Agent': 'rai',
+            },
         }))
-        .catch(error => {
-            const { response: { status: statusCode } = {} } = error;
-
-            if (statusCode !== 302) {
-                return url.replace('http://', 'https://');
-            }
-
-            const { response: { headers: { location: fileUrl } } } = error;
-
-            if (fileUrl.endsWith('video_no_available.mp4')) {
-                return url.replace('http://', 'https://');
-            }
-
-            return fileUrl.replace('http://', 'https://');
-        })
+        .then(({ request: { res: { responseUrl: fileUrl } } }) => fileUrl.endsWith('video_no_available.mp4') ? url : fileUrl)
+        .catch(() => url);
 };
 
 const getEffectiveUrl = (url, requestedQuality = Number.MAX_SAFE_INTEGER) => {
@@ -82,10 +81,17 @@ const getEffectiveUrl = (url, requestedQuality = Number.MAX_SAFE_INTEGER) => {
             const matches = fileUrl.match(urlRegex);
 
             if (matches) {
-                const qualities = matches[3].split(',').filter(Number);
+                const qualities = matches[2].split(',').filter(Boolean);
                 const quality = Math.min(requestedQuality, qualities.length - 1);
 
-                return `https://creativemedia${matches[1]}-rai-it.akamaized.net${matches[2]}_${qualities[quality]}.mp4`;
+                return Promise.any(
+                    servers.map(server => axios({
+                        method: 'HEAD',
+                        url: `https://${server}${matches[1]}_${qualities[quality]}.mp4`,
+                    }))
+                )
+                    .then(({ config: { url } }) => url)
+                    .catch(() => fileUrl.replace('http://', 'https://'));
             }
 
             return fileUrl.replace('http://', 'https://');
@@ -208,7 +214,7 @@ class RaiApi {
                 return getVideoUrl(url)
                     .then(fileUrl => {
                         const matches = fileUrl.match(urlRegex);
-                        const qualities = matches ? matches[3].split(',').filter(Boolean) : ['1800'];
+                        const qualities = matches ? matches[2].split(',').filter(Boolean) : ['1800'];
 
                         return qualities.map((quality, id) => ({
                             id,

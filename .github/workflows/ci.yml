@@ -23,8 +23,8 @@ jobs:
   test:
     runs-on: ubuntu-latest
     services:
-      mongodb:
-        image: mongo:4.2.8
+      mongo:
+        image: mongo:4-bionic
         ports:
           - 27017/tcp
     steps:
@@ -33,9 +33,9 @@ jobs:
     - name: Setup node
       uses: actions/setup-node@v1
       with:
-        node-version: 14.16.1
+        node-version: 16.13.2
     - name: Install yarn
-      run: npm install --global yarn@1.22.5
+      run: npm install --global yarn@1.22.15
     - name: Install dependencies
       run: yarn
     - name: Lint
