@@ -65,7 +65,7 @@ const getVideoUrl = url => {
     return Promise.resolve()
         .then(proxy => axios({
             proxy,
-            url: url.replace('http://', 'https://'),
+            url,
             method: 'HEAD',
         }))
         .then(({ request: { res: { responseUrl: fileUrl } } }) => fileUrl.endsWith('video_no_available.mp4') ? url : fileUrl)
