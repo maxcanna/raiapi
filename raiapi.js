@@ -67,6 +67,9 @@ const getVideoUrl = url => {
             proxy,
             url,
             method: 'HEAD',
+            headers: {
+                'User-Agent': 'rai',
+            },
         }))
         .then(({ request: { res: { responseUrl: fileUrl } } }) => fileUrl.endsWith('video_no_available.mp4') ? url : fileUrl)
         .catch(() => url);
