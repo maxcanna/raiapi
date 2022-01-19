@@ -11,6 +11,7 @@ jobs:
     - name: Set env vars
       run: |
         echo DOCKER_PUSH=$([[ $GITHUB_REF == *"master"* ]] && echo "true" || echo "false") >> $GITHUB_ENV
+        echo VERSION_NUMBER=$(jq -r < package.json .version) >> $GITHUB_ENV
     - name: Set up Docker Buildx
       uses: crazy-max/ghaction-docker-buildx@v1
       with:
@@ -22,5 +23,6 @@ jobs:
         docker buildx build \
           --platform linux/amd64,linux/arm/v7 \
           --output "type=image,push=$DOCKER_PUSH" \
+          --label "version=$VERSION_NUMBER" \
           --tag maxcanna/raiapi:latest \
           --file ./Dockerfile .
