@@ -142,9 +142,17 @@ const fetchPage = (idCanale, data) => {
         .catch(() => []);
 };
 
+const getData = (idCanale, data) => {
+    return !mongoDb
+        ? fetchPage(idCanale, data)
+        : mongoDb.collection('programmi')
+            .findOne({ _id: getDocumentIndex(idCanale, data) }, { projection: { _id: false, createdAt: false } })
+            .then(d => d ? Object.values(d.programmi) : fetchPage(idCanale, data));
+}
+
 class RaiApi {
     getAll(idCanale, data) {
-        return RaiApi.getData(idCanale, data)
+        return getData(idCanale, data)
             .then(programmi => {
                 if (programmi.length === 0) {
                     return [];
@@ -162,7 +170,7 @@ class RaiApi {
     }
 
     getFileUrl(idCanale, data, idProgramma, quality) {
-        return RaiApi.getData(idCanale, data)
+        return getData(idCanale, data)
             .then(programmi => {
                 if (programmi.length === 0) {
                     throw eNF;
@@ -189,7 +197,7 @@ class RaiApi {
     }
 
     listQualita(idCanale, data, idProgramma) {
-        return RaiApi.getData(idCanale, data)
+        return getData(idCanale, data)
             .then(programmi => {
                 if (programmi.length === 0) {
                     throw eNF;
@@ -225,7 +233,7 @@ class RaiApi {
     }
 
     listProgrammi(idCanale, data) {
-        return RaiApi.getData(idCanale, data)
+        return getData(idCanale, data)
             .then (programmi => {
                 if (programmi.length === 0) {
                     throw eNF;
@@ -245,14 +253,6 @@ class RaiApi {
             id: id,
             name: name,
         })));
-    }
-
-    static getData(idCanale, data) {
-        return !mongoDb
-            ? fetchPage(idCanale, data)
-            : mongoDb.collection('programmi')
-                .findOne({ _id: getDocumentIndex(idCanale, data) }, { projection: { _id: false, createdAt: false } })
-                .then(d => d ? Object.values(d.programmi) : fetchPage(idCanale, data));
     }
 }
 
