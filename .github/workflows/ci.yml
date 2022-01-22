@@ -42,8 +42,26 @@ jobs:
       run: npx -q eslint@^7.24.0 .
     - name: Build
       run: yarn build
-    - name: Run tests
+    - name: Run tests with mongodb cache empty
       env:
         MONGO_URL: mongodb://localhost:${{ job.services.mongo.ports['27017'] }}/raiapi-test
         APIARY_API_KEY: ${{ secrets.APIARY_API_KEY }}
-      run: ./test.sh
+        NODE_ENV: test
+        PORT: 3333
+      run: |
+              npx -q dredd@^13.1.2
+    - name: Run tests with mongodb cache full
+      env:
+        MONGO_URL: mongodb://localhost:${{ job.services.mongo.ports['27017'] }}/raiapi-test
+        APIARY_API_KEY: ${{ secrets.APIARY_API_KEY }}
+        NODE_ENV: test
+        PORT: 3333
+      run: |
+              npx -q dredd@^13.1.2
+    - name: Run tests with mongodb cache not available
+      env:
+        APIARY_API_KEY: ${{ secrets.APIARY_API_KEY }}
+        NODE_ENV: test
+        PORT: 3333
+      run: |
+              npx -q dredd@^13.1.2
