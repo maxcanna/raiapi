@@ -4,14 +4,15 @@
     "yarn": "^1.22.15"
   },
   "name": "raiapi",
-  "version": "4.0.2",
+  "version": "4.1.0",
   "description": "RaiPlay API",
   "private": true,
   "main": "index.js",
   "scripts": {
     "build": "preact build --no-prerender --dest public",
     "start": "node index.js",
-    "dev": "nodemon --ignore src/ | preact watch"
+    "dev-fe": "preact watch",
+    "dev-api": "nodemon --ignore src/"
   },
   "repository": {
     "type": "git",

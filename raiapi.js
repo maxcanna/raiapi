@@ -139,7 +139,6 @@ const fetchPage = (idCanale, data) => {
                 )
                 .then(() => programmi)
         )
-        .catch(() => []);
 };
 
 const getData = (idCanale, data) => {
