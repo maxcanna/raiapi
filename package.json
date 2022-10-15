@@ -1,7 +1,7 @@
 {
   "engines": {
     "node": "^16.16.0",
-    "yarn": "^1.22.15"
+    "yarn": "^1.22.19"
   },
   "name": "raiapi",
   "version": "4.1.10",
