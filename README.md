@@ -8,10 +8,6 @@ This project provides a [RaiPlay](http://www.raiplay.it/) API to retrieve tv pro
 
 You've several way to get raiapi running:
 
-* You can easily create an Heroku application:
-
-  [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
-
 * You can use `docker`:
 
   `docker run -d -p 80:3000 maxcanna/raiapi:latest`.
