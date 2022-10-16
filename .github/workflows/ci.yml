@@ -33,9 +33,9 @@ jobs:
     - name: Setup node
       uses: actions/setup-node@v1
       with:
-        node-version: 16.13.2
+        node-version: 16.16.0
     - name: Install yarn
-      run: npm install --global yarn@1.22.15
+      run: npm install --global yarn@1.22.19
     - name: Install dependencies
       run: yarn
     - name: Lint
