@@ -52,7 +52,7 @@ jobs:
         PORT: 3333
       run: |
               npx -q dredd@^13.1.2
-              npx -q jest@^27.4 --collectCoverage --forceExit
+              npx -q jest@^29.7 --collectCoverage --forceExit
     - name: Run tests with mongodb cache full
       env:
         MONGO_URL: mongodb://localhost:${{ job.services.mongo.ports['27017'] }}/raiapi-test
@@ -61,7 +61,7 @@ jobs:
         PORT: 3333
       run: |
               npx -q dredd@^13.1.2
-              npx -q jest@^27.4 --collectCoverage --forceExit
+              npx -q jest@^29.7 --collectCoverage --forceExit
     - name: Run tests with mongodb cache not available
       env:
         APIARY_API_KEY: ${{ secrets.APIARY_API_KEY }}
@@ -69,4 +69,4 @@ jobs:
         PORT: 3333
       run: |
               npx -q dredd@^13.1.2
-              npx -q jest@^27.4 --collectCoverage --forceExit
+              npx -q jest@^29.7 --collectCoverage --forceExit
