@@ -4,7 +4,7 @@
     "yarn": "^1.22.19"
   },
   "name": "raiapi",
-  "version": "4.1.27",
+  "version": "4.1.28",
   "description": "RaiPlay API",
   "private": true,
   "main": "index.js",
@@ -30,7 +30,7 @@
   },
   "homepage": "https://github.com/maxcanna/raiapi#readme",
   "dependencies": {
-    "axios": "^0.21.2",
+    "axios": "^1.6.0",
     "compression": "^1.7.4",
     "ejs": "^3.1.7",
     "express": "^4.17.3",
