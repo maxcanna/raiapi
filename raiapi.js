@@ -3,8 +3,9 @@
  */
 /* eslint-env node */
 const ua = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.94 Safari/537.36';
+const baseURL = 'https://www.raiplay.it';
 const axios = require('axios').create({
-    baseURL: 'https://www.raiplay.it',
+    baseURL,
     headers: {
         'User-Agent': ua,
     },
