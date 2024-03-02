@@ -158,13 +158,11 @@ class RaiApi {
                     return [];
                 }
                 return Promise.all(programmi
-                    .filter(({ video: { content_url: url } = {} }) => url)
-                    .map(({ name, time_published: orario, video: { content_url: url } }) => getEffectiveUrl(url)
-                        .then(effectiveUrl => ({
-                            name,
-                            orario,
-                            url: effectiveUrl,
-                        }))
+                    .map(({ name, time_published: orario, weblink: url }) => ({
+                        name,
+                        orario,
+                        url: `${baseURL}${url}`,
+                    })
                     ))
             })
     }
