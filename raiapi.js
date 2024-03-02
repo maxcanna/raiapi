@@ -3,8 +3,9 @@
  */
 /* eslint-env node */
 const ua = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.94 Safari/537.36';
+const baseURL = 'https://www.raiplay.it';
 const axios = require('axios').create({
-    baseURL: 'https://www.raiplay.it',
+    baseURL,
     headers: {
         'User-Agent': ua,
     },
@@ -157,13 +158,11 @@ class RaiApi {
                     return [];
                 }
                 return Promise.all(programmi
-                    .filter(({ video: { content_url: url } = {} }) => url)
-                    .map(({ name, time_published: orario, video: { content_url: url } }) => getEffectiveUrl(url)
-                        .then(effectiveUrl => ({
-                            name,
-                            orario,
-                            url: effectiveUrl,
-                        }))
+                    .map(({ name, time_published: orario, weblink: url }) => ({
+                        name,
+                        orario,
+                        url: `${baseURL}${url}`,
+                    })
                     ))
             })
     }
