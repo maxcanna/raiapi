@@ -30,14 +30,14 @@
   },
   "homepage": "https://github.com/maxcanna/raiapi#readme",
   "dependencies": {
-    "axios": "^0.21.2",
+    "axios": "^1.6.0",
     "compression": "^1.7.4",
     "ejs": "^3.1.7",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "http-errors": "^1.8.0",
     "moment": "^2.29.4",
     "moment-timezone": "^0.5.35",
-    "mongodb": "^3.6.6",
+    "mongodb": "^3.6.10",
     "morgan": "^1.10.0",
     "preact": "^10.5.13",
     "preact-render-to-string": "^5.1.19",
@@ -53,6 +53,6 @@
     "eslint-plugin-react": "^7.23.2",
     "nodemon": "^2.0.7",
     "preact-cli": "^3.0.5",
-    "webpack": "^5.33.2"
+    "webpack": "^5.76.0"
   }
 }

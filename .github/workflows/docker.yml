@@ -7,15 +7,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Check out code
-      uses: actions/checkout@v1
+      uses: actions/checkout@v3
     - name: Set env vars
       run: |
         echo DOCKER_PUSH=$([[ $GITHUB_REF == *"master"* ]] && echo "true" || echo "false") >> $GITHUB_ENV
         echo VERSION_NUMBER=$(jq -r < package.json .version) >> $GITHUB_ENV
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v2
     - name: Set up Docker Buildx
-      uses: crazy-max/ghaction-docker-buildx@v1
-      with:
-        buildx-version: latest
+      uses: docker/setup-buildx-action@v2
     - name: Docker login
       run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
     - name: Docker build
