@@ -53,6 +53,6 @@
     "eslint-plugin-react": "^7.23.2",
     "nodemon": "^2.0.7",
     "preact-cli": "^3.0.5",
-    "webpack": "^5.76.0"
+    "webpack": "^5.94.0"
   }
 }
