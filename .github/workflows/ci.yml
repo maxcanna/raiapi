@@ -41,7 +41,7 @@ jobs:
     - name: Install dependencies
       run: yarn
     - name: Lint
-      run: npx -q eslint@^7.24.0 .
+      run: yarn eslint .
     - name: Build
       run: yarn build
     - name: Run tests with mongodb cache empty
