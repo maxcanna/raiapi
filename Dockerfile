@@ -3,12 +3,12 @@ ADD ./ /var/www/raiapi/
 WORKDIR /var/www/raiapi
 RUN rm -rf src
 ENV NODE_ENV=production
-RUN yarn
+RUN yarn install --network-timeout 1000000000
 
 FROM node:16.20.2-alpine AS fe
 ADD ./ /var/www/raiapi/
 WORKDIR /var/www/raiapi
-RUN yarn
+RUN yarn install --network-timeout 1000000000
 ENV NODE_ENV=production
 RUN yarn build
 
