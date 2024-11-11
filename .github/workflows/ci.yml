@@ -10,14 +10,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Check out code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     - name: Check if there are fixup commits
       run: git log --pretty=format:%s origin/master.. | xargs | grep -v fixup
   version:
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Check version bump
@@ -31,9 +31,9 @@ jobs:
           - 27017/tcp
     steps:
     - name: Check out code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     - name: Setup node
-      uses: actions/setup-node@v1
+      uses: actions/setup-node@v4
       with:
         node-version: 16.20.2
     - name: Install yarn
