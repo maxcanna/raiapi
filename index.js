@@ -11,6 +11,7 @@ const dateValidator = require('./validator-date');
 const cacheHeaders = require('./middleware-headers-cache');
 
 app.disable('x-powered-by');
+app.enable('trust proxy');
 app.set('port', port);
 app.use(require('compression')());
 app.use(require('morgan')('combined'));
