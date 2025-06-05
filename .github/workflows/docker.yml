@@ -12,6 +12,7 @@ jobs:
       run: |
         echo DOCKER_PUSH=$([[ $GITHUB_REF == *"master"* ]] && echo "true" || echo "false") >> $GITHUB_ENV
         echo VERSION_NUMBER=$(jq -r < package.json .version) >> $GITHUB_ENV
+        echo NODE_ENV=production >> $GITHUB_ENV
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v3
     - name: Set up Docker Buildx
@@ -21,10 +22,24 @@ jobs:
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
+    - name: Setup node
+      uses: actions/setup-node@v4
+      with:
+        node-version: 18
+    - name: Install yarn
+      run: npm install --global --force yarn@1.22.22
+    - name: Install dev dependencies
+      run: yarn install --production=false
+    - name: Build application
+      run: yarn build
+    - name: Delete node_modules
+      run: rm -rf node_modules
+    - name: Install dependencies
+      run: yarn install
     - name: Docker build
       uses: docker/build-push-action@v6
       with:
-        tags: maxcanna/raiapi:latest
+        tags: maxcanna/raiapi:latest,maxcanna/raiapi:${{ env.VERSION_NUMBER }}
         labels: version=$VERSION_NUMBER
         push: ${{ env.DOCKER_PUSH }}
         platforms: linux/amd64,linux/arm64,linux/arm/v7
