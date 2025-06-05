@@ -39,7 +39,7 @@ jobs:
     - name: Docker build
       uses: docker/build-push-action@v6
       with:
-        tags: maxcanna/raiapi:latest
+        tags: maxcanna/raiapi:latest,maxcanna/raiapi:${{ env.VERSION_NUMBER }}
         labels: version=$VERSION_NUMBER
         push: ${{ env.DOCKER_PUSH }}
         platforms: linux/amd64,linux/arm64,linux/arm/v7
