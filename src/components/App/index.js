@@ -7,16 +7,20 @@ import { SnackbarQueue } from 'rmwc';
 import '@rmwc/theme/styles';
 import '@rmwc/icon/styles';
 
-export default () => (
-    <>
-        <Header />
-        <Router>
-            <Home path="/" />
-            <NotFound default />
-        </Router>
-        <SnackbarQueue
-            messages={MessagesQueue.messages}
-            timeout={1000}
-        />
-    </>
+const App = () => (
+  <>
+    <Header />
+    <Router>
+      <Home path="/" />
+      <NotFound default />
+    </Router>
+    <SnackbarQueue
+      messages={MessagesQueue.messages}
+      timeout={1000}
+    />
+  </>
 );
+
+App.displayName = 'App';
+
+export default App;
