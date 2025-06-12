@@ -1,5 +1,9 @@
-export default () => (
-    <div>
-        <h1>Pagina non trovata</h1>
-    </div>
+const NotFound = () => (
+  <div>
+    <h1>Pagina non trovata</h1>
+  </div>
 );
+
+NotFound.displayName = 'NotFound';
+
+export default NotFound;

@@ -1,4 +1,3 @@
-/* eslint-disable comma-style */
 export default function (config, { production }) {
     if (!production) {
         config.devServer.proxy = [
