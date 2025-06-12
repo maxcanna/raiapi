@@ -11,6 +11,7 @@
   "scripts": {
     "build": "preact build --no-prerender --dest public",
     "start": "node index.js",
+    "lint": "eslint .",
     "dev-fe": "preact watch",
     "dev-api": "nodemon --ignore src/"
   },
