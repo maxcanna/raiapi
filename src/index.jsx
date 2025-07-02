@@ -1,5 +1,5 @@
 import { render } from 'preact';
-import './style';
+import './style/index.css';
 import App from './components/App';
 
 const rootElement = document.getElementById('app');
