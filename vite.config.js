@@ -32,5 +32,12 @@ export default defineConfig(({ mode }) => {
             emptyOutDir: true,
             sourcemap: !production,
         },
+        esbuild: {
+            jsxFactory: 'h',
+            jsxFragment: 'Fragment',
+            loader: {
+                '.js': 'jsx' // Treat .js files as JSX
+            }
+        },
     };
 });
