@@ -1,4 +1,10 @@
+import { render } from 'preact';
 import './style';
 import App from './components/App';
 
-export default App;
+const rootElement = document.getElementById('app');
+if (rootElement) {
+  render(<App />, rootElement);
+} else {
+  console.error("Target element #app not found. Couldn't mount Preact app.");
+}
