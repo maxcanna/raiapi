@@ -1,7 +1,7 @@
 import { CardActionIcon } from 'rmwc';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import PropTypes from 'prop-types';
-import MessagesQueue from '../MessagesQueue';
+import MessagesQueue from '../MessagesQueue/index.jsx';
 import '@rmwc/card/styles';
 
 const CopyUrlButton = ({ url }) => (

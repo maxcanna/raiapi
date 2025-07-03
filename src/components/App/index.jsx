@@ -1,8 +1,8 @@
 import { Router } from 'preact-router';
-import Header from '../Header';
-import Home from '../Home';
-import NotFound from '../NotFound';
-import MessagesQueue from '../MessagesQueue';
+import Header from '../Header/index.jsx';
+import Home from '../Home/index.jsx';
+import NotFound from '../NotFound/index.jsx';
+import MessagesQueue from '../MessagesQueue/index.jsx';
 import { SnackbarQueue } from 'rmwc';
 import '@rmwc/theme/styles';
 import '@rmwc/icon/styles';

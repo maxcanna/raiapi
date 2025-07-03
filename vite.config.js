@@ -8,6 +8,7 @@ export default defineConfig(({ mode }) => {
 
     return {
         root: 'src', // Set the project root to 'src'
+        publicDir: 'assets', // Serve static assets from 'src/assets'
         plugins: [
             preact(),
             createHtmlPlugin({
@@ -35,9 +36,6 @@ export default defineConfig(({ mode }) => {
         esbuild: {
             jsxFactory: 'h',
             jsxFragment: 'Fragment',
-            loader: {
-                '.js': 'jsx' // Treat .js files as JSX
-            }
         },
     };
 });

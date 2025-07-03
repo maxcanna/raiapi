@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'preact/hooks';
 import PropTypes from 'prop-types';
 import { Select, LinearProgress } from 'rmwc';
-import MessagesQueue from '../MessagesQueue';
+import MessagesQueue from '../MessagesQueue/index.jsx';
 import '@rmwc/select/styles';
 import '@rmwc/linear-progress/styles';
 import '@rmwc/snackbar/styles';
