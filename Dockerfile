@@ -1,4 +1,4 @@
-FROM node:18-alpine
+FROM node:22-alpine
 LABEL org.opencontainers.image.authors="massi@massi.dev"
 WORKDIR /var/www/raiapi
 COPY ./ .

@@ -2,9 +2,9 @@ import ReactPlayer from 'react-player/lazy'
 import { useState, useEffect } from 'preact/hooks';
 import { Card, CardMedia, CardActionIcons, CardActions, Typography } from 'rmwc';
 import Calendar from 'react-calendar';
-import Select from '../../components/Select';
-import DownloadButton from '../DownloadButton';
-import CopyUrlButton from '../CopyUrlButton';
+import Select from '../../components/Select/index.jsx';
+import DownloadButton from '../DownloadButton/index.jsx';
+import CopyUrlButton from '../CopyUrlButton/index.jsx';
 import 'react-calendar/dist/Calendar.css';
 import '@rmwc/card/styles';
 
