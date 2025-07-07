@@ -9,11 +9,11 @@
   "private": true,
   "main": "index.js",
   "scripts": {
-    "build": "preact build --no-prerender --dest public",
+    "build": "vite build",
     "start": "node index.js",
     "lint": "eslint .",
     "test": "jest --collectCoverage --forceExit",
-    "dev-fe": "preact watch",
+    "dev-fe": "vite",
     "dev-api": "nodemon --ignore src/"
   },
   "repository": {
