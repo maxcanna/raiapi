@@ -4,7 +4,7 @@
     "yarn": "1.22.22"
   },
   "name": "raiapi",
-  "version": "4.6.0",
+  "version": "4.6.1",
   "description": "RaiPlay API",
   "private": true,
   "main": "index.js",
@@ -71,6 +71,7 @@
     "got": "^11.8.5",
     "ip": "^2.0.1",
     "braces": "^3.0.3",
+    "brace-expansion": ">=2.0.2",
     "tough-cookie": "^4.1.4"
   }
 }
