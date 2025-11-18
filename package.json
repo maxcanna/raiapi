@@ -73,6 +73,7 @@
     "ip": "^2.0.1",
     "braces": "^3.0.3",
     "brace-expansion": ">=2.0.2",
-    "tough-cookie": "^4.1.4"
+    "tough-cookie": "^4.1.4",
+    "js-yaml": "4.1.1"
   }
 }
