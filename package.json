@@ -4,7 +4,7 @@
     "yarn": "1.22.22"
   },
   "name": "raiapi",
-  "version": "4.6.9",
+  "version": "4.6.10",
   "description": "RaiPlay API",
   "private": true,
   "main": "index.js",
@@ -41,7 +41,7 @@
     "moment-timezone": "^0.5.35",
     "mongodb": "^3.6.10",
     "morgan": "^1.10.0",
-    "preact": "^10.5.13",
+    "preact": "^10.26.10",
     "preact-render-to-string": "^5.1.19",
     "preact-router": "^3.2.1",
     "react-calendar": "^3.4.0",
