@@ -16,6 +16,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/x/mongo/driver/connstring"
 )
 
 const (
@@ -95,10 +96,9 @@ func NewRaiApiService(mongoURL string) (*RaiApiService, error) {
 		}
 
 		dbName := "raiapi"
-		if strings.Contains(mongoURL, "/raiapi-test") {
-			dbName = "raiapi-test"
-		} else if strings.Contains(mongoURL, "/raiapi") {
-			dbName = "raiapi"
+		cs, err := connstring.ParseAndValidate(mongoURL)
+		if err == nil && cs.Database != "" {
+			dbName = cs.Database
 		}
 		db = mongoClient.Database(dbName)
 	}
