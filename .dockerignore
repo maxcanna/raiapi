@@ -1,4 +1,5 @@
 .idea/
+.git/
 .dockerignore
 docker-compose.yml
 now.json
@@ -13,3 +14,5 @@ apiary.apib
 dredd.yml
 test.sh
 test/
+node_modules/
+public/

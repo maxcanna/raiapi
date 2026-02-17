@@ -36,37 +36,32 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: 22
+    - name: Setup Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.23'
     - name: Install yarn
       run: npm install --global --force yarn@1.22.22
     - name: Install dependencies
       run: yarn
-    - name: Lint
-      run: yarn lint
-    - name: Build
+    - name: Build Frontend
       run: yarn build
-    - name: Run tests with mongodb cache empty
+    - name: Build Backend
+      run: go build -v -o raiapi ./cmd/server
+    - name: Run Go Tests
+      run: go test -v ./...
+    - name: Run Dredd with mongodb cache empty
       env:
         MONGO_URL: mongodb://localhost:${{ job.services.mongo.ports['27017'] }}/raiapi-test
-        APIARY_API_KEY: ${{ secrets.APIARY_API_KEY }}
-        NODE_ENV: test
         PORT: 3333
-      run: |
-              npx -q dredd@^13.1.2
-              yarn test
-    - name: Run tests with mongodb cache full
+      run: npx dredd
+    - name: Run Dredd with mongodb cache full
       env:
         MONGO_URL: mongodb://localhost:${{ job.services.mongo.ports['27017'] }}/raiapi-test
-        APIARY_API_KEY: ${{ secrets.APIARY_API_KEY }}
-        NODE_ENV: test
         PORT: 3333
-      run: |
-              npx -q dredd@^13.1.2
-              yarn test
-    - name: Run tests with mongodb cache not available
+      run: npx dredd
+    - name: Run Dredd with mongodb cache not available
       env:
-        APIARY_API_KEY: ${{ secrets.APIARY_API_KEY }}
-        NODE_ENV: test
         PORT: 3333
-      run: |
-              npx -q dredd@^13.1.2
-              yarn test
+        # No MONGO_URL means no cache
+      run: npx dredd

@@ -4,21 +4,35 @@
 
 This project provides a [RaiPlay](http://www.raiplay.it/) API to retrieve tv program information and files for the past seven days.
 
+Rewrite in Go.
+
 ## How do I get set up?
 
 You've several way to get raiapi running:
 
 * You can use `docker`:
 
-  `docker run -d -p 80:3000 maxcanna/raiapi:latest`.
+  `docker run -d -p 3000:3000 maxcanna/raiapi:latest`.
 
 * Or manually:
 
-```bash
-  $ npm i --production
-  $ npm start
-```
+  First build the frontend:
+  ```bash
+  $ yarn install
+  $ yarn build
+  ```
+
+  Then run the backend:
+  ```bash
+  $ go run ./cmd/server
+  ```
   raiapi will be available on port `3000`.
+
+* Using docker-compose:
+
+  ```bash
+  $ docker-compose up --build
+  ```
 
 ## Documentation
 
