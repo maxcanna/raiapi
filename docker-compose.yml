@@ -1,23 +1,32 @@
-version: '3.8'
+version: '2'
 services:
-  mongo:
-    image: mongo:4.4
+  redis:
+    image: redis:alpine
     restart: always
+    networks:
+      - back
     expose:
-      - 27017
-    volumes:
-      - mongo-data:/data/db
+      - 6379/tcp
 
   raiapi:
-    build: .
+    image: node:alpine
     restart: always
+    networks:
+      - front
+      - back
     ports:
-      - "3000:3000"
+      - 80:80
     environment:
-      - MONGO_URL=mongodb://mongo:27017/raiapi
-      - PORT=3000
+      - NODE_ENV=development
+      - REDISCLOUD_URL=redis://redis
+      - PORT=80
+    volumes:
+          - .:/var/www/raiapi/
+    working_dir: '/var/www/raiapi/'
     depends_on:
-      - mongo
+      - redis
+    command: ['node_modules/.bin/nodemon', '-L']
 
-volumes:
-  mongo-data:
+networks:
+  front:
+  back:

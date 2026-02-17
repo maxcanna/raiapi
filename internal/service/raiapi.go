@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"regexp"
 	"strings"
@@ -94,22 +95,11 @@ func NewRaiApiService(mongoURL string) (*RaiApiService, error) {
 		}
 
 		dbName := "raiapi"
-		// Logic to extract db name if present in URI, simplified
-		// If the user provided a full connection string with DB, the driver handles it usually if we don't specify DB?
-		// But here we need a *mongo.Database handle.
-		// Let's assume raiapi-test if running in test environment or parsing it.
-		// For simplicity, let's look at the JS: it uses `c.db()` which uses the default database.
-		// We can get the default database from the connection string options?
-		// No easy way in driver API?
-		// Let's try to parse it from the string manually as a fallback or default to 'raiapi'
-
 		if strings.Contains(mongoURL, "/raiapi-test") {
 			dbName = "raiapi-test"
 		} else if strings.Contains(mongoURL, "/raiapi") {
 			dbName = "raiapi"
 		}
-		// If user provides just mongodb://localhost:27017, we use raiapi.
-
 		db = mongoClient.Database(dbName)
 	}
 
@@ -241,7 +231,10 @@ func (s *RaiApiService) fetchPage(idCanale int, date time.Time) ([]model.RaiPlay
 			},
 		}
 		opts := options.Update().SetUpsert(true)
-		_, _ = coll.UpdateOne(context.Background(), filter, update, opts)
+		_, err = coll.UpdateOne(context.Background(), filter, update, opts)
+		if err != nil {
+			slog.Error("Failed to update cache", "error", err)
+		}
 	}
 
 	return programmi, nil
@@ -263,6 +256,7 @@ func (s *RaiApiService) getData(idCanale int, date time.Time) ([]model.RaiPlayEv
 	if err == mongo.ErrNoDocuments {
 		return s.fetchPage(idCanale, date)
 	} else if err != nil {
+		slog.Error("Error reading from cache", "error", err)
 		return s.fetchPage(idCanale, date)
 	}
 
@@ -306,7 +300,6 @@ func (s *RaiApiService) getEffectiveUrl(url string, requestedQuality int) (strin
 		}
 
 		if len(qualities) > 0 {
-			// JS logic: Math.min(requestedQuality, qualities.length - 1)
 			qualityIndex := requestedQuality
 			if qualityIndex >= len(qualities) {
 				qualityIndex = len(qualities) - 1
@@ -318,12 +311,6 @@ func (s *RaiApiService) getEffectiveUrl(url string, requestedQuality int) (strin
 
 			resultChan := make(chan string, 1)
 
-			// We need to return early if one succeeds.
-			// JS Promise.any resolves as soon as one resolves.
-
-			// To avoid leaking goroutines, we should use a context that we can cancel when one succeeds.
-			// But `http.NewRequestWithContext` handles that.
-
 			for _, server := range servers {
 				go func(srv string) {
 					targetURL := fmt.Sprintf("https://%s%s_%s.mp4", srv, matches[1], qualities[qualityIndex])
@@ -334,8 +321,6 @@ func (s *RaiApiService) getEffectiveUrl(url string, requestedQuality int) (strin
 					if err == nil && resp.StatusCode == 200 {
 						select {
 						case resultChan <- targetURL:
-							// Trigger cancellation for others?
-							// In `Promise.any` others are not necessarily cancelled but ignored.
 						case <-ctx.Done():
 						}
 					}
@@ -349,8 +334,7 @@ func (s *RaiApiService) getEffectiveUrl(url string, requestedQuality int) (strin
 			case res := <-resultChan:
 				return res, nil
 			case <-ctx.Done():
-				// Timeout or all failed (implicit timeout here as we don't count failures)
-				// JS catch returns fileUrl.replace('http://', 'https://')
+				// Timeout or all failed
 			}
 		}
 	}

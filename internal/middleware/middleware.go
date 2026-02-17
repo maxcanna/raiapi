@@ -1,32 +1,31 @@
 package middleware
 
 import (
-	"compress/gzip"
 	"fmt"
-	"io"
-	"log"
+	"log/slog"
 	"net/http"
-	"strings"
 	"time"
 )
 
 // Logger middleware
-func Logger(next http.Handler) http.Handler {
+func Logger(logger *slog.Logger, next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
 		next.ServeHTTP(w, r)
-		log.Printf("%s %s %s", r.Method, r.URL.Path, time.Since(start))
+		duration := time.Since(start)
+
+		logger.Info("Request handled",
+			"method", r.Method,
+			"path", r.URL.Path,
+			"duration", duration,
+			"remote_addr", r.RemoteAddr,
+		)
 	})
 }
 
 // CacheHeaders middleware
 func CacheHeaders(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// JS logic:
-		// getEndOfDay = () => moment.utc().endOf('day');
-		// getStartOfDayHTTP = () => formatToHTTP(moment.utc().startOf('day'));
-		// getMaxAgeHTTP = () => getEndOfDay().diff(moment.utc(), 'seconds');
-
 		now := time.Now().UTC()
 		endOfDay := time.Date(now.Year(), now.Month(), now.Day(), 23, 59, 59, 0, time.UTC)
 		startOfDay := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.UTC)
@@ -39,40 +38,4 @@ func CacheHeaders(next http.Handler) http.Handler {
 
 		next.ServeHTTP(w, r)
 	})
-}
-
-// Gzip Compression Middleware
-type gzipResponseWriter struct {
-	io.Writer
-	http.ResponseWriter
-}
-
-func (w gzipResponseWriter) Write(b []byte) (int, error) {
-	return w.Writer.Write(b)
-}
-
-func (w gzipResponseWriter) WriteHeader(statusCode int) {
-	w.ResponseWriter.WriteHeader(statusCode)
-}
-
-func Gzip(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if !strings.Contains(r.Header.Get("Accept-Encoding"), "gzip") {
-			next.ServeHTTP(w, r)
-			return
-		}
-		w.Header().Set("Content-Encoding", "gzip")
-		gz := gzip.NewWriter(w)
-		defer gz.Close()
-		gzw := gzipResponseWriter{Writer: gz, ResponseWriter: w}
-		next.ServeHTTP(gzw, r)
-	})
-}
-
-// DateValidator middleware (optional, logic inside handlers for now)
-func DateValidator(next http.Handler) http.Handler {
-    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-        // ... logic
-        next.ServeHTTP(w, r)
-    })
 }

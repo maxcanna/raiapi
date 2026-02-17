@@ -4,13 +4,15 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
-	"log"
+	"log/slog"
 	"net/http"
 	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
 
+	"go.massi.dev/raiapi/internal/middleware"
+	"go.massi.dev/raiapi/internal/model"
 	"go.massi.dev/raiapi/internal/service"
 )
 
@@ -30,19 +32,8 @@ func (h *Handler) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("GET /api/canali/{canale}/programmi/{programma}/qualita/{qualita}/{action}", h.GetFileAction)
 
 	// RSS routes
-	// mux.HandleFunc("GET /rss/canali/{canale}.xml", h.GetRSS) // Requires Go 1.22+ wildcard matching
-    // If not using Go 1.22+, we'd need to manually route /rss/canali/ and extract ID.
-    // The previous plan mentioned "vanilla http handler" and "modern golang techniques".
-    // I will assume Go 1.22+ is available or will handle it manually if needed.
-    // The environment uses `node 22` which implies recent environment.
-    // Let's use the pattern matching.
-
-    // Note: older Go versions panic on patterns with wildcards.
-    // I'll use manual parsing for RSS to be safe or use `http.StripPrefix` logic.
-    // Actually, `http.ServeMux` in Go 1.22 supports `{canale}`.
-    // Let's assume Go 1.22+.
-    // Note: Wildcard must be the entire segment. So we match {file} and check suffix.
-    mux.HandleFunc("GET /rss/canali/{file}", h.GetRSS)
+	// Note: Wildcard must be the entire segment. So we match {file} and check suffix.
+	mux.HandleFunc("GET /rss/canali/{file}", h.GetRSS)
 
 	// Robots.txt
 	mux.HandleFunc("GET /robots.txt", func(w http.ResponseWriter, r *http.Request) {
@@ -52,38 +43,14 @@ func (h *Handler) RegisterRoutes(mux *http.ServeMux) {
 	})
 }
 
-// Helper to parse date
-func parseDate(r *http.Request) (time.Time, error) {
-	dateStr := r.URL.Query().Get("data")
-	now := time.Now()
-	// Normalize to start of day (UTC or Local? JS uses Europe/Rome, we use system local or UTC if set)
-	// For consistency with inputs usually being YYYY-MM-DD (UTC midnight from Parse), let's use UTC for comparison.
-	today := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.UTC)
-
-	var d time.Time
-	if dateStr == "" {
-		d = today.AddDate(0, 0, -1) // Yesterday
-	} else {
-		parsed, err := time.Parse("2006-01-02", dateStr) // Returns UTC midnight
-		if err != nil {
-			return time.Time{}, fmt.Errorf("Data non valida")
+// Helper to get date from context (set by middleware)
+func getDateFromContext(r *http.Request) (time.Time, error) {
+	if val := r.Context().Value(middleware.DateContextKey); val != nil {
+		if d, ok := val.(time.Time); ok {
+			return d, nil
 		}
-		d = parsed
 	}
-
-	// Calculate difference in days
-	diff := today.Sub(d).Hours() / 24
-
-	// Validate range [1, 7]
-	// Using JS logic: diff > 7 || diff < 1 is invalid.
-	// Note: diff is float, but should be integer if times are normalized.
-	// Floating point precision might be an issue? No, huge hours.
-
-	if diff < 1 || diff > 7 {
-		return time.Time{}, fmt.Errorf("Data non valida")
-	}
-
-	return d, nil
+	return time.Time{}, fmt.Errorf("Date not found in context")
 }
 
 func (h *Handler) ListCanali(w http.ResponseWriter, r *http.Request) {
@@ -100,22 +67,19 @@ func (h *Handler) ListProgrammi(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	date, err := parseDate(r)
+	date, err := getDateFromContext(r)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	programmi, err := h.Service.ListProgrammi(canaleID, date)
 	if err != nil {
-		// Error handling
-		// JS: next(error) -> defaults to 500 or uses custom error handler
-		// We should return appropriate status code.
-		// eNF -> 404
 		if err.Error() == "Dati non disponibili" {
 			http.Error(w, err.Error(), http.StatusNotFound)
 			return
 		}
+		slog.Error("ListProgrammi error", "error", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -139,9 +103,9 @@ func (h *Handler) ListQualita(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	date, err := parseDate(r)
+	date, err := getDateFromContext(r)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -151,6 +115,7 @@ func (h *Handler) ListQualita(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusNotFound)
 			return
 		}
+		slog.Error("ListQualita error", "error", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -186,9 +151,9 @@ func (h *Handler) GetFileAction(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	date, err := parseDate(r)
+	date, err := getDateFromContext(r)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -198,6 +163,7 @@ func (h *Handler) GetFileAction(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusNotFound)
 			return
 		}
+		slog.Error("GetFileUrl error", "error", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -208,22 +174,6 @@ func (h *Handler) GetFileAction(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		json.NewEncoder(w).Encode(map[string]string{"url": url})
 	}
-}
-
-// Helper struct for RSS template
-type RSSData struct {
-	Canale    string
-	Hostname  string
-	URL       string
-	Today     time.Time
-	Programmi []RSSItem
-}
-
-type RSSItem struct {
-	Name    string
-	DateTag string
-	URL     string
-	PubDate string
 }
 
 func (h *Handler) GetRSS(w http.ResponseWriter, r *http.Request) {
@@ -240,15 +190,16 @@ func (h *Handler) GetRSS(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	date, err := parseDate(r)
+	date, err := getDateFromContext(r)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	// Fetch data
 	programmi, err := h.Service.GetAll(canaleID, date)
 	if err != nil {
+		slog.Error("GetAll error", "error", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -261,34 +212,24 @@ func (h *Handler) GetRSS(w http.ResponseWriter, r *http.Request) {
 	canaleName := canali[canaleID].Name
 
 	hostname := r.Host
-    requestURL := r.URL.String()
+	requestURL := r.URL.String()
 
 	// Prepare RSS data
-	rssItems := make([]RSSItem, 0, len(programmi))
+	rssItems := make([]model.RSSItem, 0, len(programmi))
 	for _, p := range programmi {
-        // Parse time: "20:00"
-        // We need to combine date and time
-        // JS: today.setHours(orarioH); today.setMinutes(orarioM);
+		parts := strings.Split(p.Orario, ":")
+		hStr, mStr := "00", "00"
+		if len(parts) >= 2 {
+			hStr, mStr = parts[0], parts[1]
+		}
+		h, _ := strconv.Atoi(hStr)
+		m, _ := strconv.Atoi(mStr)
 
-        parts := strings.Split(p.Orario, ":")
-        hStr, mStr := "00", "00"
-        if len(parts) >= 2 {
-            hStr, mStr = parts[0], parts[1]
-        }
-        h, _ := strconv.Atoi(hStr)
-        m, _ := strconv.Atoi(mStr)
+		pubDate := time.Date(date.Year(), date.Month(), date.Day(), h, m, 0, 0, date.Location())
 
-        pubDate := time.Date(date.Year(), date.Month(), date.Day(), h, m, 0, 0, date.Location())
+		dateTag := date.Format("2006.01.02")
 
-        // DateTag: YYYY.MM.DD
-        // JS: const date = name.match(/S\d+E\d+|\d{4}/gi) ? '' : dateTag;
-        dateTag := date.Format("2006.01.02")
-        // Regex check on name?
-        // JS logic: if name matches S\d+E\d+ or \d{4}, then empty string, else dateTag.
-        // I'll skip regex check for now or implement if critical.
-        // It affects the title and description format.
-
-		rssItems = append(rssItems, RSSItem{
+		rssItems = append(rssItems, model.RSSItem{
 			Name:    p.Name,
 			DateTag: dateTag,
 			URL:     p.URL,
@@ -296,7 +237,7 @@ func (h *Handler) GetRSS(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	data := RSSData{
+	data := model.RSSData{
 		Canale:    canaleName,
 		Hostname:  hostname,
 		URL:       requestURL,
@@ -306,18 +247,14 @@ func (h *Handler) GetRSS(w http.ResponseWriter, r *http.Request) {
 
 	// Render template
 	tmplPath := filepath.Join("web", "templates", "rss.xml")
-    // Use embedded template? Or read file.
-    // I wrote the file in `web/templates/rss.xml`.
-
 	tmpl, err := template.ParseFiles(tmplPath)
 	if err != nil {
-        log.Printf("Template error: %v", err)
+		slog.Error("Template error", "error", err)
 		http.Error(w, "Template error", http.StatusInternalServerError)
 		return
 	}
 
 	w.Header().Set("Content-Type", "text/xml; charset=utf-8")
-    // Cache headers are handled by middleware
 
 	tmpl.Execute(w, data)
 }

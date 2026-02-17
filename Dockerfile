@@ -1,28 +1,23 @@
-# Stage 1: Build frontend
-FROM node:22-alpine AS frontend-builder
-WORKDIR /app
-COPY package.json yarn.lock ./
-RUN yarn install --frozen-lockfile
-COPY . .
-RUN yarn build
-
-# Stage 2: Build backend
-FROM golang:1.23-alpine AS backend-builder
+# Stage 1: Build backend
+FROM golang:1.26-alpine AS backend-builder
 WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download
 COPY . .
 RUN CGO_ENABLED=0 GOOS=linux go build -o raiapi ./cmd/server
 
-# Stage 3: Final image
+# Stage 2: Final image
 FROM alpine:latest
 LABEL org.opencontainers.image.authors="massi@massi.dev"
 WORKDIR /var/www/raiapi
 
-# Install ca-certificates and curl/wget for healthcheck
-RUN apk --no-cache add ca-certificates wget
+# Install ca-certificates (required for HTTPS)
+RUN apk --no-cache add ca-certificates
 
-COPY --from=frontend-builder /app/public ./public
+# Copy frontend assets built externally
+COPY public ./public
+
+# Copy backend binary
 COPY --from=backend-builder /app/raiapi .
 COPY --from=backend-builder /app/web/templates ./web/templates
 

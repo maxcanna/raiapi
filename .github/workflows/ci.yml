@@ -39,7 +39,7 @@ jobs:
     - name: Setup Go
       uses: actions/setup-go@v5
       with:
-        go-version: '1.23'
+        go-version: '1.26'
     - name: Install yarn
       run: npm install --global --force yarn@1.22.22
     - name: Install dependencies
@@ -63,5 +63,4 @@ jobs:
     - name: Run Dredd with mongodb cache not available
       env:
         PORT: 3333
-        # No MONGO_URL means no cache
       run: npx dredd
