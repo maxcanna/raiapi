@@ -1,5 +1,5 @@
 reporter: apiary
-server: node index.js
+server: ./raiapi
 server-wait: 3
 path: []
 blueprint: apiary.apib
