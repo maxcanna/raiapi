@@ -1,0 +1,45 @@
+name: PR Version Bump
+
+on:
+  pull_request:
+    types: [opened]
+
+permissions:
+  contents: write
+
+jobs:
+  bump-version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+
+      - name: Bump version if unchanged
+        run: |
+          # Fetch the base branch to compare against
+          git fetch origin ${{ github.base_ref }}
+
+          # Check if "version" line in package.json has changed compared to the base branch
+          # git diff exits with 0 if no error, but grep exits with 1 if no match found.
+          # If grep finds "version", it means the version line HAS changed.
+          # We want to bump if the version has NOT changed (grep fails).
+          if ! git diff --diff-filter=M origin/${{ github.base_ref }} -- "package.json" | grep "version"; then
+            echo "Version has not been changed. Bumping version..."
+
+            # Configure git user using the last non-merge commit's author
+            git config user.name "$(git log -1 --no-merges --pretty=format:'%an')"
+            git config user.email "$(git log -1 --no-merges --pretty=format:'%ae')"
+
+            # Bump patch version using yarn without creating a git tag
+            yarn version --patch --no-git-tag-version
+
+            # Commit the change
+            git add package.json
+            git commit -m "Version bump"
+
+            # Push changes back to the PR branch
+            git push origin HEAD:${{ github.head_ref }}
+          fi
