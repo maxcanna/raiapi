@@ -33,8 +33,11 @@ jobs:
             git config user.name "$(git log -1 --no-merges --pretty=format:'%an')"
             git config user.email "$(git log -1 --no-merges --pretty=format:'%ae')"
 
+            # Enable corepack
+            corepack enable
+
             # Bump patch version using yarn without creating a git tag
-            yarn version --patch --no-git-tag-version
+            yarn version patch
 
             # Commit the change
             git add package.json

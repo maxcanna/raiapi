@@ -26,16 +26,14 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: 22
-    - name: Install yarn
-      run: npm install --global --force yarn@1.22.22
-    - name: Install dev dependencies
-      run: yarn install --production=false
+    - name: Enable Corepack
+      run: corepack enable
+    - name: Install dependencies
+      run: yarn install --immutable
     - name: Build application
       run: yarn build
-    - name: Delete node_modules
-      run: rm -rf node_modules
-    - name: Install dependencies
-      run: yarn install
+    - name: Clean up for production
+      run: rm -rf .yarn/cache .pnp.* .yarn/install-state.gz
     - name: Docker build
       uses: docker/build-push-action@v6
       with:
