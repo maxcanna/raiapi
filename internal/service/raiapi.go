@@ -87,20 +87,21 @@ func NewRaiApiService(mongoURL string) (*RaiApiService, error) {
 		clientOptions := options.Client().ApplyURI(mongoURL)
 		mongoClient, err := mongo.Connect(ctx, clientOptions)
 		if err != nil {
-			return nil, fmt.Errorf("failed to connect to mongo: %w", err)
+			slog.Warn("Failed to connect to MongoDB, proceeding without cache", "error", err)
+		} else {
+			// Verify connection
+			err = mongoClient.Ping(ctx, nil)
+			if err != nil {
+				slog.Warn("Failed to ping MongoDB, proceeding without cache", "error", err)
+			} else {
+				dbName := "raiapi"
+				cs, err := connstring.ParseAndValidate(mongoURL)
+				if err == nil && cs.Database != "" {
+					dbName = cs.Database
+				}
+				db = mongoClient.Database(dbName)
+			}
 		}
-		// Verify connection
-		err = mongoClient.Ping(ctx, nil)
-		if err != nil {
-			return nil, fmt.Errorf("failed to ping mongo: %w", err)
-		}
-
-		dbName := "raiapi"
-		cs, err := connstring.ParseAndValidate(mongoURL)
-		if err == nil && cs.Database != "" {
-			dbName = cs.Database
-		}
-		db = mongoClient.Database(dbName)
 	}
 
 	return &RaiApiService{
