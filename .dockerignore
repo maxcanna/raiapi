@@ -13,3 +13,9 @@ apiary.apib
 dredd.yml
 test.sh
 test/
+<<<<<<< HEAD
+!.yarn
+!.pnp.cjs
+!.pnp.loader.mjs
+=======
+>>>>>>> fcc9ea6 (Merge pull request #178 from maxcanna/dependabot/npm_and_yarn/axios-1.13.5)

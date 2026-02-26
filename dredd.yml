@@ -1,5 +1,13 @@
 reporter: apiary
+<<<<<<< HEAD
+<<<<<<< HEAD
+server: node -r ./.pnp.cjs index.js
+=======
+server: node index.js
+>>>>>>> fcc9ea6 (Merge pull request #178 from maxcanna/dependabot/npm_and_yarn/axios-1.13.5)
+=======
 server: ./raiapi
+>>>>>>> c8fc6ac (Rewrite backend in Go)
 server-wait: 3
 path: []
 blueprint: apiary.apib

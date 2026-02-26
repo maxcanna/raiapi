@@ -26,6 +26,16 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: 22
+<<<<<<< HEAD
+    - name: Enable Corepack
+      run: corepack enable
+    - name: Install dependencies
+      run: yarn install --immutable
+    - name: Build application
+      run: yarn build
+    - name: Clean up for production
+      run: rm -rf .yarn/cache .pnp.* .yarn/install-state.gz
+=======
     - name: Install yarn
       run: npm install --global --force yarn@1.22.22
     - name: Install dev dependencies
@@ -36,6 +46,7 @@ jobs:
       run: rm -rf node_modules
     - name: Install dependencies
       run: yarn install
+>>>>>>> fcc9ea6 (Merge pull request #178 from maxcanna/dependabot/npm_and_yarn/axios-1.13.5)
     - name: Docker build
       uses: docker/build-push-action@v6
       with:

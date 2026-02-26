@@ -8,7 +8,11 @@ import reactPlugin from "eslint-plugin-react";
 export default [
   // 1. Global ignores
   {
+<<<<<<< HEAD
+    ignores: ["node_modules/", "public/", "dist/", ".yarn/", ".pnp.*"],
+=======
     ignores: ["node_modules/", "public/", "dist/"],
+>>>>>>> fcc9ea6 (Merge pull request #178 from maxcanna/dependabot/npm_and_yarn/axios-1.13.5)
   },
 
   // 2. ESLint Recommended base for all JS files (applied first)
