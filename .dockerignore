@@ -13,3 +13,6 @@ apiary.apib
 dredd.yml
 test.sh
 test/
+!.yarn
+!.pnp.cjs
+!.pnp.loader.mjs

@@ -1,5 +1,5 @@
 reporter: apiary
-server: node index.js
+server: node -r ./.pnp.cjs index.js
 server-wait: 3
 path: []
 blueprint: apiary.apib
