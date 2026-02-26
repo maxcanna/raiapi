@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"strings"
 	"testing"
 	"time"
@@ -14,19 +15,19 @@ func TestIntegration(t *testing.T) {
 	}
 
 	s, _ := NewRaiApiService("")
-	s.BaseURL = DefaultBaseURL
 
 	date := time.Now().AddDate(0, 0, -1) // Yesterday
+	ctx := context.Background()
 
 	t.Run("listCanali", func(t *testing.T) {
-		canali := s.ListCanali()
+		canali := s.ListCanali(ctx)
 		if len(canali) != 14 {
 			t.Errorf("Expected 14 canali, got %d", len(canali))
 		}
 	})
 
 	t.Run("listProgrammi", func(t *testing.T) {
-		programmi, err := s.ListProgrammi(0, date)
+		programmi, err := s.ListProgrammi(ctx, 0, date)
 		if err != nil {
 			t.Fatalf("ListProgrammi failed: %v", err)
 		}
@@ -45,7 +46,7 @@ func TestIntegration(t *testing.T) {
 	})
 
 	t.Run("listQualita", func(t *testing.T) {
-		qualita, err := s.ListQualita(0, date, 0)
+		qualita, err := s.ListQualita(ctx, 0, date, 0)
 		if err != nil {
 			t.Logf("ListQualita failed (possibly valid if no program 0): %v", err)
 			return
@@ -67,7 +68,7 @@ func TestIntegration(t *testing.T) {
 	})
 
 	t.Run("getFileUrl", func(t *testing.T) {
-		url, err := s.GetFileUrl(0, date, 0, 0)
+		url, err := s.GetFileUrl(ctx, 0, date, 0, 0)
 		if err != nil {
 			t.Logf("GetFileUrl failed (possibly valid): %v", err)
 			return
@@ -78,7 +79,7 @@ func TestIntegration(t *testing.T) {
 	})
 
 	t.Run("getAll", func(t *testing.T) {
-		items, err := s.GetAll(0, date)
+		items, err := s.GetAll(ctx, 0, date)
 		if err != nil {
 			t.Logf("GetAll failed: %v", err)
 			return

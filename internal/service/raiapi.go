@@ -70,9 +70,8 @@ func init() {
 }
 
 type RaiApiService struct {
-	client  *http.Client
-	db      *mongo.Database
-	BaseURL string
+	client *http.Client
+	db     *mongo.Database
 }
 
 func NewRaiApiService(mongoURL string) (*RaiApiService, error) {
@@ -105,13 +104,12 @@ func NewRaiApiService(mongoURL string) (*RaiApiService, error) {
 	}
 
 	return &RaiApiService{
-		client:  client,
-		db:      db,
-		BaseURL: DefaultBaseURL,
+		client: client,
+		db:     db,
 	}, nil
 }
 
-func (s *RaiApiService) ListCanali() []model.Canale {
+func (s *RaiApiService) ListCanali(ctx context.Context) []model.Canale {
 	var canali []model.Canale
 	for i, name := range channelNames {
 		canali = append(canali, model.Canale{ID: i, Name: name})
@@ -135,15 +133,15 @@ func (s *RaiApiService) getDocumentIndex(idCanale int, date time.Time) (string, 
 	return fmt.Sprintf("%s:%s", identifier, date.Format("2006:01:02")), nil
 }
 
-func (s *RaiApiService) fetchPage(idCanale int, date time.Time) ([]model.RaiPlayEvent, error) {
+func (s *RaiApiService) fetchPage(ctx context.Context, idCanale int, date time.Time) ([]model.RaiPlayEvent, error) {
 	canaleIdentifier, err := s.getChannelIdentifier(idCanale)
 	if err != nil {
 		return nil, err
 	}
 
-	url := fmt.Sprintf("%s/palinsesto/app/%s/%s.json", s.BaseURL, canaleIdentifier, date.Format("02-01-2006"))
+	url := fmt.Sprintf("%s/palinsesto/app/%s/%s.json", DefaultBaseURL, canaleIdentifier, date.Format("02-01-2006"))
 
-	req, err := http.NewRequest("GET", url, nil)
+	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -173,7 +171,7 @@ func (s *RaiApiService) fetchPage(idCanale int, date time.Time) ([]model.RaiPlay
 	var fetchURLs []string
 	for _, evt := range body.Events {
 		if evt.HasVideo {
-			fetchURLs = append(fetchURLs, s.BaseURL+evt.PathID)
+			fetchURLs = append(fetchURLs, DefaultBaseURL+evt.PathID)
 		}
 	}
 
@@ -193,7 +191,7 @@ func (s *RaiApiService) fetchPage(idCanale int, date time.Time) ([]model.RaiPlay
 			sem <- struct{}{}
 			defer func() { <-sem }()
 
-			req, _ := http.NewRequest("GET", targetURL, nil)
+			req, _ := http.NewRequestWithContext(ctx, "GET", targetURL, nil)
 			req.Header.Set("User-Agent", UserAgent)
 			resp, err := s.client.Do(req)
 			if err != nil {
@@ -232,7 +230,7 @@ func (s *RaiApiService) fetchPage(idCanale int, date time.Time) ([]model.RaiPlay
 			},
 		}
 		opts := options.Update().SetUpsert(true)
-		_, err = coll.UpdateOne(context.Background(), filter, update, opts)
+		_, err = coll.UpdateOne(ctx, filter, update, opts)
 		if err != nil {
 			slog.Error("Failed to update cache", "error", err)
 		}
@@ -241,9 +239,9 @@ func (s *RaiApiService) fetchPage(idCanale int, date time.Time) ([]model.RaiPlay
 	return programmi, nil
 }
 
-func (s *RaiApiService) getData(idCanale int, date time.Time) ([]model.RaiPlayEvent, error) {
+func (s *RaiApiService) getData(ctx context.Context, idCanale int, date time.Time) ([]model.RaiPlayEvent, error) {
 	if s.db == nil {
-		return s.fetchPage(idCanale, date)
+		return s.fetchPage(ctx, idCanale, date)
 	}
 
 	docIndex, err := s.getDocumentIndex(idCanale, date)
@@ -253,19 +251,19 @@ func (s *RaiApiService) getData(idCanale int, date time.Time) ([]model.RaiPlayEv
 
 	coll := s.db.Collection("programmi")
 	var result model.ProgrammaCached
-	err = coll.FindOne(context.Background(), bson.M{"_id": docIndex}).Decode(&result)
+	err = coll.FindOne(ctx, bson.M{"_id": docIndex}).Decode(&result)
 	if err == mongo.ErrNoDocuments {
-		return s.fetchPage(idCanale, date)
+		return s.fetchPage(ctx, idCanale, date)
 	} else if err != nil {
 		slog.Error("Error reading from cache", "error", err)
-		return s.fetchPage(idCanale, date)
+		return s.fetchPage(ctx, idCanale, date)
 	}
 
 	return result.Programmi, nil
 }
 
-func (s *RaiApiService) getVideoUrl(url string) (string, error) {
-	req, err := http.NewRequest("HEAD", url, nil)
+func (s *RaiApiService) getVideoUrl(ctx context.Context, url string) (string, error) {
+	req, err := http.NewRequestWithContext(ctx, "HEAD", url, nil)
 	if err != nil {
 		return url, nil
 	}
@@ -284,8 +282,8 @@ func (s *RaiApiService) getVideoUrl(url string) (string, error) {
 	return fileUrl, nil
 }
 
-func (s *RaiApiService) getEffectiveUrl(url string, requestedQuality int) (string, error) {
-	fileUrl, err := s.getVideoUrl(url)
+func (s *RaiApiService) getEffectiveUrl(ctx context.Context, url string, requestedQuality int) (string, error) {
+	fileUrl, err := s.getVideoUrl(ctx, url)
 	if err != nil {
 		return url, nil
 	}
@@ -343,8 +341,8 @@ func (s *RaiApiService) getEffectiveUrl(url string, requestedQuality int) (strin
 	return strings.Replace(fileUrl, "http://", "https://", 1), nil
 }
 
-func (s *RaiApiService) GetAll(idCanale int, date time.Time) ([]model.ProgrammaRSS, error) {
-	programmi, err := s.getData(idCanale, date)
+func (s *RaiApiService) GetAll(ctx context.Context, idCanale int, date time.Time) ([]model.ProgrammaRSS, error) {
+	programmi, err := s.getData(ctx, idCanale, date)
 	if err != nil {
 		return []model.ProgrammaRSS{}, nil
 	}
@@ -357,14 +355,14 @@ func (s *RaiApiService) GetAll(idCanale int, date time.Time) ([]model.ProgrammaR
 		result = append(result, model.ProgrammaRSS{
 			Name:   p.Name,
 			Orario: p.TimePublished,
-			URL:    s.BaseURL + p.Weblink,
+			URL:    DefaultBaseURL + p.Weblink,
 		})
 	}
 	return result, nil
 }
 
-func (s *RaiApiService) ListProgrammi(idCanale int, date time.Time) ([]model.Programma, error) {
-	programmi, err := s.getData(idCanale, date)
+func (s *RaiApiService) ListProgrammi(ctx context.Context, idCanale int, date time.Time) ([]model.Programma, error) {
+	programmi, err := s.getData(ctx, idCanale, date)
 	if err != nil {
 		return nil, err
 	}
@@ -376,7 +374,7 @@ func (s *RaiApiService) ListProgrammi(idCanale int, date time.Time) ([]model.Pro
 	for i, p := range programmi {
 		image := ""
 		if p.Images.Landscape != "" {
-			image = s.BaseURL + p.Images.Landscape
+			image = DefaultBaseURL + p.Images.Landscape
 		}
 		result = append(result, model.Programma{
 			ID:          i,
@@ -388,8 +386,8 @@ func (s *RaiApiService) ListProgrammi(idCanale int, date time.Time) ([]model.Pro
 	return result, nil
 }
 
-func (s *RaiApiService) ListQualita(idCanale int, date time.Time, idProgramma int) ([]model.Qualita, error) {
-	programmi, err := s.getData(idCanale, date)
+func (s *RaiApiService) ListQualita(ctx context.Context, idCanale int, date time.Time, idProgramma int) ([]model.Qualita, error) {
+	programmi, err := s.getData(ctx, idCanale, date)
 	if err != nil {
 		return nil, err
 	}
@@ -402,7 +400,7 @@ func (s *RaiApiService) ListQualita(idCanale int, date time.Time, idProgramma in
 		return nil, errors.New("Dati non disponibili")
 	}
 
-	fileUrl, err := s.getVideoUrl(programma.Video.ContentURL)
+	fileUrl, err := s.getVideoUrl(ctx, programma.Video.ContentURL)
 	if err != nil {
 		return nil, err
 	}
@@ -429,8 +427,8 @@ func (s *RaiApiService) ListQualita(idCanale int, date time.Time, idProgramma in
 	return result, nil
 }
 
-func (s *RaiApiService) GetFileUrl(idCanale int, date time.Time, idProgramma int, quality int) (string, error) {
-	programmi, err := s.getData(idCanale, date)
+func (s *RaiApiService) GetFileUrl(ctx context.Context, idCanale int, date time.Time, idProgramma int, quality int) (string, error) {
+	programmi, err := s.getData(ctx, idCanale, date)
 	if err != nil {
 		return "", err
 	}
@@ -443,5 +441,5 @@ func (s *RaiApiService) GetFileUrl(idCanale int, date time.Time, idProgramma int
 		return "", errors.New("Dati non disponibili")
 	}
 
-	return s.getEffectiveUrl(programma.Video.ContentURL, quality)
+	return s.getEffectiveUrl(ctx, programma.Video.ContentURL, quality)
 }

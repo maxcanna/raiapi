@@ -54,9 +54,11 @@ func getDateFromContext(r *http.Request) (time.Time, error) {
 }
 
 func (h *Handler) ListCanali(w http.ResponseWriter, r *http.Request) {
-	canali := h.Service.ListCanali()
+	canali := h.Service.ListCanali(r.Context())
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	json.NewEncoder(w).Encode(canali)
+	if err := json.NewEncoder(w).Encode(canali); err != nil {
+		slog.Error("ListCanali encode error", "error", err)
+	}
 }
 
 func (h *Handler) ListProgrammi(w http.ResponseWriter, r *http.Request) {
@@ -73,7 +75,7 @@ func (h *Handler) ListProgrammi(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	programmi, err := h.Service.ListProgrammi(canaleID, date)
+	programmi, err := h.Service.ListProgrammi(r.Context(), canaleID, date)
 	if err != nil {
 		if err.Error() == "Dati non disponibili" {
 			http.Error(w, err.Error(), http.StatusNotFound)
@@ -109,7 +111,7 @@ func (h *Handler) ListQualita(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	qualita, err := h.Service.ListQualita(canaleID, date, programmaID)
+	qualita, err := h.Service.ListQualita(r.Context(), canaleID, date, programmaID)
 	if err != nil {
 		if err.Error() == "Dati non disponibili" {
 			http.Error(w, err.Error(), http.StatusNotFound)
@@ -157,7 +159,7 @@ func (h *Handler) GetFileAction(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	url, err := h.Service.GetFileUrl(canaleID, date, programmaID, qualitaID)
+	url, err := h.Service.GetFileUrl(r.Context(), canaleID, date, programmaID, qualitaID)
 	if err != nil {
 		if err.Error() == "Dati non disponibili" {
 			http.Error(w, err.Error(), http.StatusNotFound)
@@ -197,14 +199,14 @@ func (h *Handler) GetRSS(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Fetch data
-	programmi, err := h.Service.GetAll(canaleID, date)
+	programmi, err := h.Service.GetAll(r.Context(), canaleID, date)
 	if err != nil {
 		slog.Error("GetAll error", "error", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	canali := h.Service.ListCanali()
+	canali := h.Service.ListCanali(r.Context())
 	if canaleID >= len(canali) {
 		http.Error(w, "Channel not found", http.StatusNotFound)
 		return
@@ -256,5 +258,7 @@ func (h *Handler) GetRSS(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "text/xml; charset=utf-8")
 
-	tmpl.Execute(w, data)
+	if err := tmpl.Execute(w, data); err != nil {
+		slog.Error("Template execute error", "error", err)
+	}
 }
