@@ -1,21 +1,15 @@
-.idea/
+.git/
 .dockerignore
 docker-compose.yml
-now.json
 coverage/
 .gitignore
-.eslintignore
-.eslintrc
 Dockerfile
 LICENSE
 README.md
 apiary.apib
 dredd.yml
-test.sh
 test/
-<<<<<<< HEAD
-!.yarn
-!.pnp.cjs
-!.pnp.loader.mjs
-=======
->>>>>>> fcc9ea6 (Merge pull request #178 from maxcanna/dependabot/npm_and_yarn/axios-1.13.5)
+node_modules/
+size-plugin.json
+raiapi
+server
