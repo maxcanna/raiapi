@@ -1,35 +1,16 @@
 {
   "engines": {
     "node": "^22.0.0",
-<<<<<<< HEAD
-    "yarn": "^4.0.0"
-  },
-  "name": "raiapi",
- "version": "4.6.18",
-=======
     "yarn": "1.22.22"
   },
   "name": "raiapi",
-<<<<<<< HEAD
-  "version": "4.6.13",
->>>>>>> fcc9ea6 (Merge pull request #178 from maxcanna/dependabot/npm_and_yarn/axios-1.13.5)
-=======
   "version": "4.7.0",
->>>>>>> c8fc6ac (Rewrite backend in Go)
   "description": "RaiPlay API",
   "private": true,
-  "main": "index.js",
   "scripts": {
     "build": "vite build",
-<<<<<<< HEAD
-    "start": "node -r ./.pnp.cjs index.js",
-=======
-    "start": "node index.js",
->>>>>>> fcc9ea6 (Merge pull request #178 from maxcanna/dependabot/npm_and_yarn/axios-1.13.5)
     "lint": "eslint .",
-    "test": "jest --collectCoverage --forceExit",
-    "dev-fe": "vite",
-    "dev-api": "nodemon --ignore src/"
+    "dev-fe": "vite"
   },
   "repository": {
     "type": "git",
@@ -47,7 +28,6 @@
   },
   "homepage": "https://github.com/maxcanna/raiapi#readme",
   "dependencies": {
-<<<<<<< HEAD
     "@material/button": "^14.0.0",
     "@material/ripple": "^14.0.0",
     "@material/snackbar": "^14.0.0",
@@ -64,33 +44,15 @@
     "@rmwc/top-app-bar": "^14.3.5",
     "@rmwc/touch-target": "^14.3.5",
     "@rmwc/typography": "^14.3.5",
-=======
->>>>>>> fcc9ea6 (Merge pull request #178 from maxcanna/dependabot/npm_and_yarn/axios-1.13.5)
-    "axios": "^1.13.5",
-    "compression": "^1.7.4",
-    "ejs": "^3.1.10",
-    "express": "^4.20.0",
-    "http-errors": "^1.8.0",
-    "moment": "^2.29.4",
-    "moment-timezone": "^0.5.35",
-    "mongodb": "^3.6.10",
-    "morgan": "^1.10.0",
     "preact": "^10.26.10",
     "preact-render-to-string": "^5.1.19",
     "preact-router": "^3.2.1",
-<<<<<<< HEAD
     "prop-types": "^15.8.1",
     "react-calendar": "^3.4.0",
     "react-copy-to-clipboard": "^5.0.3",
     "react-player": "^2.9.0",
     "rmwc": "^6.1.4",
     "tslib": "^2.8.1"
-=======
-    "react-calendar": "^3.4.0",
-    "react-copy-to-clipboard": "^5.0.3",
-    "react-player": "^2.9.0",
-    "rmwc": "^6.1.4"
->>>>>>> fcc9ea6 (Merge pull request #178 from maxcanna/dependabot/npm_and_yarn/axios-1.13.5)
   },
   "devDependencies": {
     "@babel/core": "^7.24.9",
@@ -102,7 +64,6 @@
     "eslint-plugin-react": "^7.35.0",
     "globals": "^16.2.0",
     "jest": "^29.7.0",
-    "nodemon": "^2.0.7",
     "react": "^16.14.0",
     "react-dom": "^16.14.0",
     "typescript": "^5.0.0",
@@ -119,10 +80,5 @@
     "tough-cookie": "^4.1.4",
     "js-yaml": "4.1.1",
     "qs": "^6.14.1"
-<<<<<<< HEAD
-  },
-  "packageManager": "yarn@4.12.0"
-=======
   }
->>>>>>> fcc9ea6 (Merge pull request #178 from maxcanna/dependabot/npm_and_yarn/axios-1.13.5)
 }
