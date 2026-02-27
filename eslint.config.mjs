@@ -8,7 +8,7 @@ import reactPlugin from "eslint-plugin-react";
 export default [
   // 1. Global ignores
   {
-    ignores: ["node_modules/", "public/", "dist/"],
+    ignores: ["node_modules/", "public/", "dist/", ".yarn/", ".pnp.*"],
   },
 
   // 2. ESLint Recommended base for all JS files (applied first)
