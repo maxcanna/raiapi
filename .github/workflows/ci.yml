@@ -51,7 +51,7 @@ jobs:
         NODE_ENV: test
         PORT: 3333
       run: |
-              npx -q dredd@^13.1.2
+              yarn dlx -q -p dredd@^13.1.2 dredd
               yarn test
     - name: Run tests with mongodb cache full
       env:
@@ -60,7 +60,7 @@ jobs:
         NODE_ENV: test
         PORT: 3333
       run: |
-              npx -q dredd@^13.1.2
+              yarn dlx -q -p dredd@^13.1.2 dredd
               yarn test
     - name: Run tests with mongodb cache not available
       env:
@@ -68,5 +68,5 @@ jobs:
         NODE_ENV: test
         PORT: 3333
       run: |
-              npx -q dredd@^13.1.2
+              yarn dlx -q -p dredd@^13.1.2 dredd
               yarn test
