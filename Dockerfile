@@ -4,7 +4,11 @@ WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download
 COPY . .
-RUN CGO_ENABLED=0 GOOS=linux go build -o raiapi ./cmd/server
+
+# Build for the target architecture
+ARG TARGETOS
+ARG TARGETARCH
+RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -o raiapi ./cmd/server
 
 # Stage 2: Final image
 FROM alpine:latest
