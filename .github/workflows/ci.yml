@@ -55,31 +55,15 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: 22
-<<<<<<< HEAD
-<<<<<<< HEAD
-    - name: Enable Corepack
-      run: corepack enable
-    - name: Install dependencies
-      run: yarn install --immutable
-=======
-=======
     - name: Setup Go
       uses: actions/setup-go@v5
       with:
         go-version: '1.26'
->>>>>>> c8fc6ac (Rewrite backend in Go)
     - name: Install yarn
       run: npm install --global --force yarn@1.22.22
     - name: Install dependencies
       run: yarn
-<<<<<<< HEAD
->>>>>>> fcc9ea6 (Merge pull request #178 from maxcanna/dependabot/npm_and_yarn/axios-1.13.5)
-    - name: Lint
-      run: yarn lint
-    - name: Build
-=======
     - name: Build Frontend
->>>>>>> c8fc6ac (Rewrite backend in Go)
       run: yarn build
     - name: Build Backend
       run: go build -v -o raiapi ./cmd/server
