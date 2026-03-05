@@ -12,10 +12,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR branch
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: ${{ github.head_ref }}
           fetch-depth: 0
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
 
       - name: Bump version if unchanged
         run: |
@@ -32,9 +40,6 @@ jobs:
             # Configure git user using the last non-merge commit's author
             git config user.name "$(git log -1 --no-merges --pretty=format:'%an')"
             git config user.email "$(git log -1 --no-merges --pretty=format:'%ae')"
-
-            # Enable corepack
-            corepack enable
 
             # Bump patch version using yarn without creating a git tag
             yarn version patch
