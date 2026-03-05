@@ -1,26 +1,39 @@
-FROM node:22-alpine
-LABEL org.opencontainers.image.authors="massi@massi.dev"
+# Stage 1: Build backend
+FROM golang:1.26-alpine AS backend-builder
+WORKDIR /app
 
-WORKDIR /var/www/raiapi
+# Install build dependencies
+RUN apk add --no-cache git
 
-# Enable Corepack to use the Yarn version specified in package.json
-RUN corepack enable
+COPY go.mod go.sum ./
+RUN go mod download
 
-# Copy dependency definitions
-COPY package.json yarn.lock .yarnrc.yml ./
-COPY .yarn ./.yarn
-
-# Install production dependencies
-# This ensures that native bindings are built for the target architecture (alpine)
-RUN yarn workspaces focus --production
-
-# Copy the rest of the application source code
-# This includes the pre-built static assets (e.g. from a previous build step in CI)
 COPY . .
 
-ENV NODE_ENV=production
-HEALTHCHECK CMD wget -q -O /dev/stdout localhost:3000/api/canali | grep Rai1
+# Build for the target architecture
+ARG TARGETOS
+ARG TARGETARCH
+RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -trimpath -ldflags="-s -w" -o raiapi ./cmd/server
+
+# Stage 2: Final image
+FROM alpine:3.21
+LABEL org.opencontainers.image.authors="massi@massi.dev"
+WORKDIR /var/www/raiapi
+
+# Install ca-certificates (required for HTTPS) and tzdata
+RUN apk --no-cache add ca-certificates tzdata
+
+# Copy frontend assets built externally
+COPY public ./public
+
+# Copy backend binary
+COPY --from=backend-builder /app/raiapi .
+
+ENV PORT=3000
 EXPOSE 3000
 
-# Use the PnP loader to start the application
-CMD ["node", "-r", "./.pnp.cjs", "index.js"]
+# Improved HEALTHCHECK
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:3000/ready || exit 1
+
+CMD ["./raiapi"]

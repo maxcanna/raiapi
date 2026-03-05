@@ -22,6 +22,37 @@ jobs:
           fetch-depth: 0
       - name: Check version bump
         run: git diff --diff-filter=M origin/master -- "package.json" | grep "version"
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+      - name: Enable Corepack
+        run: corepack enable
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: 'yarn'
+      - name: Install dependencies
+        run: yarn install --immutable
+      - name: Lint FE
+        run: yarn lint
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.26'
+          cache: true
+      - name: Lint BE
+        uses: golangci/golangci-lint-action@v9
+        with:
+          version: latest
+      - name: Gosec
+        uses: securego/gosec@master
+        with:
+          args: ./...
+
   test:
     runs-on: ubuntu-latest
     services:
@@ -32,41 +63,31 @@ jobs:
     steps:
     - name: Check out code
       uses: actions/checkout@v4
+    - name: Enable Corepack
+      run: corepack enable
     - name: Setup node
       uses: actions/setup-node@v4
       with:
-        node-version: 22
-    - name: Enable Corepack
-      run: corepack enable
+        node-version: 24
+        cache: 'yarn'
+    - name: Setup Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.26'
+        cache: true
     - name: Install dependencies
       run: yarn install --immutable
-    - name: Lint
-      run: yarn lint
-    - name: Build
+    - name: Build Frontend
       run: yarn build
-    - name: Run tests with mongodb cache empty
+    - name: Build Backend
+      run: go build -v -o raiapi ./cmd/server
+    - name: Run Go Tests with mongodb cache empty
       env:
         MONGO_URL: mongodb://localhost:${{ job.services.mongo.ports['27017'] }}/raiapi-test
-        APIARY_API_KEY: ${{ secrets.APIARY_API_KEY }}
-        NODE_ENV: test
-        PORT: 3333
-      run: |
-              yarn dlx -q -p dredd@^13.1.2 dredd
-              yarn test
-    - name: Run tests with mongodb cache full
+      run: go test -v ./...
+    - name: Run Go Tests with mongodb cache full
       env:
         MONGO_URL: mongodb://localhost:${{ job.services.mongo.ports['27017'] }}/raiapi-test
-        APIARY_API_KEY: ${{ secrets.APIARY_API_KEY }}
-        NODE_ENV: test
-        PORT: 3333
-      run: |
-              yarn dlx -q -p dredd@^13.1.2 dredd
-              yarn test
-    - name: Run tests with mongodb cache not available
-      env:
-        APIARY_API_KEY: ${{ secrets.APIARY_API_KEY }}
-        NODE_ENV: test
-        PORT: 3333
-      run: |
-              yarn dlx -q -p dredd@^13.1.2 dredd
-              yarn test
+      run: go test -v ./...
+    - name: Run Go Tests with mongodb cache not available
+      run: go test -v ./...
