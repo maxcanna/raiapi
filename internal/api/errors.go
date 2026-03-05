@@ -37,7 +37,7 @@ type AppHandler func(w http.ResponseWriter, r *http.Request) error
 // handleError is the central point for logging and responding to errors.
 func (h *Handler) handleError(w http.ResponseWriter, r *http.Request, err error) {
 	var apiErr *APIError
-	
+
 	switch e := err.(type) {
 	case *APIError:
 		apiErr = e
@@ -63,7 +63,7 @@ func (h *Handler) handleError(w http.ResponseWriter, r *http.Request, err error)
 
 	// 3. Return structured JSON response to the client
 	w.WriteHeader(apiErr.Status)
-	
+
 	response := model.ErrorResponse{
 		Status:  apiErr.Status,
 		Message: displayMessage,

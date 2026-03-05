@@ -14,7 +14,6 @@ func setupRouter() http.Handler {
 	mux := http.NewServeMux()
 	h.RegisterRoutes(mux)
 
-	var apiHandler http.Handler = mux
-	apiHandler = middleware.JSONContentType(apiHandler)
-	return middleware.DateValidator(apiHandler)
+	// Apply DateValidator middleware to simulate the real app
+	return middleware.DateValidator(mux)
 }

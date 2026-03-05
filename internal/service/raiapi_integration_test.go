@@ -19,9 +19,9 @@ func TestIntegration(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("listCanali", func(t *testing.T) {
-		canali := s.ListCanali(ctx)
+		seq := s.ListCanali(ctx)
 		count := 0
-		for range canali {
+		for range seq {
 			count++
 		}
 		if count != 14 {
@@ -30,9 +30,9 @@ func TestIntegration(t *testing.T) {
 	})
 
 	t.Run("listProgrammi", func(t *testing.T) {
-		programmi := s.ListProgrammi(ctx, 0, date)
+		seq := s.ListProgrammi(ctx, 0, date)
 		count := 0
-		for p, err := range programmi {
+		for p, err := range seq {
 			if err != nil {
 				t.Fatalf("ListProgrammi failed: %v", err)
 			}
@@ -50,10 +50,10 @@ func TestIntegration(t *testing.T) {
 	})
 
 	t.Run("listQualita", func(t *testing.T) {
-		qualita := s.ListQualita(ctx, 0, date, 0)
+		seq := s.ListQualita(ctx, 0, date, 0)
 		found := false
 		count := 0
-		for q, err := range qualita {
+		for q, err := range seq {
 			if err != nil {
 				t.Logf("ListQualita failed (possibly valid if no program 0): %v", err)
 				return
@@ -84,9 +84,9 @@ func TestIntegration(t *testing.T) {
 	})
 
 	t.Run("getAll", func(t *testing.T) {
-		items := s.GetAll(ctx, 0, date)
+		seq := s.GetAll(ctx, 0, date)
 		count := 0
-		for item := range items {
+		for item := range seq {
 			count++
 			if item.Name == "" {
 				t.Error("Name is empty")

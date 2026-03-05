@@ -13,6 +13,7 @@ func (h *Handler) ListCanali(w http.ResponseWriter, r *http.Request) error {
 	canaliIter := h.Service.ListCanali(r.Context())
 	canali := slices.Collect(canaliIter)
 
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	if err := json.NewEncoder(w).Encode(canali); err != nil {
 		return NewAPIError(http.StatusInternalServerError, "failed to encode response", err)
 	}

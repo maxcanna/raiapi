@@ -72,13 +72,13 @@ func (s *Server) routes() http.Handler {
 	mainMux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		path := r.URL.Path
 		cleanPath := filepath.Clean(path)
-		
+
 		// Prevent directory traversal
 		if strings.HasPrefix(cleanPath, "..") {
 			http.Error(w, "forbidden", http.StatusForbidden)
 			return
 		}
-		
+
 		fullPath := filepath.Join("public", cleanPath)
 		if fi, err := os.Stat(fullPath); os.IsNotExist(err) || fi.IsDir() {
 			// If it's a directory or doesn't exist, serve index.html for SPA

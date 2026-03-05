@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"log/slog"
@@ -144,10 +143,10 @@ func (s *RaiApiService) getData(ctx context.Context, idCanale int, date time.Tim
 	}
 
 	programs, err := s.cache.Get(ctx, docIndex)
-	if err != nil {
-		if !errors.Is(err, mongo.ErrNoDocuments) {
-			slog.ErrorContext(ctx, "error reading from cache", "error", err)
-		}
+	if err == mongo.ErrNoDocuments {
+		return s.fetchPage(ctx, idCanale, date)
+	} else if err != nil {
+		slog.ErrorContext(ctx, "error reading from cache", "error", err)
 		return s.fetchPage(ctx, idCanale, date)
 	}
 

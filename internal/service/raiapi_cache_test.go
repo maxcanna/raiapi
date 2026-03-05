@@ -85,7 +85,7 @@ func TestCacheLogic(t *testing.T) {
 			GetFunc: func(ctx context.Context, key string) ([]model.RaiPlayEvent, error) {
 				// Simulating mongo.ErrNoDocuments which is what our code checks for
 				// (using a generic error for now as we checked for it in raiapi_fetch.go)
-				return nil, errors.New("mongo: no documents in result") 
+				return nil, errors.New("mongo: no documents in result")
 			},
 		}
 		s := &RaiApiService{
