@@ -41,5 +41,5 @@ jobs:
         tags: ghcr.io/maxcanna/raiapi:latest,ghcr.io/maxcanna/raiapi:${{ env.VERSION_NUMBER }}
         labels: version=$VERSION_NUMBER
         push: ${{ env.DOCKER_PUSH }}
-        platforms: linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6
+        platforms: ${{ env.DOCKER_PUSH == 'true' && 'linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6' || 'linux/amd64' }}
         context: .
