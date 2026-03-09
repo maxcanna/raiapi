@@ -20,8 +20,9 @@ jobs:
     - name: Docker login
       uses: docker/login-action@v3
       with:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
     - name: Setup node
       uses: actions/setup-node@v4
       with:
@@ -37,7 +38,7 @@ jobs:
     - name: Docker build
       uses: docker/build-push-action@v6
       with:
-        tags: maxcanna/raiapi:latest,maxcanna/raiapi:${{ env.VERSION_NUMBER }}
+        tags: ghcr.io/maxcanna/raiapi:latest,ghcr.io/maxcanna/raiapi:${{ env.VERSION_NUMBER }}
         labels: version=$VERSION_NUMBER
         push: ${{ env.DOCKER_PUSH }}
         platforms: linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6
