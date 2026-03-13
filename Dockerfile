@@ -22,7 +22,7 @@ ARG TARGETARCH
 RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -trimpath -ldflags="-s -w" -o raiapi ./cmd/server
 
 # Stage 3: Final image
-FROM alpine:3.21
+FROM alpine:3.23
 LABEL org.opencontainers.image.authors="massi@massi.dev"
 WORKDIR /var/www/raiapi
 
