@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"time"
 
 	"go.mongodb.org/mongo-driver/v2/bson"
@@ -35,6 +36,8 @@ func NewMongoCache(ctx context.Context, mongoURL string) (*MongoCache, error) {
 		dbName = cs.Database
 	}
 
+	slog.InfoContext(ctx, "successfully connected to mongodb", "dbName", dbName)
+
 	return &MongoCache{
 		db: mongoClient.Database(dbName),
 	}, nil
@@ -45,8 +48,10 @@ func (c *MongoCache) Get(ctx context.Context, key string) ([]model.RaiPlayEvent,
 	var result model.ProgrammaCached
 	err := coll.FindOne(ctx, bson.M{"_id": key}).Decode(&result)
 	if err != nil {
+		slog.DebugContext(ctx, "cache miss", "key", key, "error", err)
 		return nil, err
 	}
+	slog.DebugContext(ctx, "cache hit", "key", key)
 	return result.Programmi, nil
 }
 
@@ -61,5 +66,10 @@ func (c *MongoCache) Set(ctx context.Context, key string, programs []model.RaiPl
 	}
 	opts := options.UpdateOne().SetUpsert(true)
 	_, err := coll.UpdateOne(ctx, filter, update, opts)
-	return err
+	if err != nil {
+		slog.DebugContext(ctx, "failed to update cache", "key", key, "error", err)
+		return err
+	}
+	slog.DebugContext(ctx, "cache updated", "key", key, "programs_count", len(programs))
+	return nil
 }

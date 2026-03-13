@@ -14,7 +14,15 @@ import (
 
 func main() {
 	// Initialize structured logger
-	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
+	var logLevel = new(slog.LevelVar)
+	logLevel.Set(slog.LevelInfo)
+	if _, present := os.LookupEnv("DEBUG"); present {
+		logLevel.Set(slog.LevelDebug)
+	}
+
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+		Level: logLevel,
+	}))
 	slog.SetDefault(logger)
 
 	portStr := os.Getenv("PORT")
