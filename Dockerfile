@@ -1,11 +1,11 @@
 # Stage 1: Build frontend
-FROM node:24-alpine AS frontend-builder
+FROM --platform=$BUILDPLATFORM node:24-alpine AS frontend-builder
 WORKDIR /app
 COPY . .
 RUN corepack enable && yarn install --immutable && yarn build
 
 # Stage 2: Build backend
-FROM golang:1.26-alpine AS backend-builder
+FROM --platform=$BUILDPLATFORM golang:1.26-alpine AS backend-builder
 WORKDIR /app
 
 # Install build dependencies
@@ -22,7 +22,7 @@ ARG TARGETARCH
 RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -trimpath -ldflags="-s -w" -o raiapi ./cmd/server
 
 # Stage 3: Final image
-FROM alpine:3.21
+FROM alpine:3.23
 LABEL org.opencontainers.image.authors="massi@massi.dev"
 WORKDIR /var/www/raiapi
 
