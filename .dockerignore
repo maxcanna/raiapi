@@ -1,18 +1,27 @@
-.idea/
-.dockerignore
-docker-compose.yml
-now.json
-coverage/
+# Source Control
+.git/
 .gitignore
-.eslintignore
-.eslintrc
+
+# Docker
+.dockerignore
 Dockerfile
-LICENSE
+docker-compose.yml
+
+# Documentation
 README.md
-apiary.apib
-dredd.yml
-test.sh
-test/
-!.yarn
-!.pnp.cjs
-!.pnp.loader.mjs
+LICENSE
+
+# Testing
+coverage/
+*_test.go
+
+# Build tools & temporary files
+node_modules/
+size-plugin.json
+.nyc_output/
+.pnp.*
+.yarn/
+*.log
+*.swp
+*.swo
+.DS_Store

@@ -23,23 +23,13 @@ jobs:
         registry: ghcr.io
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
-    - name: Setup node
-      uses: actions/setup-node@v4
-      with:
-        node-version: 22
-    - name: Enable Corepack
-      run: corepack enable
-    - name: Install dependencies
-      run: yarn install --immutable
-    - name: Build application
-      run: yarn build
-    - name: Clean up for production
-      run: rm -rf .yarn/cache .pnp.* .yarn/install-state.gz
     - name: Docker build
       uses: docker/build-push-action@v6
       with:
         tags: ghcr.io/maxcanna/raiapi:latest,ghcr.io/maxcanna/raiapi:${{ env.VERSION_NUMBER }}
-        labels: version=$VERSION_NUMBER
+        labels: version=${{ env.VERSION_NUMBER }}
         push: ${{ env.DOCKER_PUSH }}
         platforms: ${{ env.DOCKER_PUSH == 'true' && 'linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6' || 'linux/amd64' }}
         context: .
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
