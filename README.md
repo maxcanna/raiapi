@@ -15,8 +15,7 @@ You've several way to get raiapi running:
 * Or manually:
 
 ```bash
-  $ npm i --production
-  $ npm start
+  $ go run cmd/server/main.go
 ```
   raiapi will be available on port `3000`.
 

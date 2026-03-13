@@ -1,7 +1,0 @@
-reporter: apiary
-server: node -r ./.pnp.cjs index.js
-server-wait: 3
-path: []
-blueprint: apiary.apib
-endpoint: 'http://localhost:3333'
-hookfiles: test/dreddHooks.js

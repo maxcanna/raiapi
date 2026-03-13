@@ -1,8 +1,5 @@
-node_modules
-coverage
-.nyc_output
-public
-size-plugin.json
+# Dependency directories
+node_modules/
 .yarn/*
 !.yarn/patches
 !.yarn/plugins
@@ -10,3 +7,40 @@ size-plugin.json
 !.yarn/sdks
 !.yarn/versions
 .pnp.*
+
+# Build outputs
+public/
+raiapi
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Testing and coverage
+coverage/
+.nyc_output/
+size-plugin.json
+
+# Environment and secrets
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.pem
+
+# IDEs and editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS specific
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
