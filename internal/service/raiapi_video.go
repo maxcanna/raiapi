@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"log/slog"
@@ -96,7 +97,11 @@ func (s *RaiApiService) getEffectiveUrl(ctx context.Context, videoURL string, re
 
 					resp, err := raceClient.Do(req)
 					if err != nil {
-						slog.DebugContext(raceCtx, "failed server race attempt", "server", srv, "error", err)
+						if errors.Is(err, context.Canceled) {
+							slog.DebugContext(raceCtx, "server race attempt aborted", "server", srv, "error", err)
+						} else {
+							slog.DebugContext(raceCtx, "failed server race attempt", "server", srv, "error", err)
+						}
 						return
 					}
 
