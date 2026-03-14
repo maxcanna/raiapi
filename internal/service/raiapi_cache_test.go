@@ -13,7 +13,7 @@ import (
 )
 
 type MockCache struct {
-	data map[string][]model.RaiPlayEvent
+	data    map[string][]model.RaiPlayEvent
 	GetFunc func(ctx context.Context, key string) ([]model.RaiPlayEvent, error)
 	SetFunc func(ctx context.Context, key string, programs []model.RaiPlayEvent) error
 }
@@ -40,8 +40,8 @@ func (m *MockCache) Set(ctx context.Context, key string, programs []model.RaiPla
 func TestCacheLogic(t *testing.T) {
 	// Mock RaiPlay server
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		resp := map[string]interface{}{
-			"events": []map[string]interface{}{
+		resp := map[string]any{
+			"events": []map[string]any{
 				{"has_video": true, "path_id": "/event1"},
 			},
 		}

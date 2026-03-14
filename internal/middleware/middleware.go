@@ -50,10 +50,7 @@ func CacheHeaders(next http.Handler) http.Handler {
 		endOfDay := time.Date(now.Year(), now.Month(), now.Day(), 23, 59, 59, 0, time.UTC)
 		startOfDay := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.UTC)
 
-		maxAge := int(endOfDay.Sub(now).Seconds())
-		if maxAge < 0 {
-			maxAge = 0
-		}
+		maxAge := max(int(endOfDay.Sub(now).Seconds()), 0)
 
 		w.Header().Set("Cache-Control", fmt.Sprintf("public, max-age=%d", maxAge))
 		w.Header().Set("Last-Modified", startOfDay.Format(http.TimeFormat))

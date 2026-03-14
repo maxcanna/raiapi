@@ -45,7 +45,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          go-version: '1.26'
+          go-version: '1.26.1'
           cache: true
       - name: Lint BE
         uses: golangci/golangci-lint-action@v9
@@ -76,7 +76,7 @@ jobs:
     - name: Setup Go
       uses: actions/setup-go@v5
       with:
-        go-version: '1.26'
+        go-version: '1.26.1'
         cache: true
     - name: Install dependencies
       run: yarn install --immutable

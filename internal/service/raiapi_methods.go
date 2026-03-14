@@ -100,7 +100,7 @@ func (s *RaiApiService) ListQualita(ctx context.Context, idCanale int, date time
 		matches := urlRegex.FindStringSubmatch(fileURL)
 		var qualities []string
 		if len(matches) > 2 {
-			for _, q := range strings.Split(matches[2], ",") {
+			for q := range strings.SplitSeq(matches[2], ",") {
 				if q != "" {
 					qualities = append(qualities, q)
 				}
