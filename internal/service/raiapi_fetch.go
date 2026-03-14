@@ -80,31 +80,31 @@ func (s *RaiApiService) fetchPage(ctx context.Context, idCanale int, date time.T
 	slog.DebugContext(ctx, "found events to fetch", "count", len(fetchURLs))
 
 	// Fetch details concurrently
-	g, ctx := errgroup.WithContext(ctx)
+	g, groupCtx := errgroup.WithContext(ctx)
 	g.SetLimit(10) // Limit concurrency
 
 	results := make([]model.RaiPlayEvent, len(fetchURLs))
 
 	for i, u := range fetchURLs {
 		g.Go(func() error {
-			slog.DebugContext(ctx, "fetching event details", "url", u)
-			req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, nil)
+			slog.DebugContext(groupCtx, "fetching event details", "url", u)
+			req, err := http.NewRequestWithContext(groupCtx, http.MethodGet, u, nil)
 			if err != nil {
-				slog.DebugContext(ctx, "failed to create request for event detail", "url", u, "error", err)
+				slog.DebugContext(groupCtx, "failed to create request for event detail", "url", u, "error", err)
 				return nil
 			}
 			req.Header.Set("User-Agent", UserAgent)
 			resp, err := s.client.Do(req)
 			if err != nil {
-				slog.DebugContext(ctx, "failed to fetch event detail", "url", u, "error", err)
+				slog.DebugContext(groupCtx, "failed to fetch event detail", "url", u, "error", err)
 				return nil // Skip on individual error
 			}
 			defer func() {
 				if _, err := io.Copy(io.Discard, resp.Body); err != nil {
-					slog.DebugContext(ctx, "failed to drain response body", "error", err)
+					slog.DebugContext(groupCtx, "failed to drain response body", "error", err)
 				}
 				if err := resp.Body.Close(); err != nil {
-					slog.DebugContext(ctx, "failed to close response body", "error", err)
+					slog.DebugContext(groupCtx, "failed to close response body", "error", err)
 				}
 			}()
 
@@ -113,10 +113,10 @@ func (s *RaiApiService) fetchPage(ctx context.Context, idCanale int, date time.T
 				if err := json.NewDecoder(resp.Body).Decode(&event); err == nil {
 					results[i] = event
 				} else {
-					slog.DebugContext(ctx, "failed to decode event detail", "url", u, "error", err)
+					slog.DebugContext(groupCtx, "failed to decode event detail", "url", u, "error", err)
 				}
 			} else {
-				slog.DebugContext(ctx, "unexpected status code for event detail", "url", u, "statusCode", resp.StatusCode)
+				slog.DebugContext(groupCtx, "unexpected status code for event detail", "url", u, "statusCode", resp.StatusCode)
 			}
 			return nil
 		})

@@ -7,7 +7,7 @@ import (
 	"log/slog"
 	"net/http"
 	"strings"
-	"time"
+	"sync/atomic"
 )
 
 func (s *RaiApiService) getVideoUrl(ctx context.Context, videoURL string) (string, error) {
@@ -66,10 +66,28 @@ func (s *RaiApiService) getEffectiveUrl(ctx context.Context, videoURL string, re
 			slog.DebugContext(ctx, "selected quality index", "index", qualityIndex, "quality", qualities[qualityIndex])
 
 			// Try servers
-			raceCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
+			raceCtx, cancel := context.WithCancel(ctx)
 			defer cancel()
 
 			resultChan := make(chan string, 1)
+			var failures int32
+
+			raceClient := &http.Client{
+				Timeout:   s.client.Timeout,
+				Transport: s.client.Transport,
+				CheckRedirect: func(req *http.Request, via []*http.Request) error {
+					return http.ErrUseLastResponse
+				},
+			}
+
+			checkDone := func() {
+				if atomic.AddInt32(&failures, 1) == int32(len(servers)) {
+					select {
+					case resultChan <- "": // Signal all failed
+					default:
+					}
+				}
+			}
 
 			for _, server := range servers {
 				go func(srv string) {
@@ -78,11 +96,12 @@ func (s *RaiApiService) getEffectiveUrl(ctx context.Context, videoURL string, re
 					req, err := http.NewRequestWithContext(raceCtx, http.MethodHead, targetURL, nil)
 					if err != nil {
 						slog.DebugContext(raceCtx, "failed to create request for server race", "server", srv, "error", err)
+						checkDone()
 						return
 					}
 					req.Header.Set("User-Agent", UserAgent)
 
-					resp, err := s.client.Do(req)
+					resp, err := raceClient.Do(req)
 					if err == nil {
 						defer func() {
 							if _, err := io.Copy(io.Discard, resp.Body); err != nil {
@@ -95,24 +114,29 @@ func (s *RaiApiService) getEffectiveUrl(ctx context.Context, videoURL string, re
 						if resp.StatusCode == http.StatusOK {
 							select {
 							case resultChan <- targetURL:
-								slog.DebugContext(raceCtx, "server race won", "targetURL", targetURL)
 							case <-raceCtx.Done():
 							}
 						} else {
 							slog.DebugContext(raceCtx, "server race attempt returned non-OK status", "server", srv, "statusCode", resp.StatusCode)
+							checkDone()
 						}
 					} else {
 						slog.DebugContext(raceCtx, "failed server race attempt", "server", srv, "error", err)
+						checkDone()
 					}
 				}(server)
 			}
 
 			select {
 			case res := <-resultChan:
-				return res, nil
-			case <-raceCtx.Done():
-				// Timeout or all failed
-				slog.DebugContext(ctx, "all server races failed or timed out", "videoURL", videoURL)
+				if res != "" {
+					slog.DebugContext(ctx, "server race won", "targetURL", res)
+					return res, nil
+				}
+				slog.DebugContext(ctx, "all server races failed", "videoURL", videoURL)
+			case <-ctx.Done():
+				// Request context canceled
+				slog.DebugContext(ctx, "server race canceled by context", "videoURL", videoURL)
 			}
 		}
 	} else {
