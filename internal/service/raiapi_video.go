@@ -70,7 +70,7 @@ func (s *RaiApiService) getEffectiveUrl(ctx context.Context, videoURL string, re
 			defer cancel()
 
 			resultChan := make(chan string, 1)
-			var failures int32
+			var failures int64
 
 			raceClient := &http.Client{
 				Timeout:   s.client.Timeout,
@@ -81,7 +81,7 @@ func (s *RaiApiService) getEffectiveUrl(ctx context.Context, videoURL string, re
 			}
 
 			checkDone := func() {
-				if atomic.AddInt32(&failures, 1) == int32(len(servers)) {
+				if atomic.AddInt64(&failures, 1) == int64(len(servers)) {
 					select {
 					case resultChan <- "": // Signal all failed
 					default:
