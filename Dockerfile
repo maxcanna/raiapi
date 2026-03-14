@@ -5,7 +5,7 @@ COPY . .
 RUN corepack enable && yarn install --immutable && yarn build
 
 # Stage 2: Build backend
-FROM --platform=$BUILDPLATFORM golang:1.26-alpine AS backend-builder
+FROM --platform=$BUILDPLATFORM golang:1.26.1-alpine AS backend-builder
 WORKDIR /app
 
 # Install build dependencies

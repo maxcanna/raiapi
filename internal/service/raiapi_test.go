@@ -32,8 +32,8 @@ func TestProgramAndQualityHandling(t *testing.T) {
 		switch r.URL.Path {
 		case "/palinsesto/app/rai-1/01-01-2023.json":
 			// Return palinsesto with one video program and one non-video program
-			resp := map[string]interface{}{
-				"events": []map[string]interface{}{
+			resp := map[string]any{
+				"events": []map[string]any{
 					{
 						"has_video": true,
 						"path_id":   "/programma/video",
@@ -109,7 +109,7 @@ func TestProgramAndQualityHandling(t *testing.T) {
 
 	// Check JSON encoding for omitempty
 	jsonData, _ := json.Marshal(noVideoProg)
-	var decoded map[string]interface{}
+	var decoded map[string]any
 	_ = json.Unmarshal(jsonData, &decoded)
 
 	if _, ok := decoded["description"]; !ok {

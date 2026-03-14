@@ -17,8 +17,8 @@ func TestFetchPage(t *testing.T) {
 		switch r.URL.Path {
 		case "/palinsesto/app/rai-1/01-01-2023.json":
 			// Return palinsesto
-			resp := map[string]interface{}{
-				"events": []map[string]interface{}{
+			resp := map[string]any{
+				"events": []map[string]any{
 					{
 						"has_video": true,
 						"path_id":   "/programma/123",

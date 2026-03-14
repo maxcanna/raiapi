@@ -59,7 +59,7 @@ func init() {
 	}
 
 	for _, host := range hosts {
-		for i := 0; i < 10; i++ {
+		for i := range 10 {
 			servers = append(servers, strings.Replace(host, "?", fmt.Sprintf("%d", i), 1))
 		}
 	}

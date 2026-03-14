@@ -86,7 +86,6 @@ func (s *RaiApiService) fetchPage(ctx context.Context, idCanale int, date time.T
 	results := make([]model.RaiPlayEvent, len(fetchURLs))
 
 	for i, u := range fetchURLs {
-		i, u := i, u
 		g.Go(func() error {
 			slog.DebugContext(ctx, "fetching event details", "url", u)
 			req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, nil)
