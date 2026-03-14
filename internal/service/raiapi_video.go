@@ -7,7 +7,7 @@ import (
 	"log/slog"
 	"net/http"
 	"strings"
-	"sync/atomic"
+	"sync"
 )
 
 func (s *RaiApiService) getVideoUrl(ctx context.Context, videoURL string) (string, error) {
@@ -70,7 +70,7 @@ func (s *RaiApiService) getEffectiveUrl(ctx context.Context, videoURL string, re
 			defer cancel()
 
 			resultChan := make(chan string, 1)
-			var failures int64
+			var wg sync.WaitGroup
 
 			raceClient := &http.Client{
 				Timeout:   s.client.Timeout,
@@ -80,56 +80,55 @@ func (s *RaiApiService) getEffectiveUrl(ctx context.Context, videoURL string, re
 				},
 			}
 
-			checkDone := func() {
-				if atomic.AddInt64(&failures, 1) == int64(len(servers)) {
-					select {
-					case resultChan <- "": // Signal all failed
-					default:
-					}
-				}
-			}
-
 			for _, server := range servers {
+				wg.Add(1)
 				go func(srv string) {
+					defer wg.Done()
 					targetURL := fmt.Sprintf("https://%s%s_%s.mp4", srv, matches[1], qualities[qualityIndex])
 					slog.DebugContext(raceCtx, "trying server", "server", srv, "targetURL", targetURL)
+
 					req, err := http.NewRequestWithContext(raceCtx, http.MethodHead, targetURL, nil)
 					if err != nil {
 						slog.DebugContext(raceCtx, "failed to create request for server race", "server", srv, "error", err)
-						checkDone()
 						return
 					}
 					req.Header.Set("User-Agent", UserAgent)
 
 					resp, err := raceClient.Do(req)
-					if err == nil {
-						defer func() {
-							if _, err := io.Copy(io.Discard, resp.Body); err != nil {
-								slog.DebugContext(raceCtx, "failed to drain response body in race", "error", err)
-							}
-							if err := resp.Body.Close(); err != nil {
-								slog.DebugContext(raceCtx, "failed to close response body in race", "error", err)
-							}
-						}()
-						if resp.StatusCode == http.StatusOK {
-							select {
-							case resultChan <- targetURL:
-							case <-raceCtx.Done():
-							}
-						} else {
-							slog.DebugContext(raceCtx, "server race attempt returned non-OK status", "server", srv, "statusCode", resp.StatusCode)
-							checkDone()
+					if err != nil {
+						slog.DebugContext(raceCtx, "failed server race attempt", "server", srv, "error", err)
+						return
+					}
+
+					defer func() {
+						if _, err := io.Copy(io.Discard, resp.Body); err != nil {
+							slog.DebugContext(raceCtx, "failed to drain response body in race", "error", err)
+						}
+						if err := resp.Body.Close(); err != nil {
+							slog.DebugContext(raceCtx, "failed to close response body in race", "error", err)
+						}
+					}()
+
+					if resp.StatusCode == http.StatusOK {
+						select {
+						case resultChan <- targetURL:
+						case <-raceCtx.Done():
 						}
 					} else {
-						slog.DebugContext(raceCtx, "failed server race attempt", "server", srv, "error", err)
-						checkDone()
+						slog.DebugContext(raceCtx, "server race attempt returned non-OK status", "server", srv, "statusCode", resp.StatusCode)
 					}
 				}(server)
 			}
 
+			// Background goroutine to wait for all attempts to finish and close the channel.
+			go func() {
+				wg.Wait()
+				close(resultChan)
+			}()
+
 			select {
-			case res := <-resultChan:
-				if res != "" {
+			case res, ok := <-resultChan:
+				if ok {
 					slog.DebugContext(ctx, "server race won", "targetURL", res)
 					return res, nil
 				}
