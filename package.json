@@ -1,10 +1,10 @@
 {
   "engines": {
-    "node": "^25.0.0",
+    "node": "^24.0.0",
     "yarn": "^4.0.0"
   },
   "name": "raiapi",
-  "version": "5.0.4",
+  "version": "5.1.0",
   "description": "RaiPlay API",
   "private": true,
   "scripts": {
