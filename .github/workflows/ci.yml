@@ -31,15 +31,12 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v4
-      - name: Enable Corepack
-        run: corepack enable
       - name: Setup node
         uses: actions/setup-node@v4
         with:
           node-version: 25.8.1
-          cache: 'yarn'
-      - name: Install dependencies
-        run: yarn install --immutable
+      - name: Enable Corepack and Install dependencies
+        run: corepack enable && yarn install --immutable
       - name: Lint FE
         run: yarn lint
       - name: Setup Go
@@ -66,20 +63,17 @@ jobs:
     steps:
     - name: Check out code
       uses: actions/checkout@v4
-    - name: Enable Corepack
-      run: corepack enable
     - name: Setup node
       uses: actions/setup-node@v4
       with:
         node-version: 25.8.1
-        cache: 'yarn'
     - name: Setup Go
       uses: actions/setup-go@v5
       with:
         go-version: '1.26.1'
         cache: true
-    - name: Install dependencies
-      run: yarn install --immutable
+    - name: Enable Corepack and Install dependencies
+      run: corepack enable && yarn install --immutable
     - name: Build Frontend
       run: yarn build
     - name: Build Backend
