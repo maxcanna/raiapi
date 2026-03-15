@@ -900,7 +900,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@eslint/js@npm:9.39.4, @eslint/js@npm:^9.28.0":
+"@eslint/js@npm:9.39.4, @eslint/js@npm:^9":
   version: 9.39.4
   resolution: "@eslint/js@npm:9.39.4"
   checksum: 10c0/5aa7dea2cbc5decf7f5e3b0c6f86a084ccee0f792d288ca8e839f8bc1b64e03e227068968e49b26096e6f71fd857ab6e42691d1b993826b9a3883f1bdd7a0e46
@@ -4077,7 +4077,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint@npm:^9.8.0":
+"eslint@npm:^9":
   version: 9.39.4
   resolution: "eslint@npm:9.39.4"
   dependencies:
@@ -5777,7 +5777,7 @@ __metadata:
     "@babel/core": "npm:^7.29.0"
     "@babel/eslint-parser": "npm:^7.28.6"
     "@babel/preset-react": "npm:^7.28.5"
-    "@eslint/js": "npm:^9.28.0"
+    "@eslint/js": "npm:^9"
     "@material/button": "npm:^14.0.0"
     "@material/ripple": "npm:^14.0.0"
     "@material/snackbar": "npm:^14.0.0"
@@ -5796,7 +5796,7 @@ __metadata:
     "@rmwc/touch-target": "npm:^14.3.5"
     "@rmwc/typography": "npm:^14.3.5"
     esbuild: "npm:^0.27.4"
-    eslint: "npm:^9.8.0"
+    eslint: "npm:^9"
     eslint-plugin-react: "npm:^7.37.5"
     globals: "npm:^17.4.0"
     preact: "npm:^10.29.0"
@@ -5811,7 +5811,7 @@ __metadata:
     rmwc: "npm:^14.3.5"
     tslib: "npm:^2.8.1"
     typescript: "npm:^5.9.3"
-    vite: "npm:^5.0.0"
+    vite: "npm:^5"
     vite-plugin-html: "npm:^3.2.2"
   languageName: unknown
   linkType: soft
@@ -6802,7 +6802,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite@npm:^5.0.0":
+"vite@npm:^5":
   version: 5.4.21
   resolution: "vite@npm:5.4.21"
   dependencies:
