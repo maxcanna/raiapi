@@ -1,6 +1,6 @@
 module go.massi.dev/raiapi
 
-go 1.26.0
+go 1.25.8
 
 require (
 	go.mongodb.org/mongo-driver/v2 v2.5.0
