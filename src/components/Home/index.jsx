@@ -1,4 +1,4 @@
-import ReactPlayer from 'react-player'
+import ReactPlayer from 'react-player/lazy'
 import { useState, useEffect } from 'preact/hooks';
 import { Card, CardMedia, CardActionIcons, CardActions, Typography } from 'rmwc';
 import Calendar from 'react-calendar';
