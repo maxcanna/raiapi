@@ -35,7 +35,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 25.8.1
-          cache: 'yarn'
       - name: Install dependencies
         run: npm install -g corepack --force && corepack enable && yarn install --immutable
       - name: Lint FE
@@ -68,14 +67,13 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: 25.8.1
-        cache: 'yarn'
+    - name: Install dependencies
+      run: npm install -g corepack --force && corepack enable && yarn install --immutable
     - name: Setup Go
       uses: actions/setup-go@v5
       with:
         go-version: '1.25.8'
         cache: true
-    - name: Install dependencies
-      run: npm install -g corepack --force && corepack enable && yarn install --immutable
     - name: Build Frontend
       run: yarn build
     - name: Build Backend
