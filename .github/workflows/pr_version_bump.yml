@@ -26,7 +26,7 @@ jobs:
           node-version: 25.8.1
 
       - name: Enable Corepack
-        run: npm install -g corepack && corepack enable
+        run: npm install -g corepack --force && corepack enable
 
       - name: Bump version if unchanged
         run: |

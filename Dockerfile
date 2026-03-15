@@ -2,7 +2,7 @@
 FROM --platform=$BUILDPLATFORM node:25.8.1-alpine AS frontend-builder
 WORKDIR /app
 COPY . .
-RUN npm install -g corepack && corepack enable && yarn install --immutable && yarn build
+RUN npm install -g corepack --force && corepack enable && yarn install --immutable && yarn build
 
 # Stage 2: Build backend
 FROM --platform=$BUILDPLATFORM golang:1.25.8-alpine AS backend-builder
