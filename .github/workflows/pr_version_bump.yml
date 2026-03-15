@@ -20,13 +20,13 @@ jobs:
           ref: ${{ github.head_ref }}
           fetch-depth: 0
 
+      - name: Enable Corepack
+        run: corepack enable
+
       - name: Setup node
         uses: actions/setup-node@v4
         with:
           node-version: 25.8.1
-
-      - name: Enable Corepack
-        run: npm install -g corepack && corepack enable
 
       - name: Bump version if unchanged
         run: |
