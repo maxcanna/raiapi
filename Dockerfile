@@ -1,12 +1,11 @@
 # Stage 1: Build frontend
 FROM --platform=$BUILDPLATFORM node:25.8.1-alpine AS frontend-builder
 WORKDIR /app
-RUN npm install -g corepack --force
 COPY . .
 RUN corepack enable && yarn install --immutable && yarn build
 
 # Stage 2: Build backend
-FROM --platform=$BUILDPLATFORM golang:1.25.8-alpine AS backend-builder
+FROM --platform=$BUILDPLATFORM golang:1.26.1-alpine AS backend-builder
 WORKDIR /app
 
 # Install build dependencies
