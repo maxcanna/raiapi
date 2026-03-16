@@ -1,7 +1,7 @@
-import ReactPlayer from 'react-player'
-import { useState, useEffect } from 'preact/hooks';
+import { lazy, Suspense } from 'preact/compat';
+import { useState, useEffect, useRef } from 'preact/hooks';
 import { Card, CardMedia, CardActionIcons, CardActions, Typography } from 'rmwc';
-import Calendar from 'react-calendar';
+import { route } from 'preact-router';
 import Select from '../../components/Select/index.jsx';
 import DownloadButton from '../DownloadButton/index.jsx';
 import CopyUrlButton from '../CopyUrlButton/index.jsx';
@@ -9,6 +9,10 @@ import PermalinkButton from '../PermalinkButton/index.jsx';
 import PropTypes from 'prop-types';
 import 'react-calendar/dist/Calendar.css';
 import '@rmwc/card/styles';
+
+import { MediaPlayer, MediaProvider } from '@vidstack/react';
+import '@vidstack/react/player/styles/base.css';
+const Calendar = lazy(() => import('react-calendar'));
 
 const Home = ({ dayOfWeek, channelId, programId, qualityId }) => {
   const minDateInitial = new Date();
@@ -184,7 +188,9 @@ const Home = ({ dayOfWeek, channelId, programId, qualityId }) => {
     if (channel && program && quality) {
       fetch(`/api/canali/${channel.id}/programmi/${program.id}/qualita/${quality.id}/url?data=${getDate()}`)
         .then(response => response.json())
-        .then(({ url }) => setVideoUrl(url));
+        .then(({ url }) => {
+          setVideoUrl(url);
+        });
     }
   }, [channel, program, quality, getDate()]);
 
@@ -192,15 +198,17 @@ const Home = ({ dayOfWeek, channelId, programId, qualityId }) => {
     <div>
       <Card>
         <Typography use="headline5" tag="h2">Seleziona un programma</Typography>
-        <Calendar
-          onChange={setDateIfChanged}
-          minDate={minDate}
-          maxDate={maxDate}
-          defaultValue={date}
-          navigationLabel={() => ''}
-          minDetail="month"
-          locale="it-IT"
-        />
+        <Suspense fallback={<div>Loading calendar...</div>}>
+          <Calendar
+            onChange={setDateIfChanged}
+            minDate={minDate}
+            maxDate={maxDate}
+            defaultValue={date}
+            navigationLabel={() => ''}
+            minDetail="month"
+            locale="it-IT"
+          />
+        </Suspense>
         <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', padding: '1rem 0', width: '100%' }}>
           { date &&
               <div style={{ flex: 1, minWidth: 0 }}>
@@ -241,13 +249,18 @@ const Home = ({ dayOfWeek, channelId, programId, qualityId }) => {
                 <Typography use="body1" tag="div">{program.description}</Typography>
               </div>
               { videoUrl
-                ? <ReactPlayer
-                  url={videoUrl}
-                  width=""
-                  height=""
+                ? <MediaPlayer
+                  key={videoUrl}
+                  src={{
+                    src: videoUrl,
+                    type: videoUrl.includes('.m3u8') ? 'application/x-mpegURL' : (videoUrl.includes('relinkerServlet') ? 'video/mp4' : undefined),
+                  }}
+                  logLevel="warn"
+                  playsInline
                   controls
-                  pip
-                />
+                >
+                  <MediaProvider />
+                </MediaPlayer>
                 : <CardMedia
                   sixteenByNine
                   style={{

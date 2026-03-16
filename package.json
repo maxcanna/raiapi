@@ -5,6 +5,7 @@
   },
   "name": "raiapi",
   "version": "5.2.3",
+  "type": "module",
   "description": "RaiPlay API",
   "private": true,
   "scripts": {
@@ -44,16 +45,18 @@
     "@rmwc/top-app-bar": "^14.3.5",
     "@rmwc/touch-target": "^14.3.5",
     "@rmwc/typography": "^14.3.5",
+    "@vidstack/react": "^1.12.13",
     "esbuild": "^0.27.4",
+    "hls.js": "^1.6.15",
     "preact": "^10.29.0",
     "preact-render-to-string": "^6.6.6",
     "preact-router": "^4.1.2",
     "prop-types": "^15.8.1",
     "react-calendar": "^6.0.0",
     "react-copy-to-clipboard": "^5.1.1",
-    "react-player": "^3.4.0",
     "rmwc": "^14.3.5",
-    "tslib": "^2.8.1"
+    "tslib": "^2.8.1",
+    "vidstack": "^1.12.13"
   },
   "devDependencies": {
     "@babel/core": "^7.29.0",
