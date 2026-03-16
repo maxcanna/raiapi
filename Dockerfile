@@ -23,7 +23,22 @@ RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -trimpath -ldfl
 
 # Stage 3: Final image
 FROM alpine:3.23
-LABEL org.opencontainers.image.authors="massi@massi.dev"
+
+ARG BUILD_DATE
+ARG REVISION
+ARG VERSION
+
+LABEL org.opencontainers.image.created=$BUILD_DATE \
+      org.opencontainers.image.authors="massi@massi.dev" \
+      org.opencontainers.image.url="https://github.com/maxcanna/raiapi" \
+      org.opencontainers.image.documentation="https://github.com/maxcanna/raiapi" \
+      org.opencontainers.image.source="https://github.com/maxcanna/raiapi" \
+      org.opencontainers.image.version=$VERSION \
+      org.opencontainers.image.revision=$REVISION \
+      org.opencontainers.image.vendor="massi.dev" \
+      org.opencontainers.image.title="RaiPlay API" \
+      org.opencontainers.image.description="RaiPlay API to retrieve tv program information and files for the past seven days"
+
 WORKDIR /var/www/raiapi
 
 # Install ca-certificates (required for HTTPS) and tzdata
