@@ -36,6 +36,15 @@ const Home = ({ dayOfWeek, channelId, programId, qualityId }) => {
 
   const [date, setDate] = useState(initialDate);
 
+  const setDateIfChanged = (newDate) => {
+    const d1 = `${date.getFullYear()}-${(('0' + (date.getMonth() + 1)).slice(-2))}-${('0' + date.getDate()).slice(-2)}`;
+    const d2 = `${newDate.getFullYear()}-${(('0' + (newDate.getMonth() + 1)).slice(-2))}-${('0' + newDate.getDate()).slice(-2)}`;
+    if (d1 !== d2) {
+      setDate(newDate);
+    }
+  };
+
+
   useEffect(() => {
     if (dayOfWeek !== undefined) {
       const targetDay = parseInt(dayOfWeek, 10);
@@ -44,7 +53,7 @@ const Home = ({ dayOfWeek, channelId, programId, qualityId }) => {
           let d = new Date(maxDateInitial);
           d.setDate(d.getDate() - i);
           if (d.getDay() === targetDay) {
-            setDate(d);
+            setDateIfChanged(d);
             break;
           }
         }
@@ -126,7 +135,7 @@ const Home = ({ dayOfWeek, channelId, programId, qualityId }) => {
         route(path, true);
       }
     }
-  }, [date, channel, program, quality, channelId, programId, qualityId]);
+  }, [date.getDay(), channel, program, quality, channelId, programId, qualityId]);
 
   if (!channels) {
     fetch('/api/canali')
@@ -146,7 +155,7 @@ const Home = ({ dayOfWeek, channelId, programId, qualityId }) => {
         .then(response => response.json())
         .then(setPrograms);
     }
-  }, [channel, date]);
+  }, [channel, getDate()]);
 
   useEffect(() => {
     setQuality();
@@ -158,7 +167,7 @@ const Home = ({ dayOfWeek, channelId, programId, qualityId }) => {
         .then(response => response.json())
         .then(setQualities);
     }
-  }, [channel, program, date]);
+  }, [channel, program, getDate()]);
 
   useEffect(() => {
     if (qualities && qualities.length === 1) {
@@ -174,14 +183,14 @@ const Home = ({ dayOfWeek, channelId, programId, qualityId }) => {
         .then(response => response.json())
         .then(({ url }) => setVideoUrl(url));
     }
-  }, [channel, program, quality, date]);
+  }, [channel, program, quality, getDate()]);
 
   return (
     <div>
       <Card>
         <Typography use="headline5" tag="h2">Seleziona un programma</Typography>
         <Calendar
-          onChange={setDate}
+          onChange={setDateIfChanged}
           minDate={minDate}
           maxDate={maxDate}
           defaultValue={date}
@@ -238,8 +247,8 @@ const Home = ({ dayOfWeek, channelId, programId, qualityId }) => {
               { videoUrl &&
                 <CardActions>
                   <CardActionIcons>
-                    <CopyUrlButton url={videoUrl}/>
                     <PermalinkButton url={typeof window !== 'undefined' ? window.location.href : ''}/>
+                    <CopyUrlButton url={videoUrl}/>
                     <DownloadButton url={videoUrl}/>
                   </CardActionIcons>
                 </CardActions>
