@@ -110,6 +110,10 @@ const Home = ({ dayOfWeek, channelId, programId, qualityId }) => {
   useEffect(() => {
     if (isInitializing.current) {
       isInitializing.current = false;
+      const currentPath = typeof window !== 'undefined' ? window.location.pathname : '';
+      if (currentPath === '/' && date) {
+        route(`/day/${date.getDay()}`, true);
+      }
       return;
     }
 
@@ -198,30 +202,32 @@ const Home = ({ dayOfWeek, channelId, programId, qualityId }) => {
           minDetail="month"
           locale="it-IT"
         />
-        { date &&
-                <Select
-                  onChange={setChannel}
-                  hintText="Canale"
-                  values={channels}
-                  value={channel}
-                />
-        }
-        { channel &&
-                <Select
-                  onChange={setProgram}
-                  hintText="Programma"
-                  values={programs}
-                  value={program}
-                />
-        }
-        { program && qualities && qualities.length > 1 &&
-                <Select
-                  onChange={setQuality}
-                  hintText="Qualità"
-                  values={qualities}
-                  value={quality}
-                />
-        }
+        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', padding: '1rem 0' }}>
+          { date &&
+                  <Select
+                    onChange={setChannel}
+                    hintText="Canale"
+                    values={channels}
+                    value={channel}
+                  />
+          }
+          { channel &&
+                  <Select
+                    onChange={setProgram}
+                    hintText="Programma"
+                    values={programs}
+                    value={program}
+                  />
+          }
+          { program && qualities && qualities.length > 1 &&
+                  <Select
+                    onChange={setQuality}
+                    hintText="Qualità"
+                    values={qualities}
+                    value={quality}
+                  />
+          }
+        </div>
       </Card>
       { program &&
             <Card>
