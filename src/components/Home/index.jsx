@@ -202,30 +202,36 @@ const Home = ({ dayOfWeek, channelId, programId, qualityId }) => {
           minDetail="month"
           locale="it-IT"
         />
-        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', padding: '1rem 0' }}>
+        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', padding: '1rem 0', width: '100%' }}>
           { date &&
-                  <Select
-                    onChange={setChannel}
-                    hintText="Canale"
-                    values={channels}
-                    value={channel}
-                  />
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <Select
+                  onChange={setChannel}
+                  hintText="Canale"
+                  values={channels}
+                  value={channel}
+                />
+              </div>
           }
           { channel &&
-                  <Select
-                    onChange={setProgram}
-                    hintText="Programma"
-                    values={programs}
-                    value={program}
-                  />
+              <div style={{ flex: 'auto', minWidth: 0 }}>
+                <Select
+                  onChange={setProgram}
+                  hintText="Programma"
+                  values={programs}
+                  value={program}
+                />
+              </div>
           }
           { program && qualities && qualities.length > 1 &&
-                  <Select
-                    onChange={setQuality}
-                    hintText="Qualità"
-                    values={qualities}
-                    value={quality}
-                  />
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <Select
+                  onChange={setQuality}
+                  hintText="Qualità"
+                  values={qualities}
+                  value={quality}
+                />
+              </div>
           }
         </div>
       </Card>
