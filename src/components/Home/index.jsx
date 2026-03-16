@@ -1,6 +1,5 @@
-import ReactPlayer from 'react-player/lazy'
-import { useState, useEffect, useRef } from 'preact/hooks';
-import { route } from 'preact-router';
+import ReactPlayer from 'react-player'
+import { useState, useEffect } from 'preact/hooks';
 import { Card, CardMedia, CardActionIcons, CardActions, Typography } from 'rmwc';
 import Calendar from 'react-calendar';
 import Select from '../../components/Select/index.jsx';
