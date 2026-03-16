@@ -11,6 +11,10 @@ const App = () => (
   <>
     <Header />
     <Router>
+      <Home path="/day/:dayOfWeek/channel/:channelId/program/:programId/quality/:qualityId" />
+      <Home path="/day/:dayOfWeek/channel/:channelId/program/:programId" />
+      <Home path="/day/:dayOfWeek/channel/:channelId" />
+      <Home path="/day/:dayOfWeek" />
       <Home path="/" />
       <NotFound default />
     </Router>

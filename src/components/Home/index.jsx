@@ -1,14 +1,17 @@
 import ReactPlayer from 'react-player/lazy'
-import { useState, useEffect } from 'preact/hooks';
+import { useState, useEffect, useRef } from 'preact/hooks';
+import { route } from 'preact-router';
 import { Card, CardMedia, CardActionIcons, CardActions, Typography } from 'rmwc';
 import Calendar from 'react-calendar';
 import Select from '../../components/Select/index.jsx';
 import DownloadButton from '../DownloadButton/index.jsx';
 import CopyUrlButton from '../CopyUrlButton/index.jsx';
+import PermalinkButton from '../PermalinkButton/index.jsx';
+import PropTypes from 'prop-types';
 import 'react-calendar/dist/Calendar.css';
 import '@rmwc/card/styles';
 
-const Home = () => {
+const Home = ({ dayOfWeek, channelId, programId, qualityId }) => {
   const minDateInitial = new Date();
   minDateInitial.setDate(minDateInitial.getDate() - 7);
   const maxDateInitial = new Date();
@@ -16,7 +19,40 @@ const Home = () => {
 
   const [minDate] = useState(minDateInitial);
   const [maxDate] = useState(maxDateInitial);
-  const [date, setDate] = useState(maxDateInitial);
+
+  const initialDate = (() => {
+    if (dayOfWeek !== undefined) {
+      const targetDay = parseInt(dayOfWeek, 10);
+      for (let i = 0; i < 7; i++) {
+        let d = new Date(maxDateInitial);
+        d.setDate(d.getDate() - i);
+        if (d.getDay() === targetDay) {
+          return d;
+        }
+      }
+    }
+    return maxDateInitial;
+  })();
+
+  const [date, setDate] = useState(initialDate);
+
+  useEffect(() => {
+    if (dayOfWeek !== undefined) {
+      const targetDay = parseInt(dayOfWeek, 10);
+      if (date && date.getDay() !== targetDay) {
+        for (let i = 0; i < 7; i++) {
+          let d = new Date(maxDateInitial);
+          d.setDate(d.getDate() - i);
+          if (d.getDay() === targetDay) {
+            setDate(d);
+            break;
+          }
+        }
+      }
+    }
+  }, [dayOfWeek]);
+
+
   const [channels, setChannels] = useState();
   const [channel, setChannel] = useState();
   const [programs, setPrograms] = useState();
@@ -25,6 +61,72 @@ const Home = () => {
   const [quality, setQuality] = useState();
   const [videoUrl, setVideoUrl] = useState();
   const getDate = () => `${date.getFullYear()}-${(('0' + (date.getMonth() + 1)).slice(-2))}-${('0' + date.getDate()).slice(-2)}`;
+
+
+  useEffect(() => {
+    if (channels) {
+      if (channelId) {
+        const found = channels.find(c => c.id.toString() === channelId.toString());
+        setChannel(found);
+      } else {
+        setChannel(undefined);
+      }
+    }
+  }, [channels, channelId]);
+
+  useEffect(() => {
+    if (programs) {
+      if (programId) {
+        const found = programs.find(p => p.id.toString() === programId.toString());
+        setProgram(found);
+      } else {
+        setProgram(undefined);
+      }
+    }
+  }, [programs, programId]);
+
+  useEffect(() => {
+    if (qualities) {
+      if (qualityId) {
+        const found = qualities.find(q => q.id.toString() === qualityId.toString());
+        setQuality(found);
+      } else {
+        setQuality(undefined);
+      }
+    }
+  }, [qualities, qualityId]);
+
+  const isInitializing = useRef(true);
+
+  useEffect(() => {
+    if (isInitializing.current) {
+      isInitializing.current = false;
+      return;
+    }
+
+    if (date) {
+      let path = `/day/${date.getDay()}`;
+      if (channel) {
+        path += `/channel/${channel.id}`;
+        if (program) {
+          path += `/program/${program.id}`;
+          if (quality) {
+            path += `/quality/${quality.id}`;
+          }
+        }
+      }
+
+      const currentPath = typeof window !== 'undefined' ? window.location.pathname : '';
+      let isStillLoadingDeepLink = false;
+      if (channelId && !channel) isStillLoadingDeepLink = true;
+      if (programId && !program) isStillLoadingDeepLink = true;
+      if (qualityId && !quality) isStillLoadingDeepLink = true;
+
+      if (!isStillLoadingDeepLink && path !== currentPath) {
+        route(path, true);
+      }
+    }
+  }, [date, channel, program, quality, channelId, programId, qualityId]);
 
   if (!channels) {
     fetch('/api/canali')
@@ -137,6 +239,7 @@ const Home = () => {
                 <CardActions>
                   <CardActionIcons>
                     <CopyUrlButton url={videoUrl}/>
+                    <PermalinkButton url={typeof window !== 'undefined' ? window.location.href : ''}/>
                     <DownloadButton url={videoUrl}/>
                   </CardActionIcons>
                 </CardActions>
@@ -150,3 +253,9 @@ const Home = () => {
 Home.displayName = 'Home';
 
 export default Home;
+Home.propTypes = {
+  dayOfWeek: PropTypes.string,
+  channelId: PropTypes.string,
+  programId: PropTypes.string,
+  qualityId: PropTypes.string,
+};
