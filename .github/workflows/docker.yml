@@ -16,7 +16,6 @@ jobs:
         echo DOCKER_PUSH=$([[ $GITHUB_REF == *"master"* ]] && echo "true" || echo "false") >> $GITHUB_ENV
         echo VERSION_NUMBER=$(jq -r < package.json .version) >> $GITHUB_ENV
         echo "BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_ENV
-        echo "REVISION=$(git rev-parse HEAD)" >> $GITHUB_ENV
         echo NODE_ENV=production >> $GITHUB_ENV
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v3
@@ -37,7 +36,7 @@ jobs:
         context: .
         build-args: |
           BUILD_DATE=${{ env.BUILD_DATE }}
-          REVISION=${{ env.REVISION }}
+          REVISION=${{ github.sha }}
           VERSION=${{ env.VERSION_NUMBER }}
         cache-from: type=gha
         cache-to: type=gha,mode=max
