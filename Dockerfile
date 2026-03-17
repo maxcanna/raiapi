@@ -19,7 +19,9 @@ COPY . .
 # Build for the target architecture
 ARG TARGETOS
 ARG TARGETARCH
-RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -trimpath -ldflags="-s -w" -o raiapi ./cmd/server
+ARG TARGETVARIANT
+
+RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=$TARGETARCH GOARM=${TARGETVARIANT#v} go build -trimpath -ldflags="-s -w" -o raiapi ./cmd/server
 
 # Stage 3: Final image
 FROM alpine:3.23
