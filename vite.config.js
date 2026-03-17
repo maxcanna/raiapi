@@ -32,6 +32,7 @@ export default defineConfig(({ mode }) => {
             outDir: '../public', // Output directory relative to the new root
             emptyOutDir: true,
             sourcemap: !production,
+            chunkSizeWarningLimit: 1000,
         },
         esbuild: {
             jsxFactory: 'h',
