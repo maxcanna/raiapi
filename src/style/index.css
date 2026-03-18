@@ -115,10 +115,11 @@ h1 {
 .mdc-select {
     flex: 1;
     min-width: 200px;
+    width: 100%;
 }
 
 .mdc-select__anchor {
-    width: 100%;
+    width: 100% !important;
     margin-top: 1rem;
 }
 
