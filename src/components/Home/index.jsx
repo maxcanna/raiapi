@@ -209,7 +209,7 @@ const Home = ({ dayOfWeek, channelId, programId, qualityId }) => {
             locale="it-IT"
           />
         </Suspense>
-        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', padding: '1rem 0', width: '100%' }}>
+        <div className="select-container">
           { date &&
               <div style={{ flex: 1, minWidth: 0 }}>
                 <Select

@@ -24,7 +24,9 @@ html, body {
         background-color: var(--mdc-theme-background);
     }
 
-    .mdc-list-item {
+    .mdc-list-item,
+    .mdc-list-item__primary-text,
+    .mdc-list-item__text {
         color: var(--mdc-theme-text-primary-on-background) !important;
     }
 
@@ -151,4 +153,18 @@ h1 {
 .react-calendar {
     border: none !important;
     width: 100% !important;
+}
+
+.select-container {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    padding: 1rem 0;
+    width: 100%;
+}
+
+@media (max-width: 600px) {
+    .select-container {
+        flex-direction: column;
+    }
 }
