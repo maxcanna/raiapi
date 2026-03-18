@@ -17,6 +17,24 @@ export default defineConfig(({ mode }) => {
                     data: {
                         title: 'RaiAPI', // You might want to make this dynamic if needed
                     },
+                    tags: [
+                        {
+                            injectTo: 'head',
+                            tag: 'link',
+                            attrs: {
+                                rel: 'manifest',
+                                href: '/manifest.json',
+                            },
+                        },
+                        {
+                            injectTo: 'head',
+                            tag: 'meta',
+                            attrs: {
+                                name: 'theme-color',
+                                content: '#2199e8',
+                            },
+                        },
+                    ],
                 },
             }),
         ],
