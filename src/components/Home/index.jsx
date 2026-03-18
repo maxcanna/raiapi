@@ -211,7 +211,7 @@ const Home = ({ dayOfWeek, channelId, programId, qualityId }) => {
         </Suspense>
         <div className="select-container">
           { date &&
-              <div style={{ flex: 1, minWidth: 0 }}>
+              <div className="select-item-small">
                 <Select
                   onChange={setChannel}
                   hintText="Canale"
@@ -221,7 +221,7 @@ const Home = ({ dayOfWeek, channelId, programId, qualityId }) => {
               </div>
           }
           { channel &&
-              <div style={{ flex: 'auto', minWidth: 0 }}>
+              <div className="select-item-large">
                 <Select
                   onChange={setProgram}
                   hintText="Programma"
@@ -231,7 +231,7 @@ const Home = ({ dayOfWeek, channelId, programId, qualityId }) => {
               </div>
           }
           { program && qualities && qualities.length > 1 &&
-              <div style={{ flex: 1, minWidth: 0 }}>
+              <div className="select-item-small">
                 <Select
                   onChange={setQuality}
                   hintText="Qualità"

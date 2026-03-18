@@ -158,13 +158,28 @@ h1 {
 .select-container {
     display: flex;
     gap: 1rem;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     padding: 1rem 0;
     width: 100%;
+}
+
+.select-item-small {
+    flex: 1;
+    min-width: 0;
+}
+
+.select-item-large {
+    flex: 2;
+    min-width: 0;
 }
 
 @media (max-width: 600px) {
     .select-container {
         flex-direction: column;
+    }
+
+    .select-item-small,
+    .select-item-large {
+        flex: auto;
     }
 }
