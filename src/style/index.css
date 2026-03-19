@@ -26,7 +26,11 @@ html, body {
 
     .mdc-list-item,
     .mdc-list-item__primary-text,
-    .mdc-list-item__text {
+    .mdc-list-item__text,
+    .mdc-list-item__secondary-text,
+    .mdc-deprecated-list-item,
+    .mdc-deprecated-list-item__text,
+    .mdc-deprecated-list-item__primary-text {
         color: var(--mdc-theme-text-primary-on-background) !important;
     }
 
