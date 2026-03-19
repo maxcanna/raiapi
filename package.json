@@ -4,7 +4,7 @@
     "yarn": "^4.0.0"
   },
   "name": "raiapi",
-  "version": "5.4.1",
+  "version": "5.4.2",
   "type": "module",
   "description": "RaiPlay API",
   "private": true,
