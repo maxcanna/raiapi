@@ -33,11 +33,7 @@ jobs:
           # Fetch the base branch to compare against
           git fetch origin ${{ github.base_ref }}
 
-          # Check if "version" line in package.json has changed compared to the base branch
-          # git diff exits with 0 if no error, but grep exits with 1 if no match found.
-          # If grep finds "version", it means the version line HAS changed.
-          # We want to bump if the version has NOT changed (grep fails).
-          if ! git diff --diff-filter=M origin/${{ github.base_ref }} -- "package.json" | grep "version"; then
+          if ! git diff --diff-filter=M origin/${{ github.base_ref }} -- "package.json" | grep '^\+.*"version":'; then
             echo "Version has not been changed. Bumping version..."
 
             # Configure git user using the last non-merge commit's author
