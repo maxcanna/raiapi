@@ -19,6 +19,7 @@ jobs:
         with:
           ref: ${{ github.head_ref }}
           fetch-depth: 0
+          token: ${{ secrets.PAT }}
 
       - name: Enable Corepack
         run: corepack enable
