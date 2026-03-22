@@ -8,8 +8,12 @@ RUN corepack enable && yarn install --immutable && yarn build
 FROM --platform=$BUILDPLATFORM golang:1.26.1-alpine AS backend-builder
 WORKDIR /app
 
-# Install build dependencies
-RUN apk add --no-cache git
+# Install build dependencies, certificates, and timezone data
+RUN apk add --no-cache git ca-certificates tzdata
+
+# Create a non-root user and group
+RUN addgroup -g 10001 app && \
+    adduser -u 10001 -G app -H -D app
 
 COPY go.mod go.sum ./
 RUN go mod download
@@ -24,7 +28,7 @@ ARG TARGETVARIANT
 RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=$TARGETARCH GOARM=${TARGETVARIANT#v} go build -trimpath -ldflags="-s -w" -o raiapi ./cmd/server
 
 # Stage 3: Final image
-FROM gcr.io/distroless/static-debian12:nonroot
+FROM scratch
 
 ARG BUILD_DATE
 ARG REVISION
@@ -43,11 +47,22 @@ LABEL org.opencontainers.image.created=$BUILD_DATE \
 
 WORKDIR /var/www/raiapi
 
+# Copy the non-root user info from the builder
+COPY --from=backend-builder /etc/passwd /etc/passwd
+COPY --from=backend-builder /etc/group /etc/group
+
+# Copy certificates and timezone data
+COPY --from=backend-builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+COPY --from=backend-builder /usr/share/zoneinfo /usr/share/zoneinfo
+
 # Copy frontend assets
 COPY --from=frontend-builder /app/public ./public
 
 # Copy backend binary
 COPY --from=backend-builder /app/raiapi .
+
+# Use the non-root user
+USER app
 
 ENV PORT=3000
 EXPOSE 3000
