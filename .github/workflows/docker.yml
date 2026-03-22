@@ -32,7 +32,7 @@ jobs:
       with:
         tags: ghcr.io/maxcanna/raiapi:latest,ghcr.io/maxcanna/raiapi:${{ env.VERSION_NUMBER }}
         push: ${{ env.DOCKER_PUSH }}
-        platforms: ${{ env.DOCKER_PUSH == 'true' && 'linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6' || 'linux/amd64' }}
+        platforms: ${{ env.DOCKER_PUSH == 'true' && 'linux/amd64,linux/arm64,linux/arm/v7 || 'linux/amd64' }}
         context: .
         build-args: |
           BUILD_DATE=${{ env.BUILD_DATE }}
