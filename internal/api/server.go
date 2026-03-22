@@ -56,9 +56,6 @@ func (s *Server) routes() http.Handler {
 
 	// Main router
 	mainMux := http.NewServeMux()
-	mainMux.HandleFunc("/ready", func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusNoContent)
-	})
 	mainMux.Handle("/api/", apiHandler)
 	mainMux.Handle("/rss/", apiHandler)
 	mainMux.HandleFunc("/robots.txt", func(w http.ResponseWriter, r *http.Request) {
