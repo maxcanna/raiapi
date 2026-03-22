@@ -12,11 +12,6 @@ import (
 // Logger middleware
 func Logger(logger *slog.Logger, next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path == "/ready" {
-			next.ServeHTTP(w, r)
-			return
-		}
-
 		start := time.Now()
 		next.ServeHTTP(w, r)
 		duration := time.Since(start).Milliseconds()
